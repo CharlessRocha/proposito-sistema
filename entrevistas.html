@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrevistas — Propósito</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
+  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  .main{max-width:900px;margin:0 auto;padding:1.25rem 1rem 4rem}
+  .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
+  .page-title{font-size:20px;font-weight:700;color:#fff}
+  .page-sub{font-size:12px;color:#666;margin-top:2px}
+  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a}
+  .tab{flex:1;padding:7px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
+  .tab.active{background:#252840;color:#fff;border:1px solid #2a2d3a}
+  .panel{display:none}.panel.active{display:block}
+
+  /* KPI */
+  .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem}
+  @media(max-width:560px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
+  .kpi{background:#1a1d27;border-radius:8px;padding:10px 12px;border:1px solid #2a2d3a}
+  .kpi-label{font-size:10px;color:#555;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px}
+  .kpi-val{font-size:19px;font-weight:700;color:#fff}
+  .kpi-sub{font-size:10px;color:#666;margin-top:1px}
+  .kpi.success .kpi-val{color:#22c55e}
+  .kpi.warning .kpi-val{color:#f59e0b}
+  .kpi.danger .kpi-val{color:#ef4444}
+  .kpi.accent .kpi-val{color:#F5C842}
+
+  /* SALAS */
+  .salas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:1.25rem}
+  .sala{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden}
+  .sala-head{padding:9px 12px;background:#1f2235;border-bottom:1px solid #2a2d3a;display:flex;align-items:center;justify-content:space-between}
+  .sala-nome{font-size:12px;font-weight:600;color:#ddd}
+  .sala-livre{font-size:10px;font-weight:600;background:#0f2a1a;color:#22c55e;padding:2px 7px;border-radius:20px}
+  .sala-ocup{font-size:10px;font-weight:600;background:#2a1e0f;color:#f59e0b;padding:2px 7px;border-radius:20px}
+  .sala-body{padding:10px 12px}
+  .sala-matric{font-size:12px;font-weight:500;color:#ccc;margin-bottom:3px}
+  .sala-cliente{font-size:11px;color:#666}
+
+  /* LISTA */
+  .lista-wrap{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden}
+  .list-header{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr 1fr;gap:6px;padding:8px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px}
+  .list-row{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr 1fr;gap:6px;padding:10px 14px;border-bottom:1px solid #2a2d3a;align-items:center;font-size:12px;background:#1a1d27}
+  .list-row:last-child{border-bottom:none}
+  .list-row:hover{background:#1f2235}
+  .r-nome{font-size:13px;font-weight:500;color:#fff}
+  .r-sub{font-size:11px;color:#555;margin-top:1px}
+  .sp{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+  .sp-ag{background:#1a1f35;color:#F5C842}
+  .sp-ch{background:#2a1e0f;color:#fbbf24}
+  .sp-em{background:#2a1a00;color:#f59e0b}
+  .sp-co{background:#0f2a1a;color:#22c55e}
+  .sp-nv{background:#2a1515;color:#ef4444}
+  .sp-on{background:#1a1535;color:#c084fc}
+  .pp{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+  .pp-s{background:#0f2a1a;color:#22c55e}
+  .pp-n{background:#2a1515;color:#ef4444}
+  .pp-p{background:#2a1e0f;color:#fbbf24}
+  .ar{display:flex;gap:4px;flex-wrap:wrap}
+  .ar-btn{font-size:10px;padding:3px 7px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#888;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .ar-btn:hover{background:#1f2235}
+  .ar-btn.p{border-color:#F5C842;background:#1a1f35;color:#F5C842}
+  .ar-btn.s{border-color:#22c55e;background:#0f2a1a;color:#22c55e}
+  .ar-btn.d{border-color:#ef4444;background:#2a1515;color:#ef4444}
+  .ar-btn.w{border-color:#f59e0b;background:#2a1e0f;color:#fbbf24}
+
+  /* ALERTAS */
+  .alerta-card{background:#1a1d27;border-radius:10px;overflow:hidden;margin-bottom:10px}
+  .alerta-head{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+  .alerta-head.danger{background:#2a1515;border:1px solid #ef4444;border-bottom:1px solid #ef4444}
+  .alerta-head.warning{background:#2a1e0f;border:1px solid #f59e0b;border-bottom:1px solid #f59e0b}
+  .alerta-head.info{background:#1a1f35;border:1px solid #F5C842;border-bottom:1px solid #F5C842}
+  .ah-title{font-size:13px;font-weight:600}
+  .alerta-head.danger .ah-title{color:#f87171}
+  .alerta-head.warning .ah-title{color:#fbbf24}
+  .alerta-head.info .ah-title{color:#F5C842}
+  .alerta-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #2a2d3a;font-size:12px}
+  .alerta-item:last-child{border-bottom:none}
+
+  /* MODAL */
+  .modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center;padding:1rem}
+  .modal-bg.show{display:flex}
+  .modal{background:#1a1d27;border-radius:14px;padding:20px;max-width:480px;width:100%;border:1px solid #2a2d3a;max-height:90vh;overflow-y:auto}
+  .modal-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:16px}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .fg label{font-size:11px;color:#666;display:block;margin-bottom:3px;font-weight:500}
+  .fg input,.fg select{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit}
+  .fg input:focus,.fg select:focus{border-color:#F5C842;outline:none}
+  .fg-full{grid-column:1/-1}
+  .modal-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+  .btn-cancel{padding:9px 16px;border-radius:8px;border:1px solid #2a2d3a;background:transparent;color:#888;cursor:pointer;font-size:13px;font-family:inherit}
+  .btn-save{padding:9px 16px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
+
+  /* LISTA DIA */
+  .ld-grupo{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:10px}
+  .ld-head{padding:10px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;font-size:13px;font-weight:600;color:#ddd;display:flex;justify-content:space-between}
+  .ld-row{display:grid;grid-template-columns:70px 1.5fr 1fr 1fr;gap:8px;padding:9px 14px;border-bottom:1px solid #2a2d3a;font-size:12px;align-items:center}
+  .ld-row:last-child{border-bottom:none}
+  .ld-hora{font-weight:600;color:#F5C842}
+  .copy-btn{font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#888;cursor:pointer;font-family:inherit}
+  .copy-btn:hover{border-color:#F5C842;color:#F5C842}
+  .add-btn{padding:8px 14px;border-radius:8px;border:1px solid #F5C842;background:#1a1f35;color:#F5C842;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .filtro-unid{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
+
+  .empty{padding:24px;text-align:center;font-size:13px;color:#555}
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+</style>
+</head>
+<body>
+<div id="auth-check">
+  <div style="font-size:32px">🔒</div>
+  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
+  <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
+</div>
+<nav class="nav">
+  <div class="nav-logo">🎯 Propósito</div>
+  <span class="nav-modulo">📋 Entrevistas</span>
+  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+</nav>
+<div class="main">
+  <div class="top-bar">
+    <div>
+      <div class="page-title">Gestão de entrevistas</div>
+      <div class="page-sub" id="data-hoje"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select class="filtro-unid" id="filtro-unid" onchange="renderTudo()">
+        <option value="">Todas as unidades</option>
+        <option>Centro I</option><option>Centro II</option><option>Leste</option><option>Jockey</option>
+      </select>
+      <button class="add-btn" onclick="abrirModal()">+ Nova entrevista</button>
+    </div>
+  </div>
+
+  <div class="kpi-strip" id="kpi-strip"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="mudarTab('vivo')">🔴 Ao vivo</button>
+    <button class="tab" onclick="mudarTab('todas')">📋 Todas</button>
+    <button class="tab" onclick="mudarTab('alertas')">⚠️ Alertas <span id="badge-al" style="background:#2a1515;color:#ef4444;border-radius:20px;padding:1px 6px;font-size:10px;margin-left:2px"></span></button>
+    <button class="tab" onclick="mudarTab('dia')">📄 Lista do dia</button>
+  </div>
+
+  <div class="panel active" id="panel-vivo">
+    <div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Salas — status em tempo real</div>
+    <div class="salas-grid" id="salas-grid"></div>
+    <div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;margin-top:4px">Entrevistas de hoje</div>
+    <div class="lista-wrap">
+      <div class="list-header"><span>Família / aluno</span><span>Horário</span><span>Matriculador / sala</span><span>Status</span><span>Proposta</span></div>
+      <div id="hoje-lista"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-todas">
+    <div style="display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap" id="filtros-todas"></div>
+    <div class="lista-wrap">
+      <div class="list-header"><span>Família / aluno</span><span>Data / hora</span><span>Matriculador</span><span>Status</span><span>Proposta</span></div>
+      <div id="todas-lista"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-alertas">
+    <div id="alertas-body"></div>
+  </div>
+
+  <div class="panel" id="panel-dia">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:13px;font-weight:600;color:#ddd">Lista para recepção e matriculadores</div>
+      <button class="copy-btn" onclick="copiarLista()">📋 Copiar para WhatsApp</button>
+    </div>
+    <div id="lista-dia-body"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Nova entrevista</div>
+    <div class="fg">
+      <div class="fg-full"><label>Nome da família / aluno</label><input type="text" id="f-familia" placeholder="Ex: Família Silva — Pedro"></div>
+      <div><label>Série / segmento</label><input type="text" id="f-serie" placeholder="Ex: 6º Ano Fund. II"></div>
+      <div><label>Data</label><input type="date" id="f-data"></div>
+      <div><label>Horário</label><input type="time" id="f-hora"></div>
+      <div><label>Matriculador</label><input type="text" id="f-matric" placeholder="Nome do matriculador"></div>
+      <div><label>Sala</label><input type="text" id="f-sala" placeholder="Ex: Sala 1"></div>
+      <div><label>Unidade</label><select id="f-unidade"><option value="">Selecione...</option><option>Centro I</option><option>Centro II</option><option>Leste</option><option>Jockey</option></select></div>
+      <div><label>Modalidade</label><select id="f-modal"><option value="presencial">Presencial</option><option value="online">Online</option></select></div>
+      <div class="fg-full"><label>Link (online) / observação</label><input type="text" id="f-link" placeholder="Link do Meet ou observação"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-save" onclick="salvarEnt()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+if(sessionStorage.getItem('acesso_entrevistas')!=='1'){document.getElementById('auth-check').style.display='flex';}
+
+const HOJE=new Date();HOJE.setHours(0,0,0,0);
+const HOJE_STR=HOJE.toISOString().split('T')[0];
+document.getElementById('data-hoje').textContent=HOJE.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('f-data').value=HOJE_STR;
+
+const SL={'agendada':'sp-ag','chegou':'sp-ch','em_atend':'sp-em','concluida':'sp-co','nao_veio':'sp-nv','online':'sp-on'};
+const STLBL={'agendada':'Agendada','chegou':'Chegou','em_atend':'Em atendimento','concluida':'Concluída','nao_veio':'Não veio','online':'Online'};
+const PL={'sim':'pp-s','nao':'pp-n','pendente':'pp-p'};
+const PLBL={'sim':'Cadastrada','nao':'Não cadastrada','pendente':'Pendente'};
+
+let ents=[],filtroTodas='todas',editId=null;
+
+async function init(){
+  try{const r=await window.storage.get('entrevistas_v2');if(r)ents=JSON.parse(r.value);}catch(e){}
+  renderTudo();
+}
+
+function salvar(){try{window.storage.set('entrevistas_v2',JSON.stringify(ents));}catch(e){}}
+
+function getEnts(){
+  const u=document.getElementById('filtro-unid').value;
+  return u?ents.filter(e=>e.unidade===u):ents;
+}
+
+function renderTudo(){renderKPIs();renderVivo();renderTodas();renderAlertas();renderListaDia();}
+
+function renderKPIs(){
+  const list=getEnts();
+  const hj=list.filter(e=>e.data===HOJE_STR);
+  const chegaram=hj.filter(e=>['chegou','em_atend','concluida'].includes(e.status)).length;
+  const conc=hj.filter(e=>e.status==='concluida').length;
+  const semProp=list.filter(e=>e.status==='concluida'&&e.proposta!=='sim').length;
+  const naoVeio=hj.filter(e=>e.status==='nao_veio').length;
+  document.getElementById('kpi-strip').innerHTML=`
+    <div class="kpi accent"><div class="kpi-label">Hoje</div><div class="kpi-val">${hj.length}</div><div class="kpi-sub">${hj.filter(e=>e.status==='agendada').length} aguardando</div></div>
+    <div class="kpi warning"><div class="kpi-label">Chegaram</div><div class="kpi-val">${chegaram}</div><div class="kpi-sub">${hj.length?Math.round(chegaram/hj.length*100):0}%</div></div>
+    <div class="kpi success"><div class="kpi-label">Concluídas</div><div class="kpi-val">${conc}</div><div class="kpi-sub">hoje</div></div>
+    <div class="kpi ${semProp>0?'danger':'success'}"><div class="kpi-label">Sem proposta</div><div class="kpi-val">${semProp}</div><div class="kpi-sub">concluídas</div></div>
+    <div class="kpi ${naoVeio>0?'danger':'success'}"><div class="kpi-label">Não vieram</div><div class="kpi-val">${naoVeio}</div><div class="kpi-sub">hoje</div></div>`;
+  document.getElementById('badge-al').textContent=(semProp+naoVeio)||'';
+}
+
+function rowHtml(e){
+  return`<div class="list-row">
+    <div><div class="r-nome">${e.familia}</div><div class="r-sub">${e.serie||''} · ${e.modalidade==='online'?'Online':'Presencial'}</div></div>
+    <div><div style="color:#ccc">${e.data} ${e.hora||''}</div><div class="r-sub">${e.unidade||''}</div></div>
+    <div><div style="font-weight:500;color:#ccc">${e.matriculador||'—'}</div><div class="r-sub">${e.sala||''}</div></div>
+    <div>
+      <span class="sp ${SL[e.status]||'sp-ag'}">${STLBL[e.status]||e.status}</span>
+      <div class="ar" style="margin-top:5px">
+        <button class="ar-btn p" onclick="setStatus('${e.id}','chegou')">Chegou</button>
+        <button class="ar-btn w" onclick="setStatus('${e.id}','em_atend')">Atend.</button>
+        <button class="ar-btn s" onclick="setStatus('${e.id}','concluida')">Concluída</button>
+        <button class="ar-btn d" onclick="setStatus('${e.id}','nao_veio')">Não veio</button>
+      </div>
+    </div>
+    <div>
+      <span class="pp ${PL[e.proposta||'pendente']}">${PLBL[e.proposta||'pendente']}</span>
+      <div class="ar" style="margin-top:5px">
+        <button class="ar-btn s" onclick="setProp('${e.id}','sim')">✓ Sim</button>
+        <button class="ar-btn d" onclick="setProp('${e.id}','nao')">✗ Não</button>
+      </div>
+      ${e.modalidade==='online'&&e.link?`<a href="${e.link}" target="_blank" style="font-size:10px;color:#F5C842;display:block;margin-top:4px">🔗 Link</a>`:''}
+    </div>
+  </div>`;
+}
+
+function renderVivo(){
+  const list=getEnts();
+  const hj=[...list.filter(e=>e.data===HOJE_STR)].sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+  const salas={};
+  hj.forEach(e=>{const k=(e.sala||'Sala ?')+'__'+(e.unidade||'');if(!salas[k])salas[k]={nome:e.sala||'Sala ?',unidade:e.unidade||'',atual:null,matric:e.matriculador||'—',ag:0};if(e.status==='em_atend')salas[k].atual=e;if(['agendada','chegou'].includes(e.status))salas[k].ag++;});
+  document.getElementById('salas-grid').innerHTML=Object.keys(salas).length?Object.values(salas).map(s=>`
+    <div class="sala">
+      <div class="sala-head"><span class="sala-nome">${s.nome}</span><span class="${s.atual?'sala-ocup':'sala-livre'}">${s.atual?'Em atend.':'Livre'}</span></div>
+      <div class="sala-body">
+        <div class="sala-matric">👤 ${s.matric}</div>
+        <div class="sala-cliente">${s.atual?'→ '+s.atual.familia:'Aguardando'}</div>
+        <div style="font-size:10px;color:#555;margin-top:3px">${s.unidade} · ${s.ag} aguardando</div>
+      </div>
+    </div>`).join(''):'<div style="font-size:13px;color:#555;grid-column:1/-1;padding:16px">Nenhuma sala com entrevistas hoje</div>';
+  document.getElementById('hoje-lista').innerHTML=hj.length?hj.map(e=>rowHtml(e)).join(''):'<div class="empty">Nenhuma entrevista hoje</div>';
+}
+
+function renderTodas(){
+  const list=getEnts();
+  const filtros=[
+    {id:'todas',label:`Todas (${list.length})`},
+    {id:'hoje',label:`Hoje (${list.filter(e=>e.data===HOJE_STR).length})`},
+    {id:'sem_prop',label:`Sem proposta (${list.filter(e=>e.status==='concluida'&&e.proposta!=='sim').length})`},
+    {id:'nao_veio',label:`Não vieram (${list.filter(e=>e.status==='nao_veio').length})`},
+  ];
+  document.getElementById('filtros-todas').innerHTML=filtros.map(f=>`<button onclick="setFiltro('${f.id}')" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid ${filtroTodas===f.id?'#F5C842':'#2a2d3a'};background:${filtroTodas===f.id?'#1a1f35':'#1a1d27'};color:${filtroTodas===f.id?'#F5C842':'#888'};cursor:pointer;font-family:inherit">${f.label}</button>`).join('');
+  let fl=list;
+  if(filtroTodas==='hoje')fl=list.filter(e=>e.data===HOJE_STR);
+  if(filtroTodas==='sem_prop')fl=list.filter(e=>e.status==='concluida'&&e.proposta!=='sim');
+  if(filtroTodas==='nao_veio')fl=list.filter(e=>e.status==='nao_veio');
+  fl=[...fl].sort((a,b)=>b.data.localeCompare(a.data)||(b.hora||'').localeCompare(a.hora||''));
+  document.getElementById('todas-lista').innerHTML=fl.length?fl.map(e=>rowHtml(e)).join(''):'<div class="empty">Nenhuma entrevista nesta categoria</div>';
+}
+
+function renderAlertas(){
+  const list=getEnts();
+  const semProp=list.filter(e=>e.status==='concluida'&&e.proposta!=='sim');
+  const naoVeio=list.filter(e=>e.status==='nao_veio'&&e.data===HOJE_STR);
+  const agHoje=list.filter(e=>e.data===HOJE_STR&&e.status==='agendada');
+  let html='';
+  if(semProp.length)html+=`<div class="alerta-card"><div class="alerta-head danger"><span class="ah-title">📄 Concluídas sem proposta cadastrada</span><span style="font-size:11px;color:#f87171">${semProp.length}</span></div>${semProp.map(e=>`<div class="alerta-item"><div style="flex:1"><strong style="color:#ddd">${e.familia}</strong> · ${e.serie||''} · ${e.matriculador||''}</div><div style="color:#555">${e.data}</div><button class="ar-btn s" onclick="setProp('${e.id}','sim')">Marcar cadastrada</button></div>`).join('')}</div>`;
+  if(naoVeio.length)html+=`<div class="alerta-card"><div class="alerta-head warning"><span class="ah-title">👤 Não vieram hoje — reagendar</span></div>${naoVeio.map(e=>`<div class="alerta-item"><div style="flex:1"><strong style="color:#ddd">${e.familia}</strong> · ${e.serie||''}</div><div style="color:#555">${e.hora||''} · ${e.matriculador||''}</div><button class="ar-btn p" onclick="reagendar('${e.id}')">Reagendar</button></div>`).join('')}</div>`;
+  if(agHoje.length)html+=`<div class="alerta-card"><div class="alerta-head info"><span class="ah-title">⏳ Aguardando hoje — confirmar chegada</span></div>${agHoje.map(e=>`<div class="alerta-item"><div style="flex:1"><strong style="color:#ddd">${e.familia}</strong> · ${e.serie||''}</div><div style="color:#555">${e.hora||''} · ${e.matriculador||''} · ${e.sala||''}</div><div style="display:flex;gap:5px"><button class="ar-btn s" onclick="setStatus('${e.id}','chegou')">Chegou</button><button class="ar-btn d" onclick="setStatus('${e.id}','nao_veio')">Não veio</button></div></div>`).join('')}</div>`;
+  document.getElementById('alertas-body').innerHTML=html||'<div class="empty" style="color:#22c55e">✓ Nenhum alerta no momento</div>';
+  document.getElementById('badge-al').textContent=(semProp.length+naoVeio.length)||'';
+}
+
+function renderListaDia(){
+  const list=getEnts().filter(e=>e.data===HOJE_STR).sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+  if(!list.length){document.getElementById('lista-dia-body').innerHTML='<div class="empty">Nenhuma entrevista hoje</div>';return;}
+  const por={};list.forEach(e=>{const u=e.unidade||'Sem unidade';if(!por[u])por[u]=[];por[u].push(e);});
+  document.getElementById('lista-dia-body').innerHTML=Object.entries(por).map(([u,ents])=>`
+    <div class="ld-grupo">
+      <div class="ld-head"><span>${u}</span><span style="color:#666;font-size:12px">${ents.length} entrevistas</span></div>
+      ${ents.map(e=>`<div class="ld-row">
+        <span class="ld-hora">${e.hora||'—'}</span>
+        <div><div style="font-weight:500;color:#ddd">${e.familia}</div><div style="font-size:10px;color:#555">${e.serie||''}</div></div>
+        <div style="color:#aaa">${e.matriculador||'—'}<br><span style="font-size:10px;color:#555">${e.sala||''}</span></div>
+        <div>${e.modalidade==='online'?`<span style="font-size:10px;background:#1a1535;color:#c084fc;padding:2px 7px;border-radius:20px">Online</span>${e.link?` <a href="${e.link}" target="_blank" style="font-size:10px;color:#F5C842">🔗</a>`:''}`:`<span style="font-size:10px;background:#1a1f35;color:#F5C842;padding:2px 7px;border-radius:20px">Presencial</span>`}</div>
+      </div>`).join('')}
+    </div>`).join('');
+}
+
+function setStatus(id,st){const e=ents.find(x=>x.id===id);if(e){e.status=st;salvar();renderTudo();}}
+function setProp(id,v){const e=ents.find(x=>x.id===id);if(e){e.proposta=v;salvar();renderTudo();}}
+function setFiltro(f){filtroTodas=f;renderTodas();}
+
+function reagendar(id){
+  const e=ents.find(x=>x.id===id);if(!e)return;
+  editId=id;
+  document.getElementById('f-familia').value=e.familia;
+  document.getElementById('f-serie').value=e.serie||'';
+  document.getElementById('f-data').value='';
+  document.getElementById('f-hora').value='';
+  document.getElementById('f-matric').value=e.matriculador||'';
+  document.getElementById('f-sala').value=e.sala||'';
+  document.getElementById('f-unidade').value=e.unidade||'';
+  document.getElementById('f-modal').value=e.modalidade||'presencial';
+  document.getElementById('f-link').value=e.link||'';
+  document.getElementById('modal-title').textContent='Reagendar — '+e.familia;
+  document.getElementById('modal-bg').classList.add('show');
+}
+
+function abrirModal(){
+  editId=null;
+  ['f-familia','f-serie','f-hora','f-matric','f-sala','f-link'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-data').value=HOJE_STR;
+  document.getElementById('f-unidade').value='';
+  document.getElementById('f-modal').value='presencial';
+  document.getElementById('modal-title').textContent='Nova entrevista';
+  document.getElementById('modal-bg').classList.add('show');
+}
+
+function fecharModal(){document.getElementById('modal-bg').classList.remove('show');editId=null;}
+
+function salvarEnt(){
+  const familia=document.getElementById('f-familia').value.trim();
+  if(!familia){alert('Informe o nome da família');return;}
+  const nova={id:editId||Date.now().toString(),familia,serie:document.getElementById('f-serie').value,data:document.getElementById('f-data').value||HOJE_STR,hora:document.getElementById('f-hora').value,matriculador:document.getElementById('f-matric').value,sala:document.getElementById('f-sala').value,unidade:document.getElementById('f-unidade').value,modalidade:document.getElementById('f-modal').value,link:document.getElementById('f-link').value,status:'agendada',proposta:'pendente'};
+  if(editId){const i=ents.findIndex(e=>e.id===editId);if(i>=0){nova.proposta=ents[i].proposta||'pendente';ents[i]=nova;}}
+  else ents.push(nova);
+  salvar();fecharModal();renderTudo();
+}
+
+function copiarLista(){
+  const list=getEnts().filter(e=>e.data===HOJE_STR).sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+  if(!list.length){alert('Nenhuma entrevista hoje');return;}
+  const por={};list.forEach(e=>{const u=e.unidade||'Sem unidade';if(!por[u])por[u]=[];por[u].push(e);});
+  let txt=`📋 *Entrevistas — ${HOJE.toLocaleDateString('pt-BR')}*\n\n`;
+  Object.entries(por).forEach(([u,ents])=>{txt+=`*${u}*\n`;ents.forEach(e=>{txt+=`${e.hora||'—'} · ${e.familia} · ${e.serie||''} · ${e.matriculador||''} · ${e.sala||''}${e.modalidade==='online'?' (Online)':''}\n`;});txt+='\n';});
+  navigator.clipboard.writeText(txt).then(()=>alert('✓ Copiado! Cole no WhatsApp.')).catch(()=>alert('Selecione e copie o texto manualmente.'));
+}
+
+function mudarTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['vivo','todas','alertas','dia'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+init();
+</script>
+</body>
+</html>

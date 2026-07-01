@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook — Propósito</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
+  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  .main{max-width:760px;margin:0 auto;padding:1.25rem 1rem 4rem}
+
+  .sel-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
+  .sel-bar select{font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
+  .sel-bar select:focus{border-color:#F5C842;outline:none}
+  .prog-txt{font-size:12px;color:#888}
+  .prog-bar-wrap{height:4px;background:#12141e;border-radius:2px;overflow:hidden;margin-top:4px;width:120px}
+  .prog-bar{height:4px;border-radius:2px;background:#F5C842}
+
+  .fase{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:10px}
+  .fase-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:#1f2235}
+  .fase-header:hover{background:#252840}
+  .fase-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+  .fb-plan{background:#1a1535;color:#c084fc}
+  .fb-pre{background:#1a1f35;color:#F5C842}
+  .fb-dia{background:#2a1e0f;color:#f59e0b}
+  .fb-pos{background:#0f2a1a;color:#22c55e}
+  .fase-title{font-size:13px;font-weight:600;color:#ddd;flex:1}
+  .fase-prog{font-size:11px;color:#555}
+  .fase-chev{color:#555;font-size:14px;transition:transform .2s;flex-shrink:0}
+  .fase-chev.open{transform:rotate(180deg)}
+  .fase-body{display:none}
+  .fase-body.open{display:block}
+
+  .tarefa{display:flex;align-items:flex-start;gap:10px;padding:11px 16px;border-top:1px solid #2a2d3a;background:#1a1d27}
+  .tarefa:hover{background:#1f2235}
+  .tarefa.done{opacity:.45}
+  .check{width:18px;height:18px;border-radius:4px;border:1px solid #3a3d4a;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;background:#12141e;transition:all .15s}
+  .check.checked{background:#22c55e;border-color:#22c55e;color:#0f1117}
+  .t-info{flex:1;min-width:0}
+  .t-nome{font-size:13px;color:#ddd;line-height:1.4}
+  .tarefa.done .t-nome{text-decoration:line-through;color:#555}
+  .t-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+  .t-resp{font-size:10px;color:#555;background:#12141e;border:1px solid #2a2d3a;border-radius:20px;padding:1px 7px}
+  .t-prazo{font-size:10px;padding:1px 7px;border-radius:20px}
+  .tp-urg{background:#2a1515;color:#f87171}
+  .tp-prox{background:#2a1e0f;color:#fbbf24}
+  .tp-ok{background:#0f2a1a;color:#4ade80}
+  .tp-n{background:#12141e;color:#555;border:1px solid #2a2d3a}
+  .t-alerta{font-size:10px;color:#f87171;background:#2a1515;border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block}
+  .t-obs{font-size:10px;color:#555;font-style:italic;margin-top:2px}
+
+  .marcos{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid #2a2d3a;background:#12141e}
+  .marco-chip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:#1a1d27;color:#888;border:1px solid #2a2d3a}
+  .marco-chip.hoje-chip{background:#0f2a1a;color:#22c55e;border-color:#22c55e}
+  .marco-chip.prox-chip{background:#2a1e0f;color:#fbbf24;border-color:#f59e0b}
+  .marco-chip.pass-chip{opacity:.4}
+
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+</style>
+</head>
+<body>
+<div id="auth-check">
+  <div style="font-size:32px">🔒</div>
+  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
+  <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
+</div>
+<nav class="nav">
+  <div class="nav-logo">🎯 Propósito</div>
+  <span class="nav-modulo">✅ Playbook</span>
+  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+</nav>
+<div class="main">
+  <div class="sel-bar">
+    <div>
+      <select id="sel-seletivo" onchange="renderPlaybook()"></select>
+    </div>
+    <div style="text-align:right">
+      <div class="prog-txt" id="prog-txt"></div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+    </div>
+  </div>
+  <div id="playbook-fases"></div>
+</div>
+
+<script>
+if(sessionStorage.getItem('acesso_playbook')!=='1'){document.getElementById('auth-check').style.display='flex';}
+
+const HOJE=new Date();HOJE.setHours(0,0,0,0);
+const FASES=[
+  {id:'plan',badge:'plan',label:'Planejamento e preparação',tarefas:[
+    {id:'p1',nome:'Confirmar condição comercial e premiação com a diretoria',resp:'Gerente Comercial',dRel:-14,alerta:'Aprovação da diretoria necessária antes de divulgar'},
+    {id:'p2',nome:'Reunião com marketing — definir meta de leads do seletivo',resp:'Gerente Comercial',dRel:-14,alerta:'Cobrar MKT semanalmente — meta por seletivo'},
+    {id:'p3',nome:'Cadastrar ofertas de curso no sistema de admissões',resp:'Assistente Comercial',dRel:-12,obs:'Pré-requisito: tabelas de preço atualizadas'},
+    {id:'p4',nome:'Verificar landing page no ar e divulgação ativa',resp:'Gerente Comercial',dRel:-10},
+    {id:'p5',nome:'Confirmar conteúdo jornada semana 1 entregue pelo MKT',resp:'Analista Comercial',dRel:-10,alerta:'Automação Blip depende desse conteúdo — sem ele o disparo não sai'},
+    {id:'p6',nome:'Enviar condição e premiação no Grupo de Matriculadores',resp:'Gerente Comercial',dRel:-1,obs:'Enviar após aprovação da diretoria'},
+  ]},
+  {id:'pre',badge:'pre',label:'Pré-seletivo — operacional',tarefas:[
+    {id:'pre1',nome:'Confirmar saldo da plataforma de telefonia (URA / discador / SMS)',resp:'Analista Comercial',dRel:-7,alerta:'Crítico — falta de saldo no dia paralisa toda a confirmação'},
+    {id:'pre2',nome:'Alocar CDRs conforme volume de inscritos',resp:'Gerente Comercial',dRel:-7,obs:'Até 40 inscritos = 2 CDRs · acima de 40 = 3 CDRs'},
+    {id:'pre3',nome:'Confirmar provas + cartão resposta entregues pela gráfica',resp:'Gerente Comercial',dRel:-7,alerta:'Prova física deve estar na unidade até D-1'},
+    {id:'pre4',nome:'Validar conteúdo jornada semana 2 entregue pelo MKT',resp:'Analista Comercial',dRel:-7},
+    {id:'pre5',nome:'Montar escala do seletivo — matriculadores por unidade',resp:'Gerente Comercial',dRel:-6,obs:'Leste: Fabia, Layane, Denise, Aline, Cristina, Ely, Daly'},
+    {id:'pre6',nome:'Colocar escala na planilha de pagamento',resp:'Analista Comercial',dRel:-5},
+    {id:'pre7',nome:'Confirmar escala dos outros setores (recepção, NIP, coordenação)',resp:'Gerente Comercial',dRel:-4,alerta:'Prazo máximo: quinta-feira antes do seletivo'},
+    {id:'pre8',nome:'Enviar planilha de pagamento da escala',resp:'Analista Comercial',dRel:-4},
+    {id:'pre9',nome:'Acompanhar meta de confirmação CDR — mínimo 80%',resp:'Gerente Comercial',dRel:-3,alerta:'Se <60% na quinta, acionar reforço imediatamente'},
+    {id:'pre10',nome:'Acionar URA + discador + SMS + Blip em massa para confirmação',resp:'Analista Comercial',dRel:-3},
+    {id:'pre11',nome:'Solicitar Ouro Branco: cartão gráfica (QR code) + bombom Sr. Roberto',resp:'Gerente Comercial',dRel:-3,obs:'Quantidade baseada no nº de inscritos + sobras por unidade'},
+    {id:'pre12',nome:'Solicitar notebooks ao TI para check-in',resp:'Gerente Comercial',dRel:-3},
+    {id:'pre13',nome:'Verificar som, microfone e mesas nas unidades (TI)',resp:'Gerente Comercial',dRel:-1},
+    {id:'pre14',nome:'Organizar salas de atendimento com todos os materiais',resp:'Assistente Comercial',dRel:-1,obs:'Anamnese, propostas por segmento, tabelas, canetas'},
+    {id:'pre15',nome:'Reunião de alinhamento com a equipe',resp:'Gerente Comercial',dRel:-1,obs:'Pautar: atividades, anamnese, postos, envio de nomes'},
+  ]},
+  {id:'dia',badge:'dia',label:'Dia do seletivo',tarefas:[
+    {id:'d1',nome:'Chegar antes dos clientes no horário combinado',resp:'Gerente Comercial',dRel:0,alerta:'Se atrasar, avisar a equipe imediatamente'},
+    {id:'d2',nome:'Conferir postos: recepção, check-in, sala comercial, NIP, coordenação',resp:'Gerente Comercial',dRel:0},
+    {id:'d3',nome:'Confirmar NIP online com acesso às provas digitais',resp:'Analista Comercial',dRel:0},
+    {id:'d4',nome:'Acompanhar divisão: infantil → socialização, fund/médio → prova',resp:'Gerente Comercial',dRel:0},
+    {id:'d5',nome:'Aplicadores enviam notas no grupo → lançar no sistema pela recepção',resp:'Gerente Comercial',dRel:0,alerta:'Notas devem ser lançadas no mesmo dia para acionar automação Rubeus'},
+    {id:'d6',nome:'Atualizar infantil manualmente no Rubeus → Compareceu no Teste',resp:'Analista Comercial',dRel:0,alerta:'Infantil não faz prova — mudança de etapa é manual'},
+    {id:'d7',nome:'Confirmar fotos de todas as propostas no Grupo de Matriculadores',resp:'Gerente Comercial',dRel:0,alerta:'Nenhuma entrevista termina sem foto da proposta no grupo'},
+    {id:'d8',nome:'Posicionar pessoa na saída para agendar quem não esperou',resp:'Gerente Comercial',dRel:0},
+  ]},
+  {id:'pos',badge:'pos',label:'Pós-seletivo',tarefas:[
+    {id:'ps1',nome:'Atualizar filtros no Rubeus: inside sales, closer, atividades',resp:'Analista Comercial',dRel:1,alerta:'Fazer em D+1 — atraso deixa o funil cego'},
+    {id:'ps2',nome:'Disparar Blip "msg de comparecimento" para quem compareceu',resp:'Analista Comercial',dRel:1},
+    {id:'ps3',nome:'Iniciar acionamento inside sales: URA + discador + SMS + Blip + email',resp:'Analista Comercial',dRel:1,alerta:'Acionamento começa em D+1 sem exceção'},
+    {id:'ps4',nome:'Cadastrar propostas físicas do dia no sistema de admissões',resp:'Assistente Comercial',dRel:1,alerta:'Gap crítico: proposta física → cadastro. Fazer até D+1'},
+    {id:'ps5',nome:'Enviar lembrete de agendamento de entrevistas (Dayane)',resp:'Assistente Comercial',dRel:2},
+    {id:'ps6',nome:'Agendar entrevistas no Rubeus para quem compareceu',resp:'Analista Comercial',dRel:2},
+    {id:'ps7',nome:'Disparo URA para agendamento de entrevistas',resp:'Analista Comercial',dRel:2},
+    {id:'ps8',nome:'Atualizar indicações do seletivo na planilha e acionar contatos',resp:'Gerente Comercial',dRel:2},
+    {id:'ps9',nome:'Acompanhar meta de agendamento — War Room diário',resp:'Analista Comercial',dRel:5},
+    {id:'ps10',nome:'Closer recebe leads em Negociação — iniciar acionamento máximo',resp:'Closer',dRel:6,alerta:'Leads chegam em Negociação após 5 dias em Proposta'},
+    {id:'ps11',nome:'Relatório de resultado: inscritos, comparecimento, propostas, matrículas',resp:'Gerente Comercial',dRel:7},
+    {id:'ps12',nome:'Cadastrar próximo processo seletivo no sistema',resp:'Assistente Comercial',dRel:3,obs:'Ciclo começa novamente em 15 dias'},
+  ]},
+];
+
+let seletivos=[],tarefas={};
+
+function parseData(str){
+  if(!str||str==='—')return null;
+  const m=str.match(/(\d+)\/(\w+)\/(\d+)/);if(!m)return null;
+  const meses={jan:0,fev:1,mar:2,abr:3,mai:4,jun:5,jul:6,ago:7,set:8,out:9,nov:10,dez:11};
+  return new Date(parseInt(m[3]),meses[m[2].toLowerCase()]||0,parseInt(m[1]));
+}
+function diasAte(d){if(!d)return null;return Math.round((d-HOJE)/(1000*60*60*24));}
+function dataRel(base,dRel){if(!base)return null;const d=new Date(base);d.setDate(d.getDate()+dRel);return d;}
+function fmtData(d){if(!d)return'—';return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});}
+function prazoCor(base,dRel){
+  const d=dataRel(base,dRel);if(!d)return'n';
+  const diff=Math.round((d-HOJE)/(1000*60*60*24));
+  if(diff<0)return'urg';if(diff<=3)return'prox';if(diff<=7)return'ok';return'n';
+}
+function getTarefas(id){if(!tarefas[id])tarefas[id]={};return tarefas[id];}
+
+async function init(){
+  try{const r=await window.storage.get('sel_tarefas');if(r)tarefas=JSON.parse(r.value);}catch(e){}
+  try{const r=await window.storage.get('cfg_v2');if(r){const c=JSON.parse(r.value);if(c.seletivos)seletivos=c.seletivos;}}catch(e){}
+  if(!seletivos.length)seletivos=[
+    {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
+    {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
+    {n:7,data:'11/out/2026',obs:'⚠ Feriado'},{n:8,data:'01/nov/2026',obs:''},{n:9,data:'15/nov/2026',obs:''},
+    {n:10,data:'29/nov/2026',obs:''},{n:11,data:'13/dez/2026',obs:''},{n:12,data:'10/jan/2027',obs:'Alta urgência'},
+    {n:13,data:'24/jan/2027',obs:'Alta urgência'},{n:14,data:'—',obs:''},{n:15,data:'—',obs:''},
+  ];
+  const sel=document.getElementById('sel-seletivo');
+  sel.innerHTML=seletivos.map(s=>`<option value="sel_${s.n}">${s.n}º Teste — ${s.data}${s.obs?' ('+s.obs+')':''}</option>`).join('');
+  // Seleciona o mais próximo
+  const ativo=seletivos.find(s=>{const d=parseData(s.data);return d&&diasAte(d)>=-7&&diasAte(d)<=30;});
+  if(ativo)sel.value=`sel_${ativo.n}`;
+  renderPlaybook();
+}
+
+function renderPlaybook(){
+  const selId=document.getElementById('sel-seletivo').value;
+  const selNum=parseInt(selId.replace('sel_',''));
+  const s=seletivos.find(x=>x.n===selNum);
+  const d=parseData(s?.data);
+  const t=getTarefas(selId);
+  const total=FASES.reduce((a,f)=>a+f.tarefas.length,0);
+  const done=Object.values(t).filter(Boolean).length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('prog-txt').textContent=`${done}/${total} concluídas (${pct}%)`;
+  document.getElementById('prog-bar').style.width=pct+'%';
+
+  const marcos=[{l:'D-15',dRel:-15},{l:'D-7',dRel:-7},{l:'D-3',dRel:-3},{l:'D-1',dRel:-1},{l:'Dia D',dRel:0},{l:'D+1',dRel:1},{l:'D+7',dRel:7}];
+
+  document.getElementById('playbook-fases').innerHTML=`
+    <div class="marcos">${marcos.map(m=>{
+      const dt=dataRel(d,m.dRel);
+      const diff=dt?Math.round((dt-HOJE)/(1000*60*60*24)):null;
+      let cls='';if(diff===0)cls='hoje-chip';else if(diff!==null&&diff>=-2&&diff<0)cls='prox-chip';else if(diff!==null&&diff<-2)cls='pass-chip';
+      return`<span class="marco-chip ${cls}">${m.l} — ${fmtData(dt)}</span>`;
+    }).join('')}</div>
+    ${FASES.map(f=>{
+      const ft=f.tarefas.length,fd=f.tarefas.filter(ta=>t[ta.id]).length;
+      return`<div class="fase">
+        <div class="fase-header" onclick="toggleFase('fb-${selId}-${f.id}','fc-${selId}-${f.id}')">
+          <span class="fase-badge fb-${f.badge}">${f.badge.toUpperCase()}</span>
+          <span class="fase-title">${f.label}</span>
+          <span class="fase-prog">${fd}/${ft}</span>
+          <span class="fase-chev" id="fc-${selId}-${f.id}">▼</span>
+        </div>
+        <div class="fase-body" id="fb-${selId}-${f.id}">
+          ${f.tarefas.map(ta=>{
+            const checked=!!t[ta.id];
+            const cor=d?prazoCor(d,ta.dRel):'n';
+            const pl=`D${ta.dRel>=0?'+':''}${ta.dRel}${d?'='+fmtData(dataRel(d,ta.dRel)):''}`;
+            return`<div class="tarefa ${checked?'done':''}">
+              <div class="check ${checked?'checked':''}" onclick="marcarTarefa('${selId}','${ta.id}')">${checked?'✓':''}</div>
+              <div class="t-info">
+                <div class="t-nome">${ta.nome}</div>
+                <div class="t-meta">
+                  <span class="t-resp">${ta.resp}</span>
+                  <span class="t-prazo tp-${cor}">${pl}</span>
+                </div>
+                ${ta.obs?`<div class="t-obs">${ta.obs}</div>`:''}
+                ${ta.alerta&&!checked?`<div class="t-alerta">⚠ ${ta.alerta}</div>`:''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('')}`;
+
+  // Abre a fase mais urgente
+  FASES.forEach(f=>{
+    const hasUrgent=f.tarefas.some(ta=>!t[ta.id]&&d&&prazoCor(d,ta.dRel)!=='n');
+    if(hasUrgent)toggleFase(`fb-${selId}-${f.id}`,`fc-${selId}-${f.id}`);
+  });
+}
+
+function toggleFase(bodyId,chevId){
+  const b=document.getElementById(bodyId);const c=document.getElementById(chevId);
+  if(b){b.classList.toggle('open');if(c)c.classList.toggle('open');}
+}
+
+function marcarTarefa(selId,taId){
+  const t=getTarefas(selId);t[taId]=!t[taId];
+  try{window.storage.set('sel_tarefas',JSON.stringify(tarefas));}catch(e){}
+  renderPlaybook();
+}
+
+init();
+</script>
+</body>
+</html>

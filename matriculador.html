@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia do Matriculador — Seletivo 28/06/26</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --azul: #1B3F8B;
+    --azul-claro: #2E5FBF;
+    --azul-bg: #EEF2FB;
+    --dourado: #E8A020;
+    --dourado-bg: #FFF8E7;
+    --verde: #1A8C5B;
+    --verde-bg: #E8F7F0;
+    --roxo: #6B3FA0;
+    --roxo-bg: #F3EAFF;
+    --vermelho: #C0392B;
+    --vermelho-bg: #FDECEA;
+    --laranja: #D4600A;
+    --laranja-bg: #FFF0E6;
+    --cinza-bg: #F5F6FA;
+    --cinza-borda: #DDE2EE;
+    --texto: #1A1F36;
+    --texto-suave: #5A637A;
+    --branco: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--cinza-bg);
+    color: var(--texto);
+    padding: 20px 16px 60px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--azul) 0%, #1e52a8 60%, #2563c9 100%);
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    margin-bottom: 6px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute;
+    top: -50px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.05); border-radius: 50%;
+  }
+  .header::after {
+    content: ''; position: absolute;
+    bottom: -70px; left: -30px;
+    width: 240px; height: 240px;
+    background: rgba(255,255,255,0.04); border-radius: 50%;
+  }
+  .header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 14px; position: relative; z-index: 1;
+  }
+  .header-badge {
+    background: var(--dourado);
+    color: #7A3D00;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 10.5px;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 20px;
+  }
+  .header-data {
+    background: rgba(255,255,255,0.15);
+    color: white; font-size: 12px; font-weight: 700;
+    padding: 5px 12px; border-radius: 20px;
+  }
+  .header h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 24px; line-height: 1.2;
+    margin-bottom: 4px; position: relative; z-index: 1;
+  }
+  .header p {
+    font-size: 13px; opacity: 0.8; position: relative; z-index: 1;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--texto-suave);
+    padding: 22px 4px 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--cinza-borda);
+  }
+
+  /* ── CARD BASE ── */
+  .card {
+    background: var(--branco);
+    border-radius: 14px;
+    border: 1px solid var(--cinza-borda);
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(27,63,139,0.06);
+  }
+  .card-header {
+    padding: 13px 18px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .card-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .card-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 14px; color: var(--texto);
+  }
+  .card-subtitle {
+    font-size: 11.5px; color: var(--texto-suave); margin-top: 1px;
+  }
+  .card-body { padding: 14px 18px; }
+
+  /* ── ALERTA DESTAQUE ── */
+  .alerta {
+    border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 12px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .alerta-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .alerta-text { font-size: 13.5px; line-height: 1.5; font-weight: 600; }
+  .alerta-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
+  .alerta.vermelho { background: var(--vermelho-bg); color: var(--vermelho); border: 1.5px solid #F5BDB8; }
+  .alerta.dourado  { background: var(--dourado-bg); color: #7A4500; border: 1.5px solid #F5D58A; }
+  .alerta.verde    { background: var(--verde-bg); color: #145C3C; border: 1.5px solid #A0DFC3; }
+  .alerta.azul     { background: var(--azul-bg); color: var(--azul); border: 1.5px solid #BDD0F5; }
+
+  /* ── FLUXO STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 18px;
+    border-bottom: 1px solid #F0F2F8;
+    position: relative;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 13px;
+    flex-shrink: 0; margin-top: 1px;
+    color: white; background: var(--azul);
+  }
+  .step-content {}
+  .step-titulo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 13.5px; color: var(--texto);
+    margin-bottom: 3px;
+  }
+  .step-desc {
+    font-size: 12.5px; color: var(--texto-suave); line-height: 1.5;
+  }
+  .step-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.6px; padding: 2px 8px; border-radius: 10px;
+    margin-top: 5px;
+  }
+  .tag-infantil { background: #FFF0F0; color: #B03060; }
+  .tag-fundamental { background: var(--azul-bg); color: var(--azul); }
+  .tag-online { background: var(--roxo-bg); color: var(--roxo); }
+  .tag-semana { background: var(--dourado-bg); color: #7A4500; }
+
+  /* ── DOCS GRID ── */
+  .docs-grid {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 14px 18px;
+  }
+  .doc-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--cinza-bg);
+    border-radius: 10px; padding: 11px 14px;
+    border: 1px solid var(--cinza-borda);
+  }
+  .doc-emoji { font-size: 20px; flex-shrink: 0; }
+  .doc-nome {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 13px; color: var(--texto);
+    margin-bottom: 2px;
+  }
+  .doc-desc { font-size: 12px; color: var(--texto-suave); line-height: 1.4; }
+
+  /* ── TABELA COMERCIAL ── */
+  .comercial-section {
+    border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--cinza-borda);
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(27,63,139,0.06);
+  }
+  .comercial-header {
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .comercial-header.verde { background: var(--verde); }
+  .comercial-header.azul  { background: var(--azul); }
+  .comercial-header .titulo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 15px; color: white;
+  }
+  .comercial-header .subtit {
+    font-size: 11.5px; color: rgba(255,255,255,0.8); margin-top: 1px;
+  }
+  .comercial-header .badge-ano {
+    margin-left: auto;
+    background: rgba(255,255,255,0.2);
+    color: white; font-size: 11px; font-weight: 800;
+    padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+  }
+  .item-row {
+    display: flex; align-items: flex-start;
+    padding: 11px 18px;
+    border-bottom: 1px solid #F0F2F8;
+    gap: 12px; background: white;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-check { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .item-info { flex: 1; }
+  .item-titulo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 13.5px; color: var(--texto);
+  }
+  .item-detalhe { font-size: 12px; color: var(--texto-suave); margin-top: 2px; line-height: 1.4; }
+  .item-destaque {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 13px;
+    white-space: nowrap; flex-shrink: 0; align-self: center;
+  }
+  .destaque-verde  { color: var(--verde); }
+  .destaque-azul   { color: var(--azul-claro); }
+  .destaque-roxo   { color: var(--roxo); }
+  .destaque-laranja { color: var(--laranja); }
+
+  .obs-box {
+    background: var(--cinza-bg);
+    border-top: 1px solid var(--cinza-borda);
+    padding: 10px 18px;
+    font-size: 12px; color: var(--texto-suave); line-height: 1.5;
+  }
+  .obs-box strong { color: var(--texto); }
+
+  /* ── PROPOSTA ALERTA ── */
+  .proposta-alerta {
+    background: linear-gradient(135deg, #FFF0E6, #FFF8E7);
+    border: 2px solid var(--dourado);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .proposta-alerta .pa-icon { font-size: 28px; flex-shrink: 0; }
+  .proposta-alerta .pa-titulo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 15px; color: #7A3D00; margin-bottom: 4px;
+  }
+  .proposta-alerta .pa-desc {
+    font-size: 12.5px; color: #7A4500; line-height: 1.5;
+  }
+  .proposta-alerta .pa-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .pa-tag {
+    font-size: 11px; font-weight: 800;
+    padding: 3px 10px; border-radius: 10px;
+  }
+  .pa-tag.academica { background: var(--azul-bg); color: var(--azul); }
+  .pa-tag.comercial { background: var(--verde-bg); color: var(--verde); }
+
+  /* ── RODAPÉ ── */
+  .rodape {
+    text-align: center; margin-top: 28px;
+    font-size: 11.5px; color: var(--texto-suave);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div id="auth-check" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:32px">🔒</div><div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div><a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a></div>
+<script>if(sessionStorage.getItem("acesso_matriculador")!=="1"){document.getElementById("auth-check").style.display="flex";}</script>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-badge">📋 Guia do Matriculador</div>
+    <div class="header-data">📅 Sábado, 28/06/2026</div>
+  </div>
+  <h1>Processo Seletivo<br>Colégio Propósito</h1>
+  <p>Tudo o que você precisa saber para o dia do seletivo</p>
+</div>
+
+<!-- ALERTA PRINCIPAL -->
+<div class="alerta vermelho" style="margin-top:14px;">
+  <span class="alerta-icon">🔔</span>
+  <div class="alerta-text">
+    <strong>Atenção obrigatória — Proposta Física</strong>
+    Toda proposta preenchida deve ter a foto enviada imediatamente no <strong>Grupo de Matriculadores</strong>. É essencial para o fluxo completo!
+  </div>
+</div>
+
+
+<!-- ═══════════ FLUXO DO DIA ═══════════ -->
+<div class="section-title">🗓 Fluxo do Dia</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#EEF2FB;">🏫</div>
+    <div>
+      <div class="card-title">Como funciona o Processo Seletivo</div>
+      <div class="card-subtitle">Ordem dos acontecimentos no sábado</div>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-titulo">Chegada das Famílias</div>
+        <div class="step-desc">Famílias e alunos chegam juntos para o início do processo seletivo.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-titulo">Apresentação Pedagógica</div>
+        <div class="step-desc">A escola realiza uma apresentação institucional para os pais enquanto os alunos são direcionados para a avaliação.</div>
+        <span class="step-tag tag-infantil">Infantil: Socialização com a coordenação</span>
+        <span class="step-tag tag-fundamental" style="margin-left:4px;">Fund. ao Médio: Prova avaliativa</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-titulo">Café da Manhã com os Pais</div>
+        <div class="step-desc">Ao fim da apresentação, os pais são convidados para um café. À medida que os alunos concluem a avaliação, as famílias se reúnem e são encaminhadas para a entrevista com os matriculadores.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-titulo">Entrevista Comercial com o Matriculador</div>
+        <div class="step-desc">Momento principal de atendimento: apresentação dos valores, condições especiais do dia e preenchimento da proposta.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-titulo">Provas Online / Atendimentos na Semana</div>
+        <div class="step-desc">Clientes que realizarem a prova online ou preferirem a entrevista durante a semana terão todo o fluxo coordenado pela equipe comercial com apoio da equipe de NIP.</div>
+        <span class="step-tag tag-online">Prova Online</span>
+        <span class="step-tag tag-semana" style="margin-left:4px;">Entrevista na Semana</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ DOCUMENTOS ═══════════ -->
+<div class="section-title">📁 Documentos — Disponíveis na Sala de Atendimento</div>
+
+<div class="card">
+  <div class="docs-grid">
+
+    <div class="doc-item">
+      <span class="doc-emoji">🏷️</span>
+      <div>
+        <div class="doc-nome">Tabela Promocional</div>
+        <div class="doc-desc">Opções de desconto para matrículas de <strong>2026 e 2027</strong>. Use como base nas negociações.</div>
+      </div>
+    </div>
+
+    <div class="doc-item">
+      <span class="doc-emoji">💰</span>
+      <div>
+        <div class="doc-nome">Tabela de Preços 2027 (Preço Cheio)</div>
+        <div class="doc-desc">Mensalidades, atividades extras, material didático e fardamento para 2027.</div>
+      </div>
+    </div>
+
+    <div class="doc-item">
+      <span class="doc-emoji">📝</span>
+      <div>
+        <div class="doc-nome">Documento de Anamnese</div>
+        <div class="doc-desc">Coleta os dados iniciais do aluno e dos responsáveis. Serve como apoio introdutório e primeiro conhecimento da família. <strong>Preencher no início do atendimento.</strong></div>
+      </div>
+    </div>
+
+    <div class="doc-item">
+      <span class="doc-emoji">📄</span>
+      <div>
+        <div class="doc-nome">Proposta Comercial (por Segmento)</div>
+        <div class="doc-desc">Cada segmento tem sua proposta com os materiais e serviços específicos. A proposta é física — ao ser preenchida, a <strong>foto deve ser enviada no Grupo de Matriculadores</strong> para registro e cadastro posterior.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ALERTA PROPOSTA -->
+<div class="proposta-alerta">
+  <span class="pa-icon">📸</span>
+  <div>
+    <div class="pa-titulo">Identifique o tipo de proposta!</div>
+    <div class="pa-desc">Ao preencher, verifique sempre qual é o tipo de proposta antes de finalizar o atendimento.</div>
+    <div class="pa-tags">
+      <span class="pa-tag academica">🎓 Identificação Acadêmica — Final de Fluxo</span>
+      <span class="pa-tag comercial">💼 Proposta Comercial — Fluxo de Venda</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ CONDIÇÕES COMERCIAIS ═══════════ -->
+<div class="section-title">🎯 Condições Especiais — Seletivo 28/06</div>
+
+<!-- 2026 -->
+<div class="comercial-section">
+  <div class="comercial-header verde">
+    <span style="font-size:22px;">⭐</span>
+    <div>
+      <div class="titulo">Matrícula para 2026</div>
+      <div class="subtit">Foco principal do seletivo — melhores condições</div>
+    </div>
+    <div class="badge-ano">ANO 2026</div>
+  </div>
+
+  <div class="item-row">
+    <span class="item-check">🎁</span>
+    <div class="item-info">
+      <div class="item-titulo">Material Didático</div>
+      <div class="item-detalhe">Todo o material incluso, sem custo adicional</div>
+    </div>
+    <span class="item-destaque destaque-verde">100% GRÁTIS</span>
+  </div>
+
+  <div class="item-row">
+    <span class="item-check">🎁</span>
+    <div class="item-info">
+      <div class="item-titulo">Taxa de Matrícula</div>
+      <div class="item-detalhe">Válido para matrículas pagas em julho</div>
+    </div>
+    <span class="item-destaque destaque-verde">100% GRÁTIS</span>
+  </div>
+
+  <div class="item-row">
+    <span class="item-check">💳</span>
+    <div class="item-info">
+      <div class="item-titulo">Mensalidades (Agosto a Dezembro)</div>
+      <div class="item-detalhe">Conforme tabela promocional vigente</div>
+    </div>
+    <span class="item-destaque destaque-laranja">Tabela Promo</span>
+  </div>
+
+  <div class="obs-box">
+    ⚠️ <strong>Importante:</strong> A mensalidade de agosto deve ser paga em junho ou julho para validar o início do contrato. <strong>O cliente paga agora a mensalidade de agosto.</strong>
+  </div>
+</div>
+
+<!-- 2027 -->
+<div class="comercial-section">
+  <div class="comercial-header azul">
+    <span style="font-size:22px;">📅</span>
+    <div>
+      <div class="titulo">Matrícula para 2027</div>
+      <div class="subtit">Condições especiais para o próximo ano</div>
+    </div>
+    <div class="badge-ano">ANO 2027</div>
+  </div>
+
+  <div class="item-row">
+    <span class="item-check">📚</span>
+    <div class="item-info">
+      <div class="item-titulo">Material Didático</div>
+      <div class="item-detalhe">Desconto aplicável ao material <strong>Propósito, Bernoulli e Bilíngue</strong> apenas</div>
+    </div>
+    <span class="item-destaque destaque-azul">30% OFF</span>
+  </div>
+
+  <div class="item-row">
+    <span class="item-check">💰</span>
+    <div class="item-info">
+      <div class="item-titulo">Matrícula (= Mensalidade de Janeiro/2027)</div>
+      <div class="item-detalhe">Pode ser parcelada em até 6x no cartão de crédito</div>
+    </div>
+    <span class="item-destaque destaque-azul">6x no Cartão</span>
+  </div>
+
+  <div class="item-row">
+    <span class="item-check">🗓️</span>
+    <div class="item-info">
+      <div class="item-titulo">Mensalidades</div>
+      <div class="item-detalhe">De acordo com a tabela promocional vigente</div>
+    </div>
+    <span class="item-destaque destaque-azul">Tabela Promo</span>
+  </div>
+
+  <div class="obs-box">
+    ⚠️ <strong>Atenção:</strong> O desconto de 30% no material é válido apenas para <strong>Material Propósito, Bernoulli e Bilíngue</strong>. Outros materiais não entram nessa condição.
+  </div>
+</div>
+
+
+<!-- ALERTA FINAL -->
+<div class="alerta dourado">
+  <span class="alerta-icon">💡</span>
+  <div class="alerta-text">
+    <strong>Lembrete Final</strong>
+    Todos os documentos estão disponíveis em pastas na sala de atendimento. Envie a foto da proposta no <strong>Grupo de Matriculadores</strong> — é essencial para o fluxo completo!
+  </div>
+</div>
+
+<div class="rodape">
+  Colégio Propósito · Guia Interno — Seletivo 28/06/2026<br>
+  Equipe Comercial · Uso exclusivo dos matriculadores
+</div>
+
+</body>
+</html>
