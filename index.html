@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colégio Propósito — Sistema Comercial</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+  .container{width:100%;max-width:420px}
+  .logo-wrap{text-align:center;margin-bottom:2rem}
+  .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#F5C842,#E8A020);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px}
+  .logo-nome{color:#fff;font-size:20px;font-weight:700;letter-spacing:-.3px}
+  .logo-sub{color:#888;font-size:13px;margin-top:3px}
+  .card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:16px;padding:28px}
+  .card-title{color:#fff;font-size:15px;font-weight:600;margin-bottom:4px}
+  .card-sub{color:#666;font-size:12px;margin-bottom:20px}
+  .modulos{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .modulo-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid #2a2d3a;background:#1f2235;cursor:pointer;transition:all .15s;text-align:left;width:100%}
+  .modulo-btn:hover{border-color:#F5C842;background:#252840}
+  .modulo-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .modulo-nome{color:#fff;font-size:13px;font-weight:500}
+  .modulo-desc{color:#666;font-size:11px;margin-top:1px}
+  .divider{height:1px;background:#2a2d3a;margin:16px 0}
+  .senha-wrap{display:none}
+  .senha-wrap.show{display:block}
+  .senha-label{color:#aaa;font-size:12px;margin-bottom:6px;display:block}
+  .senha-input{width:100%;background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;font-family:inherit;letter-spacing:2px}
+  .senha-input:focus{outline:none;border-color:#F5C842}
+  .senha-btn{width:100%;margin-top:8px;padding:11px;background:#F5C842;color:#0f1117;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+  .senha-btn:hover{background:#e8b820}
+  .erro{color:#e84b4b;font-size:12px;margin-top:6px;display:none}
+  .erro.show{display:block}
+  .footer{text-align:center;color:#444;font-size:11px;margin-top:20px}
+  .back-btn{background:none;border:none;color:#666;font-size:12px;cursor:pointer;margin-top:8px;display:none;font-family:inherit}
+  .back-btn.show{display:block}
+  .selected-modulo{color:#F5C842;font-size:12px;margin-bottom:10px;display:none}
+  .selected-modulo.show{display:flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo-wrap">
+    <div class="logo-icon">🎯</div>
+    <div class="logo-nome">Colégio Propósito</div>
+    <div class="logo-sub">Sistema Comercial — Processo Seletivo 2027</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acessar módulo</div>
+    <div class="card-sub">Selecione seu módulo de trabalho</div>
+
+    <div class="modulos" id="modulos">
+      <button class="modulo-btn" onclick="selecionarModulo('gerente','gerente.html','🏠','Painel do Gerente','Visão completa · acesso restrito')">
+        <div class="modulo-icon" style="background:#1a2a1a">🏠</div>
+        <div><div class="modulo-nome">Painel do Gerente</div><div class="modulo-desc">Visão completa · acesso restrito</div></div>
+      </button>
+      <button class="modulo-btn" onclick="selecionarModulo('cdr','cdr.html','🎧','CDR / Inside Sales','Contatos, confirmações e ações em massa')">
+        <div class="modulo-icon" style="background:#1a1a2a">🎧</div>
+        <div><div class="modulo-nome">CDR / Inside Sales</div><div class="modulo-desc">Contatos, confirmações e ações em massa</div></div>
+      </button>
+      <button class="modulo-btn" onclick="selecionarModulo('closer','closer.html','🤝','Closer','Negociação, simulador e propostas')">
+        <div class="modulo-icon" style="background:#2a1a1a">🤝</div>
+        <div><div class="modulo-nome">Closer</div><div class="modulo-desc">Negociação, simulador e propostas</div></div>
+      </button>
+      <button class="modulo-btn" onclick="selecionarModulo('entrevistas','entrevistas.html','📋','Entrevistas','Gestão ao vivo das entrevistas')">
+        <div class="modulo-icon" style="background:#1a2a2a">📋</div>
+        <div><div class="modulo-nome">Entrevistas</div><div class="modulo-desc">Gestão ao vivo das entrevistas</div></div>
+      </button>
+      <button class="modulo-btn" onclick="selecionarModulo('playbook','playbook.html','✅','Playbook','Tarefas e checklist do seletivo')">
+        <div class="modulo-icon" style="background:#2a2a1a">✅</div>
+        <div><div class="modulo-nome">Playbook</div><div class="modulo-desc">Tarefas e checklist do seletivo</div></div>
+      </button>
+      <button class="modulo-btn" onclick="selecionarModulo('matriculador','matriculador.html','📄','Guia do Matriculador','Condições, vagas e documentos do dia')">
+        <div class="modulo-icon" style="background:#2a1a2a">📄</div>
+        <div><div class="modulo-nome">Guia do Matriculador</div><div class="modulo-desc">Condições, vagas e documentos do dia</div></div>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="selected-modulo" id="selected-label"></div>
+
+    <div class="senha-wrap" id="senha-wrap">
+      <label class="senha-label">Senha de acesso</label>
+      <input type="password" class="senha-input" id="senha-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')verificarSenha()">
+      <button class="senha-btn" onclick="verificarSenha()">Entrar</button>
+      <div class="erro" id="erro">Senha incorreta. Tente novamente.</div>
+    </div>
+
+    <button class="back-btn" id="back-btn" onclick="voltar()">← Escolher outro módulo</button>
+  </div>
+
+  <div class="footer">Colégio Propósito · Sistema interno · Uso exclusivo da equipe comercial</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SENHAS — altere aqui quando precisar atualizar
+// ═══════════════════════════════════════════════
+const SENHAS = {
+  gerente:      'gerente2027',
+  cdr:          'cdr2027',
+  closer:       'closer2027',
+  entrevistas:  'entre2027',
+  playbook:     'play2027',
+  matriculador: 'matric2027',
+};
+// ═══════════════════════════════════════════════
+
+let moduloAtual = null;
+let urlAtual = null;
+
+function selecionarModulo(id, url, icon, nome, desc){
+  moduloAtual = id;
+  urlAtual = url;
+  document.getElementById('modulos').style.display = 'none';
+  document.getElementById('senha-wrap').classList.add('show');
+  document.getElementById('back-btn').classList.add('show');
+  document.getElementById('selected-label').classList.add('show');
+  document.getElementById('selected-label').innerHTML = `${icon} <strong style="color:#fff">${nome}</strong>`;
+  document.getElementById('senha-input').value = '';
+  document.getElementById('erro').classList.remove('show');
+  document.getElementById('senha-input').focus();
+}
+
+function verificarSenha(){
+  const senha = document.getElementById('senha-input').value;
+  if(senha === SENHAS[moduloAtual]){
+    sessionStorage.setItem('acesso_'+moduloAtual, '1');
+    window.location.href = urlAtual;
+  } else {
+    document.getElementById('erro').classList.add('show');
+    document.getElementById('senha-input').value = '';
+    document.getElementById('senha-input').focus();
+  }
+}
+
+function voltar(){
+  moduloAtual = null;
+  urlAtual = null;
+  document.getElementById('modulos').style.display = 'flex';
+  document.getElementById('senha-wrap').classList.remove('show');
+  document.getElementById('back-btn').classList.remove('show');
+  document.getElementById('selected-label').classList.remove('show');
+}
+</script>
+</body>
+</html>
