@@ -178,6 +178,7 @@
   </div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
 if(sessionStorage.getItem('acesso_cdr')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -199,14 +200,17 @@ let usuario='',leads=[],propostas=[],acoes={},massaLog=[],filtro='pendentes',exp
 function fmt(v){if(!v||isNaN(v))return'—';return parseFloat(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
 async function init(){
-  try{const r=await window.storage.get('u_leads');if(r)leads=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('u_propostas');if(r)propostas=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('cdr_acoes2');if(r)acoes=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('cdr_massa2');if(r)massaLog=JSON.parse(r.value);}catch(e){}
+  // Carrega do Supabase
+  const leadsDB = await supa.getLeads();
+  leads = leadsDB.map(l=>({'Nome da pessoa':l.nome,'Etapa':l.etapa,'Status':l.status,'Processo seletivo':l.processo,'Unidade':l.unidade,'Nome - Oferta de curso':l.oferta,'Turno':l.turno,'Código de Inscrição':l.codigo_inscricao}));
+  const propDB = await supa.getPropostas();
+  propostas = propDB.map(p=>({'Aluno':p.aluno,'Série':p.serie,'Unidade':p.unidade,'Status':p.status,'COD. Inscrição':p.cod_inscricao,'Mensalidade à Vista (%)':p.mensalidade_vista,'Percentual de Desconto da Mensalidade (%)':p.desconto_mensalidade,'Matrícula à Vista (%)':p.matricula_vista,'Percentual de Desconto da Matrícula (%)':p.desconto_matricula,'Cadastrado Por':p.cadastrado_por}));
+  const acoesDB = await supa.getAcoesCDR();
+  acoesDB.forEach(a=>{ if(!acoes[a.lead_nome])acoes[a.lead_nome]=[]; acoes[a.lead_nome].push({acao:a.acao,obs:a.obs,cdr:a.cdr,hora:a.hora,data:a.data}); });
   document.getElementById('id-grid').innerHTML=NOMES.map(n=>`<button class="id-btn" onclick="entrar('${n}')">${n}</button>`).join('');
 }
 
-function salvar(){try{window.storage.set('cdr_acoes2',JSON.stringify(acoes));window.storage.set('cdr_massa2',JSON.stringify(massaLog));}catch(e){}}
+function salvar(){/* dados salvos no Supabase */}
 
 function entrar(nome){
   if(!nome.trim())return;
@@ -315,18 +319,19 @@ function toggle(lid){expandido=expandido===lid?null:lid;renderOp();}
 function selAcao(lid,id){acaoSel[lid]=id;renderOp();}
 function setFiltro(f){filtro=f;expandido=null;renderOp();}
 
-function salvarAcao(lid){
+async function salvarAcao(lid){
   const id=acaoSel[lid];if(!id)return;
   const obsEl=document.getElementById('obs-'+lid.replace(/\W/g,'_'));
   if(!acoes[lid])acoes[lid]=[];
-  acoes[lid].push({acao:ACOES_DEF.find(a=>a.id===id)?.label||id,obs:obsEl?obsEl.value:'',cdr:usuario,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')});
+  const novaAcao = {acao:ACOES_DEF.find(a=>a.id===id)?.label||id,obs:obsEl?obsEl.value:'',cdr:usuario,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')};
+  acoes[lid].push(novaAcao);
+  await supa.salvarAcaoCDR(lid, novaAcao.acao, novaAcao.obs, usuario);
   delete acaoSel[lid];expandido=null;
-  salvar();renderOp();
+  renderOp();
 }
 
 function massa(tipo){
-  massaLog.push({tipo,cdr:usuario,total:leadsAtivos().length,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')});
-  salvar();
+  await supa.salvarMassa(tipo, usuario, leadsAtivos().length);
   const ok=document.getElementById('massa-ok');
   ok.style.display='block';
   ok.textContent=`✓ ${tipo} registrado — ${leadsAtivos().length} leads — ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;

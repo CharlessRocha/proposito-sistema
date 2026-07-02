@@ -145,29 +145,29 @@
   <div class="page-sub" id="data-hoje"></div>
 
   <!-- IMPORTS -->
-  <div class="import-grid">
-    <div class="iz" id="iz-reg" onclick="document.getElementById('inp-reg').click()">
-      <div class="iz-icon">👥</div>
-      <div class="iz-title">Registros-CRM</div>
-      <div class="iz-sub">Leads e funil do Rubeus</div>
-      <div class="iz-ok" id="ok-reg"></div>
-    </div>
-    <div class="iz" id="iz-prop" onclick="document.getElementById('inp-prop').click()">
-      <div class="iz-icon">📄</div>
-      <div class="iz-title">Propostas</div>
-      <div class="iz-sub">Propostas orçamentárias</div>
-      <div class="iz-ok" id="ok-prop"></div>
-    </div>
-    <div class="iz" id="iz-atv" onclick="document.getElementById('inp-atv').click()">
-      <div class="iz-icon">📅</div>
-      <div class="iz-title">Atividades-CRM</div>
-      <div class="iz-sub">Entrevistas agendadas</div>
-      <div class="iz-ok" id="ok-atv"></div>
-    </div>
+  <div class="import-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem">
+    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+      <div style="font-size:20px;margin-bottom:4px">👥</div>
+      <div style="font-size:12px;font-weight:500;color:#ddd">Registros-CRM</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Leads e funil do Rubeus</div>
+      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-reg"></div>
+      <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'reg')">
+    </label>
+    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-prop" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+      <div style="font-size:20px;margin-bottom:4px">📄</div>
+      <div style="font-size:12px;font-weight:500;color:#ddd">Propostas</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Propostas orçamentárias</div>
+      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-prop"></div>
+      <input type="file" accept=".xls,.csv" style="display:none" onchange="lerProp(this)">
+    </label>
+    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-atv" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+      <div style="font-size:20px;margin-bottom:4px">📅</div>
+      <div style="font-size:12px;font-weight:500;color:#ddd">Atividades-CRM</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Entrevistas agendadas</div>
+      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-atv"></div>
+      <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'atv')">
+    </label>
   </div>
-  <input type="file" id="inp-reg" style="display:none" accept=".csv" onchange="lerCSV(this,'reg')">
-  <input type="file" id="inp-prop" style="display:none" accept=".xls,.csv" onchange="lerProp(this)">
-  <input type="file" id="inp-atv" style="display:none" accept=".csv" onchange="lerCSV(this,'atv')">
 
   <!-- KPIs -->
   <div class="kpi-grid" id="kpi-grid"></div>
@@ -235,6 +235,7 @@
   </div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -308,6 +309,10 @@ function prazoCor(base,dRel){
 }
 function getTarefas(id){if(!tarefas[id])tarefas[id]={};return tarefas[id];}
 function compareceuReal(etapa){return['Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'].includes(etapa);}
+// Adapta lead do Supabase para formato original
+function adaptLead(l){ return {'Nome da pessoa':l.nome,'Etapa':l.etapa,'Status':l.status,'Processo seletivo':l.processo,'Unidade':l.unidade,'Nome - Oferta de curso':l.oferta,'Turno':l.turno,'Data da criação':l.data_criacao,'Código de Inscrição':l.codigo_inscricao}; }
+function adaptAtv(a){ return {'Contato':a.contato,'Atividade':a.atividade,'Status':a.status,'Etapa':a.etapa,'Nome - Processo seletivo':a.processo,'Unidade':a.unidade,'Nome - Oferta de curso':a.oferta,'Data de vencimento':a.data_vencimento,'Responsável':a.responsavel}; }
+function adaptProp(p){ return {'Aluno':p.aluno,'Série':p.serie,'Unidade':p.unidade,'Status':p.status,'COD. Inscrição':p.cod_inscricao,'Mensalidade à Vista (%)':p.mensalidade_vista,'Percentual de Desconto da Mensalidade (%)':p.desconto_mensalidade,'Matrícula à Vista (%)':p.matricula_vista,'Percentual de Desconto da Matrícula (%)':p.desconto_matricula,'Cadastrado Por':p.cadastrado_por}; }
 function seletivoAtivo(){
   return seletivos.find(s=>{const d=parseData(s.data);if(!d)return false;const dias=diasAte(d);return dias>=-7&&dias<=15;})
     ||seletivos.find(s=>{const d=parseData(s.data);return d&&diasAte(d)>0;});
@@ -315,11 +320,18 @@ function seletivoAtivo(){
 
 async function init(){
   document.getElementById('data-hoje').textContent=HOJE.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-  try{const r=await window.storage.get('sel_tarefas');if(r)tarefas=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('cfg_v2');if(r){const c=JSON.parse(r.value);if(c.seletivos)seletivos=c.seletivos;}}catch(e){}
-  try{const r=await window.storage.get('u_leads');if(r){leads=JSON.parse(r.value);marcarOk('reg',leads.length);}}catch(e){}
-  try{const r=await window.storage.get('u_propostas');if(r){propostas=JSON.parse(r.value);marcarOk('prop',propostas.length);}}catch(e){}
-  try{const r=await window.storage.get('u_atividades');if(r){atividades=JSON.parse(r.value);marcarOk('atv',atividades.length);}}catch(e){}
+  // Carrega tarefas do Supabase
+  const tarefasDB = await supa.getTarefas();
+  tarefasDB.forEach(t=>{ if(!tarefas[t.sel_id])tarefas[t.sel_id]={}; tarefas[t.sel_id][t.tarefa_id]=t.concluida; });
+  // Carrega dados do Supabase
+  leads = await supa.getLeads();
+  if(leads.length) marcarOk('reg',leads.length);
+  propostas = await supa.getPropostas();
+  if(propostas.length) marcarOk('prop',propostas.length);
+  atividades = await supa.getAtividades();
+  if(atividades.length) marcarOk('atv',atividades.length);
+  // Seletivos do localStorage
+  try{const c=JSON.parse(localStorage.getItem('cfg_seletivos')||'null');if(c)seletivos=c;}catch(e){}
   if(!seletivos.length)seletivos=SELETIVOS_DEFAULT;
   renderTudo();
 }
@@ -328,34 +340,45 @@ function marcarOk(tipo,n){
   const ok=document.getElementById('ok-'+tipo);
   if(ok){ok.style.display='block';ok.textContent=`✓ ${n} registros`;}
   const iz=document.getElementById('iz-'+tipo);
-  if(iz)iz.classList.add('loaded');
+  if(iz){iz.style.borderColor='#22c55e';iz.style.background='#0f2a1a';}
 }
 
-function lerCSV(inp,tipo){
+async function lerCSV(inp,tipo){
   const f=inp.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{
+  r.onload=async e=>{
     const linhas=e.target.result.split('\n').filter(l=>l.trim());
     const header=linhas[0].split(';').map(h=>h.replace(/^"|"$/g,'').trim());
     const rows=linhas.slice(1).map(l=>{const cols=l.split(';').map(c=>c.replace(/^"|"$/g,'').trim());const obj={};header.forEach((h,i)=>obj[h]=cols[i]||'');return obj;});
-    if(tipo==='reg'){leads=rows.filter(r=>r['Nome da pessoa']&&r['Nome da pessoa']!='- - -');window.storage.set('u_leads',JSON.stringify(leads));marcarOk('reg',leads.length);}
-    else{atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');window.storage.set('u_atividades',JSON.stringify(atividades));marcarOk('atv',atividades.length);}
+    if(tipo==='reg'){
+      leads=rows.filter(r=>r['Nome da pessoa']&&r['Nome da pessoa']!='- - -');
+      marcarOk('reg',leads.length+' (salvando...)');
+      await supa.salvarLeads(leads);
+      marcarOk('reg',leads.length);
+    } else {
+      atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
+      marcarOk('atv',atividades.length+' (salvando...)');
+      await supa.salvarAtividades(atividades);
+      marcarOk('atv',atividades.length);
+    }
     renderTudo();
   };
   r.readAsText(f,'ISO-8859-1');
 }
 
-function lerProp(inp){
+async function lerProp(inp){
   const f=inp.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=e=>{
+  r.onload=async e=>{
     const doc=(new DOMParser()).parseFromString(e.target.result,'text/html');
     const rows=[...doc.querySelectorAll('tr')];
     if(rows.length<2)return;
     const headers=[...rows[1].querySelectorAll('td')].map(td=>td.textContent.trim());
     propostas=rows.slice(2).map(row=>{const cells=[...row.querySelectorAll('td')].map(td=>td.textContent.trim());const obj={};headers.forEach((h,i)=>obj[h]=cells[i]||'');return obj;}).filter(p=>p['Aluno']&&p['Status']==='ATIVO');
-    window.storage.set('u_propostas',JSON.stringify(propostas));
-    marcarOk('prop',propostas.length);renderTudo();
+    marcarOk('prop',propostas.length+' (salvando...)');
+    await supa.salvarPropostas(propostas);
+    marcarOk('prop',propostas.length);
+    renderTudo();
   };
   r.readAsText(f,'latin-1');
 }
@@ -363,7 +386,7 @@ function lerProp(inp){
 function renderTudo(){renderKPIs();renderAlertas();renderDatas();renderPlaybook();renderFunil();renderEntrevistas();}
 
 function renderKPIs(){
-  const total=leads.filter(l=>l['Status']!=='Perdido').length;
+  const leadsAdapt=leads.map(adaptLead);const total=leadsAdapt.filter(l=>l['Status']!=='Perdido').length;
   const perdidos=leads.filter(l=>l['Status']==='Perdido').length;
   const compareceram=leads.filter(l=>compareceuReal(l['Etapa'])&&l['Status']!=='Perdido').length;
   const matriculas=leads.filter(l=>l['Etapa']==='Matrícula').length;
@@ -495,9 +518,9 @@ function renderEntrevistas(){
     </div>`).join('');
 }
 
-function marcarTarefa(selId,taId){
+async function marcarTarefa(selId,taId){
   const t=getTarefas(selId);t[taId]=!t[taId];
-  try{window.storage.set('sel_tarefas',JSON.stringify(tarefas));}catch(e){}
+  await supa.salvarTarefa(selId,taId,t[taId]);
   renderTudo();
 }
 

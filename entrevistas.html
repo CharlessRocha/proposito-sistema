@@ -202,6 +202,7 @@
   </div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
 if(sessionStorage.getItem('acesso_entrevistas')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -218,11 +219,11 @@ const PLBL={'sim':'Cadastrada','nao':'Não cadastrada','pendente':'Pendente'};
 let ents=[],filtroTodas='todas',editId=null;
 
 async function init(){
-  try{const r=await window.storage.get('entrevistas_v2');if(r)ents=JSON.parse(r.value);}catch(e){}
+  ents = await supa.getEntrevistas();
   renderTudo();
 }
 
-function salvar(){try{window.storage.set('entrevistas_v2',JSON.stringify(ents));}catch(e){}}
+function salvar(){/* salvo no Supabase */}
 
 function getEnts(){
   const u=document.getElementById('filtro-unid').value;
@@ -335,8 +336,8 @@ function renderListaDia(){
     </div>`).join('');
 }
 
-function setStatus(id,st){const e=ents.find(x=>x.id===id);if(e){e.status=st;salvar();renderTudo();}}
-function setProp(id,v){const e=ents.find(x=>x.id===id);if(e){e.proposta=v;salvar();renderTudo();}}
+async function setStatus(id,st){const e=ents.find(x=>x.id===id);if(e){e.status=st;await supa.updateEntrevista(id,{status:st});renderTudo();}}
+async function setProp(id,v){const e=ents.find(x=>x.id===id);if(e){e.proposta=v;await supa.updateEntrevista(id,{proposta:v});renderTudo();}}
 function setFiltro(f){filtroTodas=f;renderTodas();}
 
 function reagendar(id){
@@ -367,13 +368,13 @@ function abrirModal(){
 
 function fecharModal(){document.getElementById('modal-bg').classList.remove('show');editId=null;}
 
-function salvarEnt(){
+async function salvarEnt(){
   const familia=document.getElementById('f-familia').value.trim();
   if(!familia){alert('Informe o nome da família');return;}
   const nova={id:editId||Date.now().toString(),familia,serie:document.getElementById('f-serie').value,data:document.getElementById('f-data').value||HOJE_STR,hora:document.getElementById('f-hora').value,matriculador:document.getElementById('f-matric').value,sala:document.getElementById('f-sala').value,unidade:document.getElementById('f-unidade').value,modalidade:document.getElementById('f-modal').value,link:document.getElementById('f-link').value,status:'agendada',proposta:'pendente'};
   if(editId){const i=ents.findIndex(e=>e.id===editId);if(i>=0){nova.proposta=ents[i].proposta||'pendente';ents[i]=nova;}}
   else ents.push(nova);
-  salvar();fecharModal();renderTudo();
+  await supa.salvarEntrevista(nova);fecharModal();renderTudo();
 }
 
 function copiarLista(){

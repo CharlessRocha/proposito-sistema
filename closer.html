@@ -164,6 +164,7 @@
   </div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
 if(sessionStorage.getItem('acesso_closer')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -194,12 +195,14 @@ let negociacoes=[],propostas=[],simAtual=null,descAtual=0;
 function fmt(v){return parseFloat(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
 async function init(){
-  try{const r=await window.storage.get('closer_negs');if(r)negociacoes=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('u_propostas');if(r)propostas=JSON.parse(r.value);}catch(e){}
+  const negsDB = await supa.getNegociacoes();
+  negociacoes = negsDB.map(n=>({id:n.id,nome:n.nome,turno:n.turno,seg:n.seg,ano:n.ano,desconto:n.desconto,valFinal:parseFloat(n.val_final),limite:parseFloat(n.limite),status:n.status,hora:n.hora,data:n.data}));
+  const propDB = await supa.getPropostas();
+  propostas = propDB.map(p=>({'Aluno':p.aluno,'Série':p.serie,'Unidade':p.unidade,'Status':p.status,'COD. Inscrição':p.cod_inscricao,'Mensalidade à Vista (%)':p.mensalidade_vista,'Percentual de Desconto da Mensalidade (%)':p.desconto_mensalidade,'Matrícula à Vista (%)':p.matricula_vista,'Percentual de Desconto da Matrícula (%)':p.desconto_matricula,'Cadastrado Por':p.cadastrado_por}));
   renderTabela();renderNegociacoes();renderPropostas();
 }
 
-function salvar(){try{window.storage.set('closer_negs',JSON.stringify(negociacoes));}catch(e){}}
+function salvar(){/* salvo no Supabase */}
 
 function atualizarSim(){
   const turno=document.getElementById('s-turno').value;
@@ -243,20 +246,22 @@ function atualizarResultado(desc){
 
 function atualizarSlider(v){descAtual=parseInt(v);document.getElementById('slider-label').textContent=v+'%';atualizarResultado(descAtual);}
 
-function registrar(){
+async function registrar(){
   const t=simAtual;if(!t)return;
   const nome=document.getElementById('s-nome').value||'Família (sem nome)';
   const ano=document.getElementById('s-ano').value;
   const vf=t.promo*(1-descAtual/100);
   const lim=t.promo*(1-t.descMax/100);
   const abaixo=vf<lim;
-  negociacoes.unshift({id:Date.now(),nome,turno:t.turno,seg:t.seg,ano,desconto:descAtual,valFinal:vf,limite:lim,status:abaixo?'aprovacao':'aberta',hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')});
-  salvar();renderNegociacoes();
+  const novaNeg = {id:Date.now(),nome,turno:t.turno,seg:t.seg,ano,desconto:descAtual,val_final:vf,limite:lim,status:abaixo?'aprovacao':'aberta',hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')};
+  await supa.salvarNegociacao(novaNeg);
+  negociacoes.unshift({...novaNeg,valFinal:vf});
+  renderNegociacoes();
   document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';
   mudarTab('neg');
 }
 
-function fechar(id,status){const n=negociacoes.find(x=>x.id===id);if(n){n.status=status;salvar();renderNegociacoes();}document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';}
+async function fechar(id,status){const n=negociacoes.find(x=>x.id===id);if(n){n.status=status;await supa.updateNegociacao(id,{status});renderNegociacoes();}document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';}
 
 function renderNegociacoes(){
   document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';

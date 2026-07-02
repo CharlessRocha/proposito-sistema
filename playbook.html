@@ -88,6 +88,7 @@
   <div id="playbook-fases"></div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
 if(sessionStorage.getItem('acesso_playbook')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -163,8 +164,9 @@ function prazoCor(base,dRel){
 function getTarefas(id){if(!tarefas[id])tarefas[id]={};return tarefas[id];}
 
 async function init(){
-  try{const r=await window.storage.get('sel_tarefas');if(r)tarefas=JSON.parse(r.value);}catch(e){}
-  try{const r=await window.storage.get('cfg_v2');if(r){const c=JSON.parse(r.value);if(c.seletivos)seletivos=c.seletivos;}}catch(e){}
+  const tarefasDB = await supa.getTarefas();
+  tarefasDB.forEach(t=>{ if(!tarefas[t.sel_id])tarefas[t.sel_id]={}; tarefas[t.sel_id][t.tarefa_id]=t.concluida; });
+  try{const c=JSON.parse(localStorage.getItem('cfg_seletivos')||'null');if(c)seletivos=c;}catch(e){}
   if(!seletivos.length)seletivos=[
     {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
     {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
@@ -244,9 +246,9 @@ function toggleFase(bodyId,chevId){
   if(b){b.classList.toggle('open');if(c)c.classList.toggle('open');}
 }
 
-function marcarTarefa(selId,taId){
+async function marcarTarefa(selId,taId){
   const t=getTarefas(selId);t[taId]=!t[taId];
-  try{window.storage.set('sel_tarefas',JSON.stringify(tarefas));}catch(e){}
+  await supa.salvarTarefa(selId,taId,t[taId]);
   renderPlaybook();
 }
 
