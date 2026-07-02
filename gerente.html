@@ -408,18 +408,37 @@ function getProcessoSel(){ return document.getElementById('sel-processo')?.value
 function popularProcessos(){
   const sel = document.getElementById('sel-processo');
   if(!sel) return;
-  // Pega processos dos leads E das atividades
+  // Pega códigos únicos dos leads E das atividades
   const deLeads = leads.map(l=>l['Processo seletivo']);
   const deAtiv = atividades.map(a=>a['Nome - Processo seletivo']);
-  const processos = [...new Set([...deLeads,...deAtiv].filter(p=>p&&p!='- - -'&&p!=''))].sort();
+  const codigos = [...new Set([...deLeads,...deAtiv].filter(p=>p&&p!='- - -'&&p!=''))];
+  // Agrupa por nome amigável — vários códigos podem compartilhar o mesmo nome
+  const grupos = {};
+  codigos.forEach(cod=>{
+    const nome = nomeAmigavel(cod);
+    if(!grupos[nome]) grupos[nome]=[];
+    grupos[nome].push(cod);
+  });
+  const nomesOrdenados = Object.keys(grupos).sort();
   const atual = sel.value;
-  sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${nomeAmigavel(p)}</option>`).join('');
+  sel.innerHTML = '<option value="">Todos os seletivos</option>' + 
+    nomesOrdenados.map(nome=>`<option value="${nome}" ${nome===atual?'selected':''}>${nome}</option>`).join('');
+  // Guarda o mapeamento nome→códigos globalmente para uso nos filtros
+  window._gruposSeletivo = grupos;
+}
+
+// Retorna true se o processo do lead/atividade pertence ao grupo selecionado
+function pertenceAoGrupo(processoLead, nomeGrupoSelecionado){
+  if(!nomeGrupoSelecionado) return true; // "Todos" selecionado
+  const grupos = window._gruposSeletivo || {};
+  const codigos = grupos[nomeGrupoSelecionado] || [];
+  return codigos.some(c=>c.trim()===(processoLead||'').trim());
 }
 
 function getLeadsFiltrados(){
   const proc = getProcessoSel();
   let lista = leads.filter(l=>l['Status']!=='Perdido');
-  if(proc) lista = lista.filter(l=>(l['Processo seletivo']||'').trim()===proc.trim());
+  if(proc) lista = lista.filter(l=>pertenceAoGrupo(l['Processo seletivo'], proc));
   return lista;
 }
 
@@ -543,7 +562,7 @@ function renderEntrevistas(){
   // Status reais do CSV: Atrasada, Planejada — Ganho = matriculado
   let todas=[...atividades.filter(a=>a['Status']==='Atrasada'),...atividades.filter(a=>a['Status']==='Planejada'),...atividades.filter(a=>a['Status']==='Ganho')];
   // Filtro por processo
-  if(proc) todas=todas.filter(a=>(a['Nome - Processo seletivo']||'').trim()===proc.trim());
+  if(proc) todas=todas.filter(a=>pertenceAoGrupo(a['Nome - Processo seletivo'], proc));
   // Ordena por data/hora (campo Data de vencimento = hora real da entrevista)
   todas.sort((a,b)=>{
     const da=a['Data de vencimento']||''; const db=b['Data de vencimento']||'';
