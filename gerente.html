@@ -169,6 +169,15 @@
     </label>
   </div>
 
+  <!-- SELETOR DE SELETIVO -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+    <label style="font-size:12px;color:#888;flex-shrink:0">Visualizando:</label>
+    <select id="sel-processo" onchange="renderTudo()" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit;flex:1;max-width:340px">
+      <option value="">Todos os seletivos</option>
+    </select>
+    <span id="sel-count" style="font-size:11px;color:#555"></span>
+  </div>
+
   <!-- KPIs -->
   <div class="kpi-grid" id="kpi-grid"></div>
 
@@ -383,7 +392,24 @@ async function lerProp(inp){
   r.readAsText(f,'latin-1');
 }
 
-function renderTudo(){renderKPIs();renderAlertas();renderDatas();renderPlaybook();renderFunil();renderEntrevistas();}
+function getProcessoSel(){ return document.getElementById('sel-processo')?.value||''; }
+
+function popularProcessos(){
+  const sel = document.getElementById('sel-processo');
+  if(!sel) return;
+  const processos = [...new Set(leads.map(l=>l['Processo seletivo']).filter(p=>p&&p!='- - -'))].sort();
+  const atual = sel.value;
+  sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${p.replace('TS ','').replace('(PROPOSITO ','(').replace('(CENTRO/SUL ','(C.Sul ')}</option>`).join('');
+}
+
+function getLeadsFiltrados(){
+  const proc = getProcessoSel();
+  let lista = leads.filter(l=>l['Status']!=='Perdido');
+  if(proc) lista = lista.filter(l=>l['Processo seletivo']===proc);
+  return lista;
+}
+
+function renderTudo(){popularProcessos();renderKPIs();renderAlertas();renderDatas();renderPlaybook();renderFunil();renderEntrevistas();}
 
 function renderKPIs(){
   const leadsAdapt=leads.map(adaptLead);const total=leadsAdapt.filter(l=>l['Status']!=='Perdido').length;
@@ -481,7 +507,7 @@ function renderPlaybook(){
 
 function renderFunil(){
   if(!leads.length){document.getElementById('funil-body').innerHTML='<div class="empty">Importe o CSV de Registros</div>';return;}
-  const ativos=leads.filter(l=>l['Status']!=='Perdido');
+  const ativos=getLeadsFiltrados();
   const total=ativos.length;
   const contEtapa={};ativos.forEach(l=>{const e=l['Etapa']||'';contEtapa[e]=(contEtapa[e]||0)+1;});
   const maxE=Math.max(...Object.values(contEtapa),1);
@@ -499,23 +525,32 @@ function renderFunil(){
 }
 
 function renderEntrevistas(){
-  const atrasadas=atividades.filter(a=>a['Status']==='Atrasada');
-  const planejadas=atividades.filter(a=>a['Status']==='Planejada');
-  const todas=[...atrasadas,...planejadas];
-  if(!atividades.length){document.getElementById('ent-body').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';document.getElementById('entrevistas-full').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';return;}
-  document.getElementById('ent-body').innerHTML=todas.slice(0,6).map(a=>`
+  const proc=getProcessoSel();
+  let todas=[...atividades.filter(a=>a['Status']==='Atrasada'),...atividades.filter(a=>a['Status']==='Planejada'),...atividades.filter(a=>a['Status']==='Concluída')];
+  if(proc) todas=todas.filter(a=>a['Nome - Processo seletivo']===proc);
+  if(!atividades.length){
+    document.getElementById('ent-body').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
+    document.getElementById('entrevistas-full').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
+    return;
+  }
+  const cor = s=>s==='Atrasada'?'background:#2a1515;color:#ef4444':s==='Concluída'?'background:#0f2a1a;color:#22c55e':'background:#1a1f35;color:#F5C842';
+  document.getElementById('ent-body').innerHTML=todas.length?todas.slice(0,6).map(a=>`
     <div class="ent-item">
-      <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${a['Status']==='Atrasada'?'background:#2a1515;color:#ef4444':'background:#1a1f35;color:#F5C842'}">${a['Status']}</span>
+      <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${cor(a['Status'])}">${a['Status']}</span>
       <span class="ent-nome">${a['Contato']}</span>
-      <span class="ent-info">${a['Nome - Oferta de curso']||''}</span>
+      <span class="ent-info">${a['Atividade']||''}</span>
       <span class="ent-info">${a['Data de vencimento']||'—'}</span>
-    </div>`).join('');
-  document.getElementById('entrevistas-full').innerHTML=todas.map(a=>`
+    </div>`).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
+  document.getElementById('entrevistas-full').innerHTML=todas.length?todas.map(a=>`
     <div class="ent-item" style="padding:10px 0;border-bottom:1px solid #2a2d3a">
-      <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${a['Status']==='Atrasada'?'background:#2a1515;color:#ef4444':'background:#1a1f35;color:#F5C842'}">${a['Status']}</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:500;color:#ddd">${a['Contato']}</div><div style="font-size:11px;color:#555;margin-top:2px">${a['Nome - Oferta de curso']||''} · ${(a['Unidade']||'').replace('UNIDADE ','').replace('PROPÓSITO ','')} · Resp: ${a['Responsável']||'—'}</div></div>
-      <span style="font-size:11px;color:#666">${a['Data de vencimento']||'—'}</span>
-    </div>`).join('');
+      <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;${cor(a['Status'])}">${a['Status']}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:#ddd">${a['Contato']}</div>
+        <div style="font-size:11px;color:#555;margin-top:2px">${a['Atividade']||''} · ${a['Nome - Oferta de curso']||''} · ${a['Unidade']||''} · <span style="color:#888">Resp: ${a['Responsável']||'—'}</span></div>
+        <div style="font-size:11px;color:#F5C842;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
+      </div>
+      <span style="font-size:11px;color:#666;white-space:nowrap;flex-shrink:0">${a['Data de vencimento']||'—'}</span>
+    </div>`).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
 }
 
 async function marcarTarefa(selId,taId){

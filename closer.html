@@ -11,49 +11,115 @@
   .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
   .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
   .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
-  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit}
+  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
   .nav-back:hover{color:#F5C842;border-color:#F5C842}
-  .main{max-width:680px;margin:0 auto;padding:1.25rem 1rem 4rem}
-  .page-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
-  .page-sub{font-size:13px;color:#666;margin-bottom:1.25rem}
-  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a}
-  .tab{flex:1;padding:8px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
+  .main{max-width:760px;margin:0 auto;padding:1.25rem 1rem 4rem}
+
+  /* ID */
+  .id-screen{display:flex;flex-direction:column;align-items:center;padding:40px 16px;gap:14px;text-align:center}
+  .id-box{background:#1a1d27;border-radius:12px;padding:24px;width:100%;max-width:360px;border:1px solid #2a2d3a}
+  .id-titulo{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+  .id-sub{font-size:13px;color:#666;margin-bottom:18px}
+  .id-input{width:100%;font-size:14px;padding:12px 14px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit;margin-bottom:10px}
+  .id-input:focus{border-color:#F5C842;outline:none}
+  .id-btn-enter{width:100%;padding:12px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+  .id-btn-enter:hover{background:#e8b820}
+
+  /* OP */
+  .op-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+  .op-user{display:flex;align-items:center;gap:8px}
+  .op-avatar{width:32px;height:32px;border-radius:50%;background:#1a1f35;border:1.5px solid #F5C842;color:#F5C842;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .op-name{font-size:14px;font-weight:600;color:#fff}
+  .op-sub{font-size:11px;color:#666}
+  .trocar-btn{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #2a2d3a;background:transparent;color:#666;cursor:pointer;font-family:inherit}
+  .trocar-btn:hover{color:#F5C842;border-color:#F5C842}
+
+  .aviso-gold{background:#1a1500;border:1px solid #F5C842;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#fbbf24;line-height:1.5}
+
+  /* TABS */
+  .tabs{display:flex;gap:4px;margin-bottom:1rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a}
+  .tab{flex:1;padding:7px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
   .tab.active{background:#252840;color:#fff;border:1px solid #2a2d3a}
   .panel{display:none}.panel.active{display:block}
 
-  .aviso-gold{background:#1a1500;border:1px solid #F5C842;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#fbbf24;line-height:1.5}
+  /* FILTROS */
+  .filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+  .filtros select,.filtros input{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
+  .filtros input{flex:1;min-width:120px}
+  .f-btn{font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid #2a2d3a;background:#1a1d27;color:#888;cursor:pointer;font-weight:500;font-family:inherit}
+  .f-btn.active{background:#1a1f35;color:#F5C842;border-color:#F5C842}
+
+  /* LEAD CARD */
+  .lead-card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+  .lead-card:hover{border-color:#3a3d4a}
+  .lead-card.expandido{border-color:#F5C842}
+  .lead-card.perdido-card{opacity:.5;border-style:dashed}
+  .lc-top{display:flex;align-items:center;gap:10px}
+  .lc-avatar{width:34px;height:34px;border-radius:50%;background:#1a1f35;color:#F5C842;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .lc-avatar.perdido{background:#2a1515;color:#f87171}
+  .lc-info{flex:1;min-width:0}
+  .lc-nome{font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lc-sub{font-size:11px;color:#555;margin-top:1px}
+  .lc-badges{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+  .badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+  .b-inscrito{background:#1a2a40;color:#60a5fa}
+  .b-confirmado{background:#2a1e00;color:#fbbf24}
+  .b-ncomp{background:#2a1515;color:#f87171}
+  .b-comp{background:#0f2a1a;color:#4ade80}
+  .b-ent{background:#1a1535;color:#c084fc}
+  .b-prop{background:#1a2535;color:#38bdf8}
+  .b-neg{background:#2a1a00;color:#fb923c}
+  .b-mat{background:#0f2a1a;color:#4ade80}
+  .b-perd{background:#2a1515;color:#f87171}
+  .b-prop-sim{background:#0f2a1a;color:#4ade80}
+
+  /* PROP BOX */
+  .prop-box{background:#0f2a1a;border:1px solid #22c55e;border-radius:8px;padding:10px 12px;margin:8px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .prop-box.sem{background:#1a1500;border-color:#f59e0b}
+  .prop-val{font-size:16px;font-weight:700;color:#22c55e}
+  .prop-sem{font-size:12px;font-weight:500;color:#fbbf24}
+
+  /* AÇÃO PANEL */
+  .acao-panel{display:none;border-top:1px solid #2a2d3a;margin-top:10px;padding-top:10px}
+  .acao-panel.aberto{display:block}
+  .acao-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#555;margin-bottom:6px}
+  .acoes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+  .acao-btn{padding:9px 4px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#888;font-size:11px;font-weight:500;cursor:pointer;text-align:center;font-family:inherit;transition:all .15s}
+  .acao-btn:hover,.acao-btn.sel{border-color:#F5C842;background:#1a1f35;color:#F5C842}
+  .acao-btn.danger{border-color:#ef4444;background:#2a1515;color:#f87171}
+  .acao-btn.success{border-color:#22c55e;background:#0f2a1a;color:#4ade80}
+  .obs-inp{width:100%;font-size:12px;padding:8px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#fff;margin-bottom:8px;resize:none;height:48px;font-family:inherit}
+  .obs-inp:focus{border-color:#F5C842;outline:none}
+  .salvar-btn{width:100%;padding:10px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .salvar-btn:hover{background:#e8b820}
+  .hist-item{font-size:11px;color:#888;padding:4px 0;border-bottom:1px solid #2a2d3a;display:flex;gap:8px}
+  .hist-item:last-child{border-bottom:none}
 
   /* SIMULADOR */
   .card{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:12px}
-  .card-head{padding:11px 14px;border-bottom:1px solid #2a2d3a;background:#1f2235}
+  .card-head{padding:10px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a}
   .card-title{font-size:13px;font-weight:600;color:#ddd}
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
   .ff label{font-size:11px;color:#666;display:block;margin-bottom:3px;font-weight:500}
   .ff select,.ff input{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit}
   .ff select:focus,.ff input:focus{border-color:#F5C842;outline:none}
-
   .resultado{background:#12141e;border-radius:8px;margin:0 14px 14px;padding:14px;border:1px solid #2a2d3a;display:none}
   .resultado.show{display:block}
-  .res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-  .res-stat{}
+  .res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
   .res-label{font-size:10px;color:#555;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
   .res-val{font-size:18px;font-weight:700}
-  .res-val.cheio{color:#555;text-decoration:line-through;font-size:14px}
-  .res-val.promo{color:#F5C842}
-  .res-val.negoc{color:#22c55e;font-size:22px}
+  .res-val.cheio{color:#555;text-decoration:line-through;font-size:13px}
+  .res-val.negoc{color:#F5C842;font-size:22px}
   .res-val.econ{color:#22c55e}
-
-  .slider-wrap{margin-bottom:12px}
-  .slider-top{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:6px}
+  .slider-wrap{margin-bottom:10px}
+  .slider-top{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:5px}
   .slider-top strong{color:#fff;font-size:14px}
   input[type=range]{width:100%;accent-color:#F5C842}
-
-  .limite-ok{background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:8px 12px;font-size:12px;color:#4ade80;display:flex;align-items:center;gap:6px;margin-top:6px}
-  .limite-nok{background:#2a1515;border:1px solid #ef4444;border-radius:6px;padding:8px 12px;font-size:12px;color:#f87171;display:flex;align-items:center;gap:6px;margin-top:6px}
-
-  .prop-btn{width:100%;padding:11px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;font-family:inherit}
-  .prop-btn:hover{background:#e8b820}
-  .aprov-btn{width:100%;padding:11px;border-radius:8px;border:1px solid #ef4444;background:#2a1515;color:#f87171;font-size:13px;font-weight:500;cursor:pointer;margin-top:6px;font-family:inherit;display:none}
+  .limite-ok{background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:7px 12px;font-size:12px;color:#4ade80;margin-top:6px}
+  .limite-nok{background:#2a1515;border:1px solid #ef4444;border-radius:6px;padding:7px 12px;font-size:12px;color:#f87171;margin-top:6px}
+  .prop-final-btn{width:100%;padding:11px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;font-family:inherit}
+  .prop-final-btn:hover{background:#e8b820}
+  .aprov-btn{width:100%;padding:10px;border-radius:8px;border:1px solid #ef4444;background:#2a1515;color:#f87171;font-size:12px;font-weight:500;cursor:pointer;margin-top:6px;font-family:inherit;display:none}
 
   /* TABELA */
   .t-wrap{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden}
@@ -71,9 +137,9 @@
   .db-med{background:#2a1e00;color:#fbbf24}
   .db-bx{background:#1a1f35;color:#F5C842}
 
-  /* NEGOCIAÇÕES */
+  /* NEG */
   .neg-item{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:13px 14px;margin-bottom:8px}
-  .neg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .neg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
   .neg-nome{font-size:13px;font-weight:600;color:#fff}
   .neg-st{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
   .st-ab{background:#2a1e00;color:#fbbf24}
@@ -81,12 +147,11 @@
   .st-pd{background:#2a1515;color:#f87171}
   .st-ap{background:#1a1535;color:#c084fc}
   .neg-info{font-size:11px;color:#555;display:flex;gap:10px;flex-wrap:wrap}
-  .neg-val{font-size:13px;font-weight:700;color:#22c55e;margin-top:5px}
-  .neg-actions{display:flex;gap:6px;margin-top:8px}
   .nb{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#888;cursor:pointer;font-family:inherit}
   .nb.s{border-color:#22c55e;background:#0f2a1a;color:#4ade80}
   .nb.d{border-color:#ef4444;background:#2a1515;color:#f87171}
 
+  .loading{padding:24px;text-align:center;font-size:13px;color:#555}
   .empty{padding:24px;text-align:center;font-size:13px;color:#555}
   #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
@@ -103,63 +168,97 @@
   <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
 <div class="main">
-  <div class="page-title">Painel de negociação</div>
-  <div class="page-sub" id="data-hoje"></div>
-  <div class="aviso-gold">⭐ <strong>Regra de ouro:</strong> Qualquer desconto abaixo do limite mínimo precisa de aprovação do Gerente Comercial antes de ser oferecido ao cliente.</div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="mudarTab('sim')">🧮 Simulador</button>
-    <button class="tab" onclick="mudarTab('tab')">📊 Tabela de limites</button>
-    <button class="tab" onclick="mudarTab('neg')">📋 Negociações <span id="badge-neg" style="background:#2a1e00;color:#fbbf24;border-radius:20px;padding:1px 6px;font-size:10px;margin-left:3px"></span></button>
-    <button class="tab" onclick="mudarTab('prop')">📄 Propostas</button>
-  </div>
-
-  <!-- SIMULADOR -->
-  <div class="panel active" id="panel-sim">
-    <div class="card">
-      <div class="card-head"><div class="card-title">⚙️ Simular proposta</div></div>
-      <div class="form-grid">
-        <div class="ff"><label>Turno</label>
-          <select id="s-turno" onchange="atualizarSim()">
-            <option value="">Selecione...</option>
-            <option>Integral</option><option>Manhã</option><option>Tarde</option><option value="Especial">Turmas especiais</option>
-          </select></div>
-        <div class="ff"><label>Segmento</label><select id="s-seg" onchange="renderSim()"><option value="">Selecione...</option></select></div>
-        <div class="ff"><label>Ano letivo</label><select id="s-ano" onchange="renderSim()"><option value="2027">2027</option><option value="2026">2026</option></select></div>
-        <div class="ff"><label>Nome do cliente</label><input type="text" id="s-nome" placeholder="Família..."></div>
+  <!-- ID SCREEN -->
+  <div id="id-wrap">
+    <div class="id-screen">
+      <div style="font-size:36px">🤝</div>
+      <div class="id-box">
+        <div class="id-titulo">Identificação</div>
+        <div class="id-sub">Digite seu nome para registrar as negociações</div>
+        <input type="text" class="id-input" id="nome-input" placeholder="Seu nome completo...">
+        <button type="button" class="id-btn-enter" onclick="entrar()">Entrar</button>
       </div>
-      <div class="resultado" id="resultado">
-        <div class="res-grid" id="res-grid"></div>
-        <div class="slider-wrap">
-          <div class="slider-top"><span>Desconto negociado</span><strong id="slider-label">0%</strong></div>
-          <input type="range" id="slider" min="0" max="55" step="1" value="0" oninput="atualizarSlider(this.value)">
-          <div id="limite-msg"></div>
-        </div>
-        <div id="res-final"></div>
-        <button class="prop-btn" onclick="registrar()">📋 Registrar negociação</button>
-        <button class="aprov-btn" id="aprov-btn" onclick="alert('Envie mensagem ao Gerente Comercial com os detalhes antes de apresentar ao cliente.')">⚠️ Pedir aprovação ao gerente</button>
-      </div>
-      <div id="sim-vazio" style="padding:20px;text-align:center;font-size:13px;color:#555">Selecione turno e segmento para simular</div>
     </div>
   </div>
 
-  <!-- TABELA -->
-  <div class="panel" id="panel-tab">
-    <div class="t-wrap"><table><thead><tr><th>Turno / segmento</th><th>Preço cheio</th><th>Tabela promo</th><th>Limite mín.</th><th>Desc. máx.</th></tr></thead><tbody id="tab-body"></tbody></table></div>
-    <div style="background:#1a1f35;border:1px solid #2a2d3a;border-radius:8px;padding:10px 14px;font-size:12px;color:#F5C842;margin-top:10px">ℹ️ <strong>Limite mínimo</strong> = tabela promocional com desconto máximo autorizado sem aprovação. Abaixo disso, acionar o gerente.</div>
-  </div>
+  <!-- OP SCREEN -->
+  <div id="op-wrap" style="display:none">
+    <div class="op-header">
+      <div class="op-user">
+        <div class="op-avatar" id="op-avatar">?</div>
+        <div>
+          <div class="op-name" id="op-name"></div>
+          <div class="op-sub" id="op-data"></div>
+        </div>
+      </div>
+      <button type="button" class="trocar-btn" onclick="trocar()">↺ Trocar</button>
+    </div>
 
-  <!-- NEGOCIAÇÕES -->
-  <div class="panel" id="panel-neg">
-    <div id="neg-lista"></div>
-  </div>
+    <div class="aviso-gold">⭐ <strong>Regra de ouro:</strong> Qualquer desconto abaixo do limite mínimo precisa de aprovação do Gerente Comercial antes de oferecer ao cliente.</div>
 
-  <!-- PROPOSTAS -->
-  <div class="panel" id="panel-prop">
-    <div style="font-size:12px;color:#666;margin-bottom:10px">Propostas cadastradas no sistema de admissões. Importe o arquivo de Propostas no Painel do Gerente.</div>
-    <div class="t-wrap">
-      <table><thead><tr><th>Aluno</th><th>Série</th><th>Unidade</th><th>Valor negociado</th><th>Status</th></tr></thead>
-      <tbody id="prop-body"></tbody></table>
+    <div class="tabs">
+      <button class="tab active" onclick="mudarTab('clientes')">👥 Clientes</button>
+      <button class="tab" onclick="mudarTab('sim')">🧮 Simulador</button>
+      <button class="tab" onclick="mudarTab('tab')">📊 Tabela de limites</button>
+      <button class="tab" onclick="mudarTab('neg')">📋 Negociações <span id="badge-neg" style="background:#2a1e00;color:#fbbf24;border-radius:20px;padding:1px 6px;font-size:10px;margin-left:2px"></span></button>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="panel active" id="panel-clientes">
+      <div class="filtros">
+        <input type="text" id="busca" placeholder="Buscar por nome..." oninput="renderClientes()">
+        <select id="f-etapa" onchange="renderClientes()"><option value="">Todas as etapas</option></select>
+        <select id="f-processo" onchange="renderClientes()"><option value="">Todos os processos</option></select>
+        <select id="f-unidade" onchange="renderClientes()"><option value="">Todas as unidades</option></select>
+      </div>
+      <div class="filtros">
+        <button type="button" class="f-btn active" id="fb-todos" onclick="setFiltroStatus('todos')">Todos</button>
+        <button type="button" class="f-btn" id="fb-neg" onclick="setFiltroStatus('neg')">Em negociação</button>
+        <button type="button" class="f-btn" id="fb-prop" onclick="setFiltroStatus('prop')">Proposta</button>
+        <button type="button" class="f-btn" id="fb-perd" onclick="setFiltroStatus('perd')" style="border-color:#ef4444;color:#f87171">Perdidos</button>
+      </div>
+      <div id="clientes-lista"><div class="loading">⏳ Carregando...</div></div>
+    </div>
+
+    <!-- SIMULADOR -->
+    <div class="panel" id="panel-sim">
+      <div class="card">
+        <div class="card-head"><div class="card-title">⚙️ Simular proposta</div></div>
+        <div class="form-grid">
+          <div class="ff"><label>Turno</label>
+            <select id="s-turno" onchange="atualizarSim()">
+              <option value="">Selecione...</option>
+              <option>Integral</option><option>Manhã</option><option>Tarde</option><option value="Especial">Turmas especiais</option>
+            </select></div>
+          <div class="ff"><label>Segmento</label><select id="s-seg" onchange="renderSim()"><option value="">Selecione...</option></select></div>
+          <div class="ff"><label>Ano letivo</label><select id="s-ano" onchange="renderSim()"><option value="2027">2027</option><option value="2026">2026</option></select></div>
+          <div class="ff"><label>Nome do cliente</label><input type="text" id="s-nome" placeholder="Família..."></div>
+        </div>
+        <div class="resultado" id="resultado">
+          <div class="res-grid" id="res-grid"></div>
+          <div class="slider-wrap">
+            <div class="slider-top"><span>Desconto negociado</span><strong id="slider-label">0%</strong></div>
+            <input type="range" id="slider" min="0" max="55" step="1" value="0" oninput="atualizarSlider(this.value)">
+            <div id="limite-msg"></div>
+          </div>
+          <div id="res-final"></div>
+          <button type="button" class="prop-final-btn" onclick="registrarNeg()">📋 Registrar negociação</button>
+          <button type="button" class="aprov-btn" id="aprov-btn" onclick="alert('Envie mensagem ao Gerente Comercial com os detalhes antes de apresentar ao cliente.')">⚠️ Pedir aprovação ao gerente</button>
+        </div>
+        <div id="sim-vazio" style="padding:20px;text-align:center;font-size:13px;color:#555">Selecione turno e segmento para simular</div>
+      </div>
+    </div>
+
+    <!-- TABELA -->
+    <div class="panel" id="panel-tab">
+      <div class="t-wrap"><table><thead><tr><th>Turno / segmento</th><th>Preço cheio</th><th>Tabela promo</th><th>Limite mín.</th><th>Desc. máx.</th></tr></thead><tbody id="tab-body"></tbody></table></div>
+      <div style="background:#1a1f35;border:1px solid #2a2d3a;border-radius:8px;padding:10px 14px;font-size:12px;color:#F5C842;margin-top:10px">ℹ️ <strong>Limite mínimo</strong> = tabela promo com desconto máximo autorizado sem aprovação.</div>
+    </div>
+
+    <!-- NEGOCIAÇÕES -->
+    <div class="panel" id="panel-neg">
+      <div id="neg-lista"></div>
     </div>
   </div>
 </div>
@@ -168,8 +267,7 @@
 <script>
 if(sessionStorage.getItem('acesso_closer')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
-document.getElementById('data-hoje').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-
+const HOJE=new Date();HOJE.setHours(0,0,0,0);
 const TABELA=[
   {turno:'Integral',seg:'Infantil',cheio:4926.90,promo:3179.00,descMax:20},
   {turno:'Integral',seg:'Fundamental 1',cheio:4543.86,promo:3179.00,descMax:20},
@@ -189,41 +287,185 @@ const TABELA=[
   {turno:'Especial',seg:'3º ADV',cheio:3209.54,promo:2739.00,descMax:33},
 ];
 const SEGS={Integral:['Infantil','Fundamental 1','Fundamental 2','Médio'],Manhã:['Infantil','Fundamental 1','Fundamental 2','Médio'],Tarde:['Infantil','Fundamental 1','Fundamental 2','Médio'],Especial:['9º a 2º ITA','3º ITA','9º a 2º ADV','3º ADV']};
+const ETAPA_BADGE={'Inscrito':'b-inscrito','Confirmado no Teste':'b-confirmado','Não Compareceu no Teste':'b-ncomp','Compareceu no Teste':'b-comp','Entrevista Agendada':'b-ent','Proposta':'b-prop','Negociação':'b-neg','Matrícula':'b-mat','Perdido':'b-perd'};
+const ACOES_CLOSER=[
+  {id:'ligou',label:'Ligou',emoji:'📞'},
+  {id:'whatsapp',label:'WhatsApp',emoji:'📱'},
+  {id:'nao-atendeu',label:'Não atendeu',emoji:'🔕'},
+  {id:'proposta',label:'Proposta enviada',emoji:'📄',success:true},
+  {id:'fechou',label:'Fechou! ✓',emoji:'🎉',success:true},
+  {id:'perdeu',label:'Perdeu',emoji:'❌',danger:true},
+];
 
-let negociacoes=[],propostas=[],simAtual=null,descAtual=0;
+let usuario='',leads=[],propostas=[],acoes={},negociacoes=[],filtroStatus='todos',simAtual=null,descAtual=0,expandido=null,acaoSel={};
 
-function fmt(v){return parseFloat(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function fmt(v){if(!v||isNaN(v))return'—';return parseFloat(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
-async function init(){
-  const negsDB = await supa.getNegociacoes();
-  negociacoes = negsDB.map(n=>({id:n.id,nome:n.nome,turno:n.turno,seg:n.seg,ano:n.ano,desconto:n.desconto,valFinal:parseFloat(n.val_final),limite:parseFloat(n.limite),status:n.status,hora:n.hora,data:n.data}));
-  const propDB = await supa.getPropostas();
-  propostas = propDB.map(p=>({'Aluno':p.aluno,'Série':p.serie,'Unidade':p.unidade,'Status':p.status,'COD. Inscrição':p.cod_inscricao,'Mensalidade à Vista (%)':p.mensalidade_vista,'Percentual de Desconto da Mensalidade (%)':p.desconto_mensalidade,'Matrícula à Vista (%)':p.matricula_vista,'Percentual de Desconto da Matrícula (%)':p.desconto_matricula,'Cadastrado Por':p.cadastrado_por}));
-  renderTabela();renderNegociacoes();renderPropostas();
+function entrar(){
+  const nome=document.getElementById('nome-input').value.trim();
+  if(!nome){alert('Digite seu nome para continuar');return;}
+  usuario=nome;
+  document.getElementById('id-wrap').style.display='none';
+  document.getElementById('op-wrap').style.display='block';
+  document.getElementById('op-avatar').textContent=nome[0].toUpperCase();
+  document.getElementById('op-name').textContent=nome;
+  document.getElementById('op-data').textContent=HOJE.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  carregarDados();
 }
 
-function salvar(){/* salvo no Supabase */}
+function trocar(){
+  usuario='';
+  document.getElementById('op-wrap').style.display='none';
+  document.getElementById('id-wrap').style.display='block';
+  document.getElementById('nome-input').value='';
+}
 
+async function carregarDados(){
+  document.getElementById('clientes-lista').innerHTML='<div class="loading">⏳ Carregando...</div>';
+  leads = await supa.getLeads();
+  propostas = await supa.getPropostas();
+  const acoesDB = await supa.getAcoesCDR();
+  acoes={};
+  acoesDB.forEach(a=>{
+    if(!acoes[a.lead_nome])acoes[a.lead_nome]=[];
+    acoes[a.lead_nome].push({acao:a.acao,obs:a.obs,cdr:a.cdr,hora:a.hora,data:a.data});
+  });
+  const negsDB = await supa.getNegociacoes();
+  negociacoes = negsDB.map(n=>({id:n.id,nome:n.nome,turno:n.turno,seg:n.seg,ano:n.ano,desconto:n.desconto,valFinal:parseFloat(n.val_final),limite:parseFloat(n.limite),status:n.status,hora:n.hora,data:n.data}));
+  popularFiltros();
+  renderClientes();
+  renderTabela2();
+  renderNegociacoes();
+}
+
+function popularFiltros(){
+  const etapas=[...new Set(leads.map(l=>l['Etapa']).filter(Boolean))].sort();
+  const processos=[...new Set(leads.map(l=>l['Processo seletivo']).filter(p=>p&&p!='- - -'))].sort();
+  const unidades=[...new Set(leads.map(l=>l['Unidade']).filter(u=>u&&u!='- - -'))].sort();
+  document.getElementById('f-etapa').innerHTML='<option value="">Todas as etapas</option>'+etapas.map(e=>`<option>${e}</option>`).join('');
+  document.getElementById('f-processo').innerHTML='<option value="">Todos os processos</option>'+processos.map(p=>`<option>${p}</option>`).join('');
+  document.getElementById('f-unidade').innerHTML='<option value="">Todas as unidades</option>'+unidades.map(u=>`<option>${u}</option>`).join('');
+}
+
+function setFiltroStatus(f){
+  filtroStatus=f;
+  ['todos','neg','prop','perd'].forEach(id=>{
+    const el=document.getElementById('fb-'+id);
+    if(el)el.classList.toggle('active',id===f);
+  });
+  renderClientes();
+}
+
+function getAcoes(lid){return acoes[lid]||[];}
+function ultimaAcao(lid){const a=getAcoes(lid);return a.length?a[a.length-1]:null;}
+function getProp(nome){return propostas.find(p=>(p['Aluno']||'').toLowerCase().trim()===nome.toLowerCase().trim())||null;}
+
+function renderClientes(){
+  const busca=(document.getElementById('busca')?.value||'').toLowerCase();
+  const fEtapa=document.getElementById('f-etapa')?.value||'';
+  const fProc=document.getElementById('f-processo')?.value||'';
+  const fUnid=document.getElementById('f-unidade')?.value||'';
+
+  let lista=leads;
+  // Filtro de status
+  if(filtroStatus==='neg')lista=lista.filter(l=>l['Etapa']==='Negociação');
+  else if(filtroStatus==='prop')lista=lista.filter(l=>l['Etapa']==='Proposta');
+  else if(filtroStatus==='perd')lista=lista.filter(l=>l['Status']==='Perdido');
+  else lista=lista; // todos
+
+  if(busca)lista=lista.filter(l=>(l['Nome da pessoa']||'').toLowerCase().includes(busca));
+  if(fEtapa)lista=lista.filter(l=>l['Etapa']===fEtapa);
+  if(fProc)lista=lista.filter(l=>l['Processo seletivo']===fProc);
+  if(fUnid)lista=lista.filter(l=>l['Unidade']===fUnid);
+
+  if(!leads.length){document.getElementById('clientes-lista').innerHTML='<div class="empty">📭 Importe o CSV no Painel do Gerente</div>';return;}
+  if(!lista.length){document.getElementById('clientes-lista').innerHTML='<div class="empty">Nenhum lead nesta categoria</div>';return;}
+
+  document.getElementById('clientes-lista').innerHTML=lista.map(l=>{
+    const lid=l['Nome da pessoa'];
+    const isPerdido=l['Status']==='Perdido';
+    const prop=getProp(lid);
+    const ua=ultimaAcao(lid);
+    const hist=getAcoes(lid);
+    const isExp=expandido===lid;
+    const iniciais=(lid||'?').split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+    const etapaBadge=isPerdido?'b-perd':(ETAPA_BADGE[l['Etapa']]||'b-inscrito');
+    const lidId=lid.replace(/\W/g,'_');
+    const valMens=prop?prop['Mensalidade à Vista (%)']||prop['Matrícula à Vista (%)']||'':'';
+    const descMens=prop?prop['Percentual de Desconto da Mensalidade (%)']||prop['Percentual de Desconto da Matrícula (%)']||'':'';
+
+    return`<div class="lead-card ${isExp?'expandido':''} ${isPerdido?'perdido-card':''}">
+      <div class="lc-top" onclick="toggle('${lid.replace(/'/g,"&apos;")}')">
+        <div class="lc-avatar ${isPerdido?'perdido':''}">${iniciais}</div>
+        <div class="lc-info">
+          <div class="lc-nome">${lid}${isPerdido?' <span style="font-size:10px;color:#f87171">(Perdido)</span>':''}</div>
+          <div class="lc-sub">${l['Nome - Oferta de curso']||''} · ${l['Unidade']||''} · <span style="color:#666">${l['Processo seletivo']||''}</span></div>
+        </div>
+        <div class="lc-badges">
+          <span class="badge ${etapaBadge}">${isPerdido?'Perdido':l['Etapa']}</span>
+          ${prop?`<span class="badge b-prop-sim">Proposta</span>`:''}
+        </div>
+      </div>
+      ${ua?`<div style="font-size:10px;color:#555;margin-top:5px">↩ ${ua.acao} — ${ua.hora} — ${ua.cdr}</div>`:''}
+      <div class="acao-panel ${isExp?'aberto':''}">
+        ${prop?`<div class="prop-box">
+          <div>
+            <div style="font-size:10px;color:#22c55e;font-weight:600;text-transform:uppercase;margin-bottom:2px">Proposta cadastrada</div>
+            <div class="prop-val">${fmt(valMens)}/mês</div>
+            <div style="font-size:11px;color:#888">${descMens?descMens+'% desc ·':''} ${prop['Série']||''}</div>
+          </div>
+        </div>`:
+        `<div class="prop-box sem"><span class="prop-sem">⚠ Sem proposta cadastrada ainda</span></div>`}
+        <div class="acao-label">Registrar ação de fechamento</div>
+        <div class="acoes-grid">
+          ${ACOES_CLOSER.map(a=>`<button type="button" class="acao-btn ${a.danger?'danger':a.success?'success':''} ${acaoSel[lid]===a.id?'sel':''}" onclick="selAcao('${lid.replace(/'/g,"&apos;")}','${a.id}')">${a.emoji} ${a.label}</button>`).join('')}
+        </div>
+        <textarea class="obs-inp" id="obs-${lidId}" placeholder="Observação (opcional)..."></textarea>
+        <button type="button" class="salvar-btn" onclick="salvarAcao('${lid.replace(/'/g,"&apos;")}')">✓ Registrar</button>
+        ${hist.length?`<div style="margin-top:10px">
+          <div class="acao-label" style="margin-bottom:4px">Histórico</div>
+          ${hist.slice(-3).reverse().map(h=>`<div class="hist-item"><span style="flex:1"><strong style="color:#ddd">${h.acao}</strong>${h.obs?' — '+h.obs:''}</span><span style="color:#555;white-space:nowrap;flex-shrink:0">${h.hora} · ${h.cdr}</span></div>`).join('')}
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggle(lid){expandido=expandido===lid?null:lid;renderClientes();}
+function selAcao(lid,id){acaoSel[lid]=id;renderClientes();}
+
+async function salvarAcao(lid){
+  const id=acaoSel[lid];if(!id){alert('Selecione uma ação');return;}
+  const lidId=lid.replace(/\W/g,'_');
+  const obsEl=document.getElementById('obs-'+lidId);
+  const obs=obsEl?obsEl.value.trim():'';
+  const label=ACOES_CLOSER.find(a=>a.id===id)?.label||id;
+  if(!acoes[lid])acoes[lid]=[];
+  acoes[lid].push({acao:label,obs,cdr:usuario,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')});
+  delete acaoSel[lid];expandido=null;
+  await supa.salvarAcaoCDR(lid,label,obs,usuario);
+  renderClientes();
+}
+
+// SIMULADOR
 function atualizarSim(){
   const turno=document.getElementById('s-turno').value;
   const segSel=document.getElementById('s-seg');
   if(turno&&SEGS[turno]){segSel.innerHTML='<option value="">Selecione...</option>'+SEGS[turno].map(s=>`<option>${s}</option>`).join('');}
   renderSim();
 }
-
 function renderSim(){
   const turno=document.getElementById('s-turno').value;
   const seg=document.getElementById('s-seg').value;
   if(!turno||!seg){document.getElementById('resultado').classList.remove('show');document.getElementById('sim-vazio').style.display='block';return;}
   simAtual=TABELA.find(t=>t.turno===turno&&t.seg===seg)||null;
-  if(!simAtual){return;}
+  if(!simAtual)return;
   document.getElementById('resultado').classList.add('show');
   document.getElementById('sim-vazio').style.display='none';
   document.getElementById('slider').value=0;descAtual=0;
   document.getElementById('slider-label').textContent='0%';
   atualizarResultado(0);
 }
-
 function atualizarResultado(desc){
   const t=simAtual;if(!t)return;
   const vf=t.promo*(1-desc/100);
@@ -231,50 +473,53 @@ function atualizarResultado(desc){
   const abaixo=vf<lim;
   const econ=(t.cheio-vf)*12;
   document.getElementById('res-grid').innerHTML=`
-    <div class="res-stat"><div class="res-label">Preço cheio</div><div class="res-val cheio">${fmt(t.cheio)}/mês</div></div>
-    <div class="res-stat"><div class="res-label">Valor negociado</div><div class="res-val negoc">${fmt(vf)}/mês</div></div>
-    <div class="res-stat"><div class="res-label">Economia anual</div><div class="res-val econ">${fmt(econ)}</div></div>`;
+    <div><div class="res-label">Preço cheio</div><div class="res-val cheio">${fmt(t.cheio)}/mês</div></div>
+    <div><div class="res-label">Valor negociado</div><div class="res-val negoc">${fmt(vf)}/mês</div></div>
+    <div><div class="res-label">Economia anual</div><div class="res-val econ">${fmt(econ)}</div></div>`;
   document.getElementById('limite-msg').innerHTML=abaixo?
-    `<div class="limite-nok">⚠️ Abaixo do limite mínimo (${fmt(lim)}/mês) — precisa de aprovação do gerente</div>`:
-    `<div class="limite-ok">✓ Dentro do limite autorizado — mín. ${fmt(lim)}/mês · desc. máx. ${t.descMax}%</div>`;
-  document.getElementById('res-final').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:12px">
-    <div style="background:#12141e;border-radius:8px;padding:9px 10px"><div style="color:#555;font-size:10px;margin-bottom:2px">DESCONTO APLICADO</div><div style="font-size:16px;font-weight:700;color:#ef4444">${desc}%</div></div>
-    <div style="background:#12141e;border-radius:8px;padding:9px 10px"><div style="color:#555;font-size:10px;margin-bottom:2px">MATRÍCULA (jan/2027)</div><div style="font-size:16px;font-weight:700;color:#F5C842">${fmt(vf)}</div></div>
+    `<div class="limite-nok">⚠️ Abaixo do limite (${fmt(lim)}/mês) — precisa de aprovação</div>`:
+    `<div class="limite-ok">✓ Dentro do limite — mín. ${fmt(lim)}/mês · desc. máx. ${t.descMax}%</div>`;
+  document.getElementById('res-final').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+    <div style="background:#12141e;border-radius:8px;padding:8px 10px"><div style="color:#555;font-size:10px;margin-bottom:2px">DESCONTO</div><div style="font-size:16px;font-weight:700;color:#ef4444">${desc}%</div></div>
+    <div style="background:#12141e;border-radius:8px;padding:8px 10px"><div style="color:#555;font-size:10px;margin-bottom:2px">MATRÍCULA</div><div style="font-size:16px;font-weight:700;color:#F5C842">${fmt(vf)}</div></div>
   </div>`;
   document.getElementById('aprov-btn').style.display=abaixo?'block':'none';
 }
-
 function atualizarSlider(v){descAtual=parseInt(v);document.getElementById('slider-label').textContent=v+'%';atualizarResultado(descAtual);}
 
-async function registrar(){
+async function registrarNeg(){
   const t=simAtual;if(!t)return;
   const nome=document.getElementById('s-nome').value||'Família (sem nome)';
   const ano=document.getElementById('s-ano').value;
   const vf=t.promo*(1-descAtual/100);
   const lim=t.promo*(1-t.descMax/100);
   const abaixo=vf<lim;
-  const novaNeg = {id:Date.now(),nome,turno:t.turno,seg:t.seg,ano,desconto:descAtual,val_final:vf,limite:lim,status:abaixo?'aprovacao':'aberta',hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')};
-  await supa.salvarNegociacao(novaNeg);
-  negociacoes.unshift({...novaNeg,valFinal:vf});
+  const neg={id:Date.now(),nome,turno:t.turno,seg:t.seg,ano,desconto:descAtual,val_final:vf,limite:lim,status:abaixo?'aprovacao':'aberta',hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')};
+  await supa.salvarNegociacao(neg);
+  negociacoes.unshift({...neg,valFinal:vf});
   renderNegociacoes();
   document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';
   mudarTab('neg');
 }
 
-async function fechar(id,status){const n=negociacoes.find(x=>x.id===id);if(n){n.status=status;await supa.updateNegociacao(id,{status});renderNegociacoes();}document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';}
+async function fecharNeg(id,status){
+  const n=negociacoes.find(x=>x.id===id);
+  if(n){n.status=status;await supa.updateNegociacao(id,{status});renderNegociacoes();}
+  document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';
+}
 
 function renderNegociacoes(){
   document.getElementById('badge-neg').textContent=negociacoes.filter(n=>n.status==='aberta'||n.status==='aprovacao').length||'';
   document.getElementById('neg-lista').innerHTML=negociacoes.length?negociacoes.map(n=>`
     <div class="neg-item">
       <div class="neg-top"><span class="neg-nome">${n.nome}</span><span class="neg-st ${{aberta:'st-ab',fechada:'st-fc',perdida:'st-pd',aprovacao:'st-ap'}[n.status]||'st-ab'}">${{aberta:'Em aberto',fechada:'Fechada ✓',perdida:'Perdida',aprovacao:'Aguarda aprovação'}[n.status]||n.status}</span></div>
-      <div class="neg-info"><span>${n.turno} · ${n.seg} · ${n.ano}</span><span>${n.data} ${n.hora}</span></div>
-      <div class="neg-val">${fmt(n.valFinal)}/mês · ${n.desconto}% off${n.status==='aprovacao'?' · ⚠️ Abaixo do limite':''}</div>
-      ${n.status==='aberta'||n.status==='aprovacao'?`<div class="neg-actions"><button class="nb s" onclick="fechar(${n.id},'fechada')">✓ Fechou!</button><button class="nb d" onclick="fechar(${n.id},'perdida')">✗ Perdeu</button></div>`:''}
+      <div class="neg-info"><span>${n.turno} · ${n.seg} · ${n.ano}</span><span>${n.data} ${n.hora}</span><span style="color:#888">por ${n.cdr||usuario}</span></div>
+      <div style="font-size:13px;font-weight:700;color:#22c55e;margin-top:5px">${fmt(n.valFinal)}/mês · ${n.desconto}% off${n.status==='aprovacao'?' · ⚠️ Abaixo do limite':''}</div>
+      ${n.status==='aberta'||n.status==='aprovacao'?`<div style="display:flex;gap:6px;margin-top:8px"><button class="nb s" onclick="fecharNeg(${n.id},'fechada')">✓ Fechou!</button><button class="nb d" onclick="fecharNeg(${n.id},'perdida')">✗ Perdeu</button></div>`:''}
     </div>`).join(''):'<div class="empty">Nenhuma negociação registrada ainda</div>';
 }
 
-function renderTabela(){
+function renderTabela2(){
   let lastT='';
   document.getElementById('tab-body').innerHTML=TABELA.map(t=>{
     const lim=t.promo*(1-t.descMax/100);
@@ -284,22 +529,11 @@ function renderTabela(){
   }).join('');
 }
 
-function renderPropostas(){
-  if(!propostas.length){document.getElementById('prop-body').innerHTML='<tr><td colspan="5" style="text-align:center;color:#555;padding:20px">Importe o arquivo de Propostas no Painel do Gerente</td></tr>';return;}
-  document.getElementById('prop-body').innerHTML=propostas.map(p=>{
-    const v=parseFloat(p['Mensalidade à Vista (%)'])||parseFloat(p['Matrícula à Vista (%)'])||0;
-    const d=parseFloat(p['Percentual de Desconto da Mensalidade (%)'])||parseFloat(p['Percentual de Desconto da Matrícula (%)'])||0;
-    return`<tr><td style="font-weight:500">${p['Aluno']}</td><td>${p['Série']||'—'}</td><td style="font-size:11px">${(p['Unidade']||'').replace(/.*\(/,'(')}</td><td style="color:#22c55e;font-weight:600">${v?fmt(v):'—'}${d?` <span style="font-size:10px;color:#ef4444">${d}% off</span>`:''}</td><td><span style="font-size:10px;background:#0f2a1a;color:#4ade80;padding:2px 7px;border-radius:20px">${p['Status']}</span></td></tr>`;
-  }).join('');
-}
-
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['sim','tab','neg','prop'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['clientes','sim','tab','neg'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }
-
-init();
 </script>
 </body>
 </html>
