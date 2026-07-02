@@ -21,16 +21,17 @@ const adapt = {
     '_id': l.id
   }),
   atividade: a => ({
-    'Contato': a.contato||'',
+    'Contato': a.contato||'',          // nome da pessoa
     'Atividade': a.atividade||'',
-    'Status': a.status||'',
-    'Etapa': a.etapa||'',
+    'Status': a.status||'',            // Atrasada / Planejada / Ganho
+    'Etapa': a.etapa||'',              // Entrevista Agendada / Proposta / Matrícula
     'Nome - Processo seletivo': a.processo||'',
-    'Unidade': a.unidade||'',
+    'Unidade': a.unidade||'',          // unidade real (PROPÓSITO LESTE etc)
     'Nome - Oferta de curso': a.oferta||'',
-    'Data de vencimento': a.data_vencimento||'',
-    'Responsável': a.responsavel||'',
-    'Resumo da Atividade': a.resumo||'',
+    'Data de vencimento': a.data_vencimento||'', // data e hora da entrevista
+    'Responsável': a.responsavel||'',  // entrevistador
+    'Segmento': a.segmento||'',        // segmento pretendido
+    'Telefone': a.telefone||'',        // telefone do contato
     '_id': a.id
   }),
   proposta: p => ({
@@ -63,17 +64,21 @@ const csv2supa = {
     codigo_inscricao: l['Código de Inscrição']||l['Código da Inscrição']||''
   }),
   atividade: a => ({
-    // Mapeamento real das colunas do Rubeus (CSV com colunas deslocadas)
-    contato: a['Telefones secundários']||a['Contato']||'',
-    atividade: a['Atividade']||'',
-    status: a['Contato_Relacionado_aluno']||a['Status']||'',
-    etapa: a['Forma de contato']||a['Etapa']||'',
-    processo: a['Objeção']||a['Nome - Processo seletivo']||'',
-    unidade: a['Status do registro']||a['Unidade']||'',
-    oferta: a['Nome - Oferta de curso']||a['E-mail']||'',
-    data_vencimento: a['Status']||a['Data de vencimento']||'',
-    responsavel: a['Responsável']||'',
-    resumo: a['Resumo da Atividade']||''
+    // Mapeamento REAL das colunas do Rubeus — confirmado pelo CSV de 02/07/27
+    contato: a['Telefones secundários']||'',       // col P [15]: nome da pessoa
+    atividade: a['Atividade']||'',                 // col B [1]: tipo de atividade
+    status: a['Contato_Relacionado_aluno']||'',    // col AD [29]: Atrasada/Planejada/Ganho
+    etapa: a['Forma de contato']||'',              // col X [23]: etapa no funil
+    processo: a['Objeção']||'',                    // col W [22]: processo seletivo
+    unidade: (a['Status do registro']||'')         // col S [18]: unidade real
+             .replace('UNIDADE ','').replace('PROPÓSITO ','').trim(),
+    oferta: (a['Resumo da Atividade']||'')         // col D [3]: "Segmento: X"
+            .replace('Segmento: ','').trim(),
+    data_vencimento: a['Status']||'',              // col AB [27]: data e hora da entrevista
+    responsavel: a['Responsável']||'',             // col N [13]: entrevistador
+    segmento: (a['Resumo da Atividade']||'')       // col D [3]: segmento
+              .replace('Segmento: ','').trim(),
+    telefone: a['Telefone da pessoa']||''          // col O [14]: telefone
   }),
   proposta: p => ({
     aluno: p['Aluno']||'',
@@ -133,6 +138,15 @@ const supa = {
     const rows = atvCSV.map(csv2supa.atividade);
     for(let i=0; i<rows.length; i+=100) await this.insert('atividades', rows.slice(i,i+100));
   },
+  // Mapeia código do processo para nome amigável configurado
+  mapearProcesso(processo, mapa) {
+    if(!mapa||!processo) return processo;
+    for(const [codigo, nome] of Object.entries(mapa)) {
+      if(processo.includes(codigo)||codigo.includes(processo)) return nome;
+    }
+    return processo;
+  },
+
   async getAtividades() {
     const rows = await this.get('atividades', '?order=data_vencimento&limit=1000');
     return rows.map(adapt.atividade);

@@ -397,9 +397,20 @@ function getProcessoSel(){ return document.getElementById('sel-processo')?.value
 function popularProcessos(){
   const sel = document.getElementById('sel-processo');
   if(!sel) return;
-  const processos = [...new Set(leads.map(l=>l['Processo seletivo']).filter(p=>p&&p!='- - -'&&p!=''))].sort();
+  // Pega processos dos leads E das atividades
+  const deLeads = leads.map(l=>l['Processo seletivo']);
+  const deAtiv = atividades.map(a=>a['Nome - Processo seletivo']);
+  const processos = [...new Set([...deLeads,...deAtiv].filter(p=>p&&p!='- - -'&&p!=''))].sort();
   const atual = sel.value;
-  const fmt = p => p.replace('TS ','').replace('(PROPOSITO ','(').replace('(CENTRO/SUL ','(C.Sul ').replace('PROPÓSITO ','');
+  const fmt = p => p
+    .replace('TS ','')
+    .replace('2027/','')
+    .replace('2026/','')
+    .replace('(PROPOSITO ','(')
+    .replace('(CENTRO/SUL ','(C.Sul ')
+    .replace('PROPÓSITO ','')
+    .replace('JOCKEY','Jockey')
+    .replace('LESTE','Leste');
   sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${fmt(p)}</option>`).join('');
 }
 
@@ -527,31 +538,45 @@ function renderFunil(){
 
 function renderEntrevistas(){
   const proc=getProcessoSel();
-  let todas=[...atividades.filter(a=>a['Status']==='Atrasada'),...atividades.filter(a=>a['Status']==='Planejada'),...atividades.filter(a=>a['Status']==='Concluída')];
-  if(proc){todas=todas.filter(a=>(a['Nome - Processo seletivo']||'').includes(proc)||(a['Nome - Processo seletivo']===proc));}
+  // Status reais do CSV: Atrasada, Planejada — Ganho = matriculado
+  let todas=[...atividades.filter(a=>a['Status']==='Atrasada'),...atividades.filter(a=>a['Status']==='Planejada'),...atividades.filter(a=>a['Status']==='Ganho')];
+  // Filtro por processo
+  if(proc) todas=todas.filter(a=>(a['Nome - Processo seletivo']||'').includes(proc.substring(0,20)));
+  // Ordena por data/hora (campo Data de vencimento = hora real da entrevista)
+  todas.sort((a,b)=>{
+    const da=a['Data de vencimento']||''; const db=b['Data de vencimento']||'';
+    if(!da)return 1; if(!db)return -1;
+    return da.localeCompare(db);
+  });
   if(!atividades.length){
     document.getElementById('ent-body').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
     document.getElementById('entrevistas-full').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
     return;
   }
-  const cor = s=>s==='Atrasada'?'background:#2a1515;color:#ef4444':s==='Concluída'?'background:#0f2a1a;color:#22c55e':'background:#1a1f35;color:#F5C842';
-  document.getElementById('ent-body').innerHTML=todas.length?todas.slice(0,6).map(a=>`
-    <div class="ent-item">
-      <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${cor(a['Status'])}">${a['Status']}</span>
-      <span class="ent-nome">${a['Contato']}</span>
-      <span class="ent-info">${a['Atividade']||''}</span>
-      <span class="ent-info">${a['Data de vencimento']||'—'}</span>
-    </div>`).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
-  document.getElementById('entrevistas-full').innerHTML=todas.length?todas.map(a=>`
-    <div class="ent-item" style="padding:10px 0;border-bottom:1px solid #2a2d3a">
-      <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;${cor(a['Status'])}">${a['Status']}</span>
+  const cor=s=>s==='Atrasada'?'background:#2a1515;color:#ef4444':s==='Ganho'?'background:#0f2a1a;color:#22c55e':'background:#1a1f35;color:#F5C842';
+  const rowHtml=a=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;${cor(a['Status'])}">${a['Status']}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:#ddd">${a['Contato']}</div>
-        <div style="font-size:11px;color:#555;margin-top:2px">${a['Atividade']||''} · ${a['Nome - Oferta de curso']||''} · ${a['Unidade']||''} · <span style="color:#888">Resp: ${a['Responsável']||'—'}</span></div>
-        <div style="font-size:11px;color:#F5C842;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
+        <div style="font-size:13px;font-weight:500;color:#ddd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a['Contato']}</div>
+        <div style="font-size:11px;color:#555;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="color:#aaa">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
+          <span>${a['Unidade']||''}</span>
+          <span style="color:#888">👤 ${a['Responsável']||'—'}</span>
+          ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#60a5fa">📞 ${a['Telefone']}</span>`:''}
+        </div>
+        <div style="font-size:10px;color:#666;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
       </div>
-      <span style="font-size:11px;color:#666;white-space:nowrap;flex-shrink:0">${a['Data de vencimento']||'—'}</span>
-    </div>`).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:12px;font-weight:600;color:#F5C842">${(a['Data de vencimento']||'—').split(' ')[1]||'—'}</div>
+        <div style="font-size:10px;color:#555">${(a['Data de vencimento']||'').split(' ')[0]||''}</div>
+      </div>
+    </div>`;
+  document.getElementById('ent-body').innerHTML=todas.length?
+    todas.slice(0,5).map(rowHtml).join('')+
+    (todas.length>5?`<div style="font-size:11px;color:#555;text-align:center;padding:8px">+ ${todas.length-5} entrevistas na aba Entrevistas</div>`:'')
+    :'<div class="empty">Nenhuma entrevista encontrada</div>';
+  document.getElementById('entrevistas-full').innerHTML=todas.length?todas.map(rowHtml).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
 }
 
 async function marcarTarefa(selId,taId){

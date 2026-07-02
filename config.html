@@ -88,7 +88,8 @@
 
   <div class="tabs">
     <button class="tab active" onclick="mudarTab('cal')">📅 Calendário</button>
-    <button class="tab" onclick="mudarTab('promo')">🏷️ Tabela promo</button>
+    <button class="tab" onclick="mudarTab('mapa')">🏷️ Nomes dos seletivos</button>
+    <button class="tab" onclick="mudarTab('promo')">💵 Tabela promo</button>
     <button class="tab" onclick="mudarTab('mens')">💰 Mensalidades</button>
     <button class="tab" onclick="mudarTab('mat')">📚 Material</button>
     <button class="tab" onclick="mudarTab('feriados')">🗓 Feriados</button>
@@ -104,6 +105,31 @@
       </div>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <!-- MAPA DE SELETIVOS -->
+  <div class="panel" id="panel-mapa">
+    <div style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">
+      Configure nomes amigáveis para cada seletivo. O sistema usa esses nomes nos filtros e nos painéis.<br>
+      <strong style="color:#aaa">Código do Rubeus</strong> = exatamente como aparece no CSV (ex: <code style="color:#F5C842;background:#12141e;padding:1px 5px;border-radius:4px">TS 2027/01 (PROPOSITO LESTE)</code>)
+    </div>
+    <div class="section-label">
+      <span>Mapeamento de processos seletivos</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-mapa">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarMapa()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:2fr 1.5fr 22px;padding:7px 14px">
+        <span>Código do Rubeus (exato)</span><span>Nome amigável no sistema</span><span></span>
+      </div>
+      <div id="mapa-lista"></div>
+      <button class="add-row-btn" onclick="addMapa()">+ Novo mapeamento</button>
+    </div>
+    <div style="background:#1a1f35;border:1px solid #2a2d3a;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#888;line-height:1.6">
+      <strong style="color:#F5C842">Como funciona:</strong> Quando o sistema lê "TS 2027/01 (PROPOSITO LESTE)" no CSV, exibe "1º Teste — Leste" nos filtros e nos painéis. Facilita identificar rapidamente qual seletivo é qual.
+    </div>
   </div>
 
   <!-- TABELA PROMO -->
@@ -195,6 +221,16 @@
 if(sessionStorage.getItem('acesso_config')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
 let cfg = {
+  mapa_processos: [
+    {codigo:'TS 2027/01 (PROPOSITO LESTE)', nome:'1º Teste — Leste'},
+    {codigo:'TS 2027/01 (CENTRO/SUL I)', nome:'1º Teste — Centro I'},
+    {codigo:'TS 2027/01 (CENTRO/SUL II)', nome:'1º Teste — Centro II'},
+    {codigo:'TS 2027/01 (PROPOSITO JOCKEY)', nome:'1º Teste — Jockey'},
+    {codigo:'TS 2027/02 (PROPOSITO LESTE)', nome:'2º Teste — Leste'},
+    {codigo:'TS 2027/02 (CENTRO/SUL I)', nome:'2º Teste — Centro I'},
+    {codigo:'TS 2027/02 (CENTRO/SUL II)', nome:'2º Teste — Centro II'},
+    {codigo:'TS 2027/02 (PROPOSITO JOCKEY)', nome:'2º Teste — Jockey'},
+  ],
   seletivos:[
     {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
     {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
@@ -263,7 +299,23 @@ async function init(){
   renderTudo();
 }
 
-function renderTudo(){renderCal();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
+function renderTudo(){renderCal();renderMapa();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
+
+function renderMapa(){
+  if(!cfg.mapa_processos)cfg.mapa_processos=[];
+  document.getElementById('mapa-lista').innerHTML=cfg.mapa_processos.map((m,i)=>`
+    <div class="item-simples">
+      <input style="flex:2" value="${m.codigo||''}" placeholder="Código exato do Rubeus" onchange="cfg.mapa_processos[${i}].codigo=this.value">
+      <input style="flex:1.5" value="${m.nome||''}" placeholder="Nome amigável" onchange="cfg.mapa_processos[${i}].nome=this.value">
+      <button class="del-btn" onclick="cfg.mapa_processos.splice(${i},1);renderMapa()">×</button>
+    </div>`).join('');
+}
+function addMapa(){cfg.mapa_processos.push({codigo:'',nome:''});renderMapa();}
+async function salvarMapa(){
+  await supa.salvarConfig('cfg_principal',cfg);
+  await supa.salvarConfig('mapa_processos',cfg.mapa_processos);
+  mostrarSalvo('mapa');
+}
 
 function renderCal(){
   document.getElementById('cal-grid').innerHTML=cfg.seletivos.map((s,i)=>`
@@ -351,7 +403,7 @@ function mostrarSalvo(tipo){
 }
 
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','promo','mens','mat','feriados'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','promo','mens','mat','feriados'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }
