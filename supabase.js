@@ -30,6 +30,7 @@ const adapt = {
     'Nome - Oferta de curso': a.oferta||'',
     'Data de vencimento': a.data_vencimento||'',
     'Responsável': a.responsavel||'',
+    'Resumo da Atividade': a.resumo||'',
     '_id': a.id
   }),
   proposta: p => ({
@@ -62,15 +63,17 @@ const csv2supa = {
     codigo_inscricao: l['Código de Inscrição']||l['Código da Inscrição']||''
   }),
   atividade: a => ({
-    contato: a['Contato']||'',
+    // Mapeamento real das colunas do Rubeus (CSV com colunas deslocadas)
+    contato: a['Telefones secundários']||a['Contato']||'',
     atividade: a['Atividade']||'',
-    status: a['Status']||'',
-    etapa: a['Etapa']||'',
-    processo: a['Nome - Processo seletivo']||'',
-    unidade: (a['Unidade']||'').replace('UNIDADE ','').replace('PROPÓSITO ','').trim(),
-    oferta: a['Nome - Oferta de curso']||'',
-    data_vencimento: a['Data de vencimento']||'',
-    responsavel: a['Responsável']||''
+    status: a['Contato_Relacionado_aluno']||a['Status']||'',
+    etapa: a['Forma de contato']||a['Etapa']||'',
+    processo: a['Objeção']||a['Nome - Processo seletivo']||'',
+    unidade: a['Status do registro']||a['Unidade']||'',
+    oferta: a['Nome - Oferta de curso']||a['E-mail']||'',
+    data_vencimento: a['Status']||a['Data de vencimento']||'',
+    responsavel: a['Responsável']||'',
+    resumo: a['Resumo da Atividade']||''
   }),
   proposta: p => ({
     aluno: p['Aluno']||'',
