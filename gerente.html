@@ -170,12 +170,12 @@
   </div>
 
   <!-- SELETOR DE SELETIVO -->
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
-    <label style="font-size:12px;color:#888;flex-shrink:0">Visualizando:</label>
-    <select id="sel-processo" onchange="renderTudo()" style="font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit;flex:1;max-width:340px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;background:#1a1f35;border:1px solid #2a2d3a;border-radius:10px;padding:10px 14px">
+    <span style="font-size:13px;color:#888;flex-shrink:0">📊 Visualizando:</span>
+    <select id="sel-processo" onchange="renderTudo()" style="font-size:13px;font-weight:500;padding:7px 12px;border-radius:8px;border:1px solid #F5C842;background:#12141e;color:#fff;font-family:inherit;flex:1;max-width:360px">
       <option value="">Todos os seletivos</option>
     </select>
-    <span id="sel-count" style="font-size:11px;color:#555"></span>
+    <span id="sel-count" style="font-size:12px;color:#F5C842;font-weight:500"></span>
   </div>
 
   <!-- KPIs -->
@@ -397,15 +397,16 @@ function getProcessoSel(){ return document.getElementById('sel-processo')?.value
 function popularProcessos(){
   const sel = document.getElementById('sel-processo');
   if(!sel) return;
-  const processos = [...new Set(leads.map(l=>l['Processo seletivo']).filter(p=>p&&p!='- - -'))].sort();
+  const processos = [...new Set(leads.map(l=>l['Processo seletivo']).filter(p=>p&&p!='- - -'&&p!=''))].sort();
   const atual = sel.value;
-  sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${p.replace('TS ','').replace('(PROPOSITO ','(').replace('(CENTRO/SUL ','(C.Sul ')}</option>`).join('');
+  const fmt = p => p.replace('TS ','').replace('(PROPOSITO ','(').replace('(CENTRO/SUL ','(C.Sul ').replace('PROPÓSITO ','');
+  sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${fmt(p)}</option>`).join('');
 }
 
 function getLeadsFiltrados(){
   const proc = getProcessoSel();
   let lista = leads.filter(l=>l['Status']!=='Perdido');
-  if(proc) lista = lista.filter(l=>l['Processo seletivo']===proc);
+  if(proc) lista = lista.filter(l=>(l['Processo seletivo']||'')===proc||(l['Processo seletivo']||'').includes(proc.substring(0,15)));
   return lista;
 }
 
@@ -527,7 +528,7 @@ function renderFunil(){
 function renderEntrevistas(){
   const proc=getProcessoSel();
   let todas=[...atividades.filter(a=>a['Status']==='Atrasada'),...atividades.filter(a=>a['Status']==='Planejada'),...atividades.filter(a=>a['Status']==='Concluída')];
-  if(proc) todas=todas.filter(a=>a['Nome - Processo seletivo']===proc);
+  if(proc){todas=todas.filter(a=>(a['Nome - Processo seletivo']||'').includes(proc)||(a['Nome - Processo seletivo']===proc));}
   if(!atividades.length){
     document.getElementById('ent-body').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
     document.getElementById('entrevistas-full').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
