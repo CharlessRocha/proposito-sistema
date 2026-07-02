@@ -299,7 +299,16 @@ const FASES_DEF=[
 const ETAPA_ORDER=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'];
 const ETAPA_COR={'Inscrito':'#3b82f6','Confirmado no Teste':'#f59e0b','Não Compareceu no Teste':'#ef4444','Compareceu no Teste':'#22c55e','Entrevista Agendada':'#a78bfa','Proposta':'#38bdf8','Negociação':'#fb923c','Matrícula':'#22c55e'};
 
-let leads=[], propostas=[], atividades=[], tarefas={}, seletivos=[];
+let leads=[], propostas=[], atividades=[], tarefas={}, seletivos=[], mapaProcessos=[];
+
+// Converte código do Rubeus em nome amigável configurado
+function nomeAmigavel(processo){
+  if(!processo) return processo;
+  const m = mapaProcessos.find(m=>m.codigo&&processo.trim()===m.codigo.trim());
+  if(m&&m.nome) return m.nome;
+  // fallback: limpa o código
+  return processo.replace('TS ','').replace('(PROPOSITO ','(').replace('(CENTRO/SUL ','(C.Sul ');
+}
 
 function parseData(str){
   if(!str||str==='—')return null;
@@ -339,9 +348,11 @@ async function init(){
   if(propostas.length) marcarOk('prop',propostas.length);
   atividades = await supa.getAtividades();
   if(atividades.length) marcarOk('atv',atividades.length);
-  // Seletivos do localStorage
-  try{const c=JSON.parse(localStorage.getItem('cfg_seletivos')||'null');if(c)seletivos=c;}catch(e){}
-  if(!seletivos.length)seletivos=SELETIVOS_DEFAULT;
+  // Seletivos e mapa de nomes do Supabase
+  const cfgSel = await supa.getConfig('seletivos');
+  if(cfgSel) seletivos = cfgSel;
+  if(!seletivos.length) seletivos = SELETIVOS_DEFAULT;
+  mapaProcessos = await supa.getConfig('mapa_processos') || [];
   renderTudo();
 }
 
@@ -402,22 +413,13 @@ function popularProcessos(){
   const deAtiv = atividades.map(a=>a['Nome - Processo seletivo']);
   const processos = [...new Set([...deLeads,...deAtiv].filter(p=>p&&p!='- - -'&&p!=''))].sort();
   const atual = sel.value;
-  const fmt = p => p
-    .replace('TS ','')
-    .replace('2027/','')
-    .replace('2026/','')
-    .replace('(PROPOSITO ','(')
-    .replace('(CENTRO/SUL ','(C.Sul ')
-    .replace('PROPÓSITO ','')
-    .replace('JOCKEY','Jockey')
-    .replace('LESTE','Leste');
-  sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${fmt(p)}</option>`).join('');
+  sel.innerHTML = '<option value="">Todos os seletivos</option>' + processos.map(p=>`<option value="${p}" ${p===atual?'selected':''}>${nomeAmigavel(p)}</option>`).join('');
 }
 
 function getLeadsFiltrados(){
   const proc = getProcessoSel();
   let lista = leads.filter(l=>l['Status']!=='Perdido');
-  if(proc) lista = lista.filter(l=>(l['Processo seletivo']||'')===proc||(l['Processo seletivo']||'').includes(proc.substring(0,15)));
+  if(proc) lista = lista.filter(l=>(l['Processo seletivo']||'').trim()===proc.trim());
   return lista;
 }
 
@@ -541,7 +543,7 @@ function renderEntrevistas(){
   // Status reais do CSV: Atrasada, Planejada — Ganho = matriculado
   let todas=[...atividades.filter(a=>a['Status']==='Atrasada'),...atividades.filter(a=>a['Status']==='Planejada'),...atividades.filter(a=>a['Status']==='Ganho')];
   // Filtro por processo
-  if(proc) todas=todas.filter(a=>(a['Nome - Processo seletivo']||'').includes(proc.substring(0,20)));
+  if(proc) todas=todas.filter(a=>(a['Nome - Processo seletivo']||'').trim()===proc.trim());
   // Ordena por data/hora (campo Data de vencimento = hora real da entrevista)
   todas.sort((a,b)=>{
     const da=a['Data de vencimento']||''; const db=b['Data de vencimento']||'';
