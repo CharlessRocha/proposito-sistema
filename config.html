@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurações — Propósito</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
+  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  .main{max-width:800px;margin:0 auto;padding:1.25rem 1rem 4rem}
+  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a;flex-wrap:wrap}
+  .tab{flex:1;min-width:80px;padding:7px 8px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
+  .tab.active{background:#252840;color:#fff;border:1px solid #2a2d3a}
+  .panel{display:none}.panel.active{display:block}
+  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#555;margin-bottom:8px;margin-top:16px;display:flex;align-items:center;justify-content:space-between}
+  .section-label:first-child{margin-top:0}
+  .card{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:10px}
+  .card-head{padding:10px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-size:13px;font-weight:600;color:#ddd}
+  .save-btn{padding:8px 16px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+  .save-btn:hover{background:#e8b820}
+  .saved-msg{font-size:11px;color:#22c55e;display:none}
+
+  /* CALENDÁRIO */
+  .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;padding:14px}
+  .sel-card{background:#12141e;border-radius:8px;padding:10px 12px;border:1px solid #2a2d3a}
+  .sel-num{font-size:10px;font-weight:700;color:#F5C842;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+  .sel-input{width:100%;font-size:13px;font-weight:500;border:none;background:transparent;color:#fff;padding:0;margin-bottom:3px;font-family:inherit}
+  .sel-input:focus{outline:none;border-bottom:1px solid #F5C842}
+  .sel-obs{width:100%;font-size:11px;border:none;background:transparent;color:#555;padding:0;font-family:inherit}
+  .sel-obs:focus{outline:none;border-bottom:1px solid #555}
+  .add-sel-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:8px;border:1.5px dashed #2a2d3a;background:transparent;color:#555;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .add-sel-btn:hover{border-color:#F5C842;color:#F5C842}
+
+  /* TABELA PREÇOS */
+  .tbl-wrap{overflow:hidden}
+  .tbl-col-header{display:grid;padding:7px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px;gap:6px}
+  .data-row{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid #2a2d3a;gap:6px;background:#1a1d27}
+  .data-row:last-child{border-bottom:none}
+  .data-row:hover{background:#1f2235}
+  .data-row input,.data-row select{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#ddd;width:100%;font-family:inherit}
+  .data-row input:hover,.data-row select:hover{border-color:#2a2d3a;background:#12141e}
+  .data-row input:focus,.data-row select:focus{border-color:#F5C842;outline:none;background:#12141e}
+  .del-btn{width:22px;height:22px;border-radius:5px;border:1px solid #2a2d3a;background:transparent;color:#555;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .del-btn:hover{background:#2a1515;color:#f87171;border-color:#ef4444}
+  .add-row-btn{padding:7px 14px;border:none;background:transparent;color:#555;font-size:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit;border-top:1px solid #2a2d3a}
+  .add-row-btn:hover{color:#F5C842;background:#1f2235}
+
+  /* FERIADOS / PONTOS */
+  .lista-simples{padding:0}
+  .item-simples{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid #2a2d3a}
+  .item-simples:last-child{border-bottom:none}
+  .item-simples input{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#ddd;font-family:inherit}
+  .item-simples input:hover{border-color:#2a2d3a;background:#12141e}
+  .item-simples input:focus{border-color:#F5C842;outline:none;background:#12141e}
+
+  .loading{text-align:center;padding:24px;color:#555;font-size:13px}
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+</style>
+</head>
+<body>
+<div id="auth-check">
+  <div style="font-size:32px">🔒</div>
+  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
+  <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
+</div>
+<nav class="nav">
+  <div class="nav-logo">🎯 Propósito</div>
+  <span class="nav-modulo">⚙️ Configurações</span>
+  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+</nav>
+<div class="main">
+  <div style="margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div>
+      <div style="font-size:20px;font-weight:700;color:#fff">Central de configurações</div>
+      <div style="font-size:12px;color:#666;margin-top:2px">Fonte de verdade — alimenta todos os módulos</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="saved-msg" id="saved-global">✓ Salvo!</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="mudarTab('cal')">📅 Calendário</button>
+    <button class="tab" onclick="mudarTab('promo')">🏷️ Tabela promo</button>
+    <button class="tab" onclick="mudarTab('mens')">💰 Mensalidades</button>
+    <button class="tab" onclick="mudarTab('mat')">📚 Material</button>
+    <button class="tab" onclick="mudarTab('feriados')">🗓 Feriados</button>
+  </div>
+
+  <!-- CALENDÁRIO -->
+  <div class="panel active" id="panel-cal">
+    <div class="section-label">
+      <span>Seletivos — clique em qualquer campo para editar</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-cal">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarCal()">Salvar calendário</button>
+      </div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <!-- TABELA PROMO -->
+  <div class="panel" id="panel-promo">
+    <div class="section-label">
+      <span>Tabela promocional — junho/26</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-promo">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarTabela('promo')">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:0.8fr 1fr 1fr 0.7fr 1fr 0.7fr 1fr 22px">
+        <span>Turno</span><span>Habilitação</span><span>Tabela promo</span><span>Desc 2027</span><span>Valor 2027</span><span>Desc 2026</span><span>Valor 2026</span><span></span>
+      </div>
+      <div id="promo-lista"></div>
+      <button class="add-row-btn" onclick="addRow('promo')">+ Nova linha</button>
+    </div>
+  </div>
+
+  <!-- MENSALIDADES -->
+  <div class="panel" id="panel-mens">
+    <div class="section-label">
+      <span>Mensalidades 2027</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-mens">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarTabela('mens')">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:1fr 2fr 0.6fr 1fr 22px">
+        <span>Segmento</span><span>Nome do curso</span><span>Parcelas</span><span>Valor 2027</span><span></span>
+      </div>
+      <div id="mens-lista"></div>
+      <button class="add-row-btn" onclick="addRow('mens')">+ Nova linha</button>
+    </div>
+  </div>
+
+  <!-- MATERIAL -->
+  <div class="panel" id="panel-mat">
+    <div class="section-label">
+      <span>Material didático 2027</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-mat">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarTabela('mat')">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:1fr 2fr 1fr 22px">
+        <span>Segmento</span><span>Material</span><span>Valor 2027</span><span></span>
+      </div>
+      <div id="mat-lista"></div>
+      <button class="add-row-btn" onclick="addRow('mat')">+ Nova linha</button>
+    </div>
+  </div>
+
+  <!-- FERIADOS -->
+  <div class="panel" id="panel-feriados">
+    <div class="section-label">
+      <span>Feriados e pontos críticos</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-fer">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarFeriados()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:1fr 2fr 22px;padding:7px 14px">
+        <span>Data</span><span>Descrição</span><span></span>
+      </div>
+      <div id="fer-lista"></div>
+      <button class="add-row-btn" onclick="addFeriado()">+ Novo feriado</button>
+    </div>
+    <div class="section-label" style="margin-top:16px">
+      <span>Pontos de atenção por período</span>
+      <button class="save-btn" onclick="salvarFeriados()">Salvar</button>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:1fr 2fr 22px;padding:7px 14px">
+        <span>Período</span><span>Observação</span><span></span>
+      </div>
+      <div id="pontos-lista"></div>
+      <button class="add-row-btn" onclick="addPonto()">+ Novo ponto</button>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+if(sessionStorage.getItem('acesso_config')!=='1'){document.getElementById('auth-check').style.display='flex';}
+
+let cfg = {
+  seletivos:[
+    {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
+    {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
+    {n:7,data:'11/out/2026',obs:'⚠ Feriado prolongado'},{n:8,data:'01/nov/2026',obs:''},{n:9,data:'15/nov/2026',obs:''},
+    {n:10,data:'29/nov/2026',obs:''},{n:11,data:'13/dez/2026',obs:''},{n:12,data:'10/jan/2027',obs:'Alta urgência'},
+    {n:13,data:'24/jan/2027',obs:'Alta urgência'},{n:14,data:'—',obs:'A definir'},{n:15,data:'—',obs:'A definir'},
+  ],
+  promo:[
+    {turno:'Integral',hab:'Infantil',promo:'R$ 3.179,00',d27:'15%',v27:'R$ 2.702,15',d26:'20%',v26:'R$ 2.543,20'},
+    {turno:'Integral',hab:'Fundamental 1',promo:'R$ 3.179,00',d27:'15%',v27:'R$ 2.702,15',d26:'20%',v26:'R$ 2.543,20'},
+    {turno:'Integral',hab:'Fundamental 2',promo:'R$ 3.179,00',d27:'15%',v27:'R$ 2.702,15',d26:'20%',v26:'R$ 2.543,20'},
+    {turno:'Integral',hab:'Médio',promo:'R$ 3.179,00',d27:'15%',v27:'R$ 2.702,15',d26:'20%',v26:'R$ 2.543,20'},
+    {turno:'Manhã',hab:'Infantil',promo:'R$ 2.079,00',d27:'25%',v27:'R$ 1.559,25',d26:'30%',v26:'R$ 1.455,30'},
+    {turno:'Manhã',hab:'Fundamental 1',promo:'R$ 1.969,00',d27:'25%',v27:'R$ 1.476,75',d26:'30%',v26:'R$ 1.378,30'},
+    {turno:'Manhã',hab:'Fundamental 2',promo:'R$ 1.969,00',d27:'25%',v27:'R$ 1.476,75',d26:'30%',v26:'R$ 1.378,30'},
+    {turno:'Manhã',hab:'Médio',promo:'R$ 2.079,00',d27:'25%',v27:'R$ 1.559,25',d26:'30%',v26:'R$ 1.455,30'},
+    {turno:'Tarde',hab:'Infantil',promo:'R$ 1.969,00',d27:'35%',v27:'R$ 1.279,85',d26:'40%',v26:'R$ 1.181,40'},
+    {turno:'Tarde',hab:'Fundamental 1',promo:'R$ 1.749,00',d27:'35%',v27:'R$ 1.136,85',d26:'40%',v26:'R$ 1.049,40'},
+    {turno:'Tarde',hab:'Fundamental 2',promo:'R$ 1.749,00',d27:'35%',v27:'R$ 1.136,85',d26:'40%',v26:'R$ 1.049,40'},
+    {turno:'Tarde',hab:'Médio',promo:'R$ 1.859,00',d27:'35%',v27:'R$ 1.208,35',d26:'40%',v26:'R$ 1.115,40'},
+    {turno:'Especial',hab:'9º a 2º ITA',promo:'R$ 1.859,00',d27:'23%',v27:'R$ 1.431,43',d26:'33%',v26:'R$ 1.245,53'},
+    {turno:'Especial',hab:'3º ITA',promo:'R$ 1.969,00',d27:'23%',v27:'R$ 1.516,13',d26:'33%',v26:'R$ 1.319,23'},
+    {turno:'Especial',hab:'9º a 2º ADV',promo:'R$ 1.859,00',d27:'23%',v27:'R$ 1.431,43',d26:'33%',v26:'R$ 1.245,53'},
+    {turno:'Especial',hab:'3º ADV',promo:'R$ 2.739,00',d27:'23%',v27:'R$ 2.109,03',d26:'33%',v26:'R$ 1.835,13'},
+  ],
+  mens:[
+    {seg:'Ed. Infantil',nome:'Educação Infantil — Integral',parc:'12',val:'R$ 4.926,90'},
+    {seg:'Ed. Infantil',nome:'Educação Infantil — Manhã',parc:'12',val:'R$ 2.632,87'},
+    {seg:'Ed. Infantil',nome:'Educação Infantil — Tarde',parc:'12',val:'R$ 2.104,61'},
+    {seg:'Fundamental',nome:'Ensino Fund. — Integral — Fund 1',parc:'12',val:'R$ 4.543,86'},
+    {seg:'Fundamental',nome:'Ensino Fund. — Manhã — Fund 1',parc:'12',val:'R$ 2.527,64'},
+    {seg:'Fundamental',nome:'Ensino Fund. — Tarde — Fund 1',parc:'12',val:'R$ 1.917,30'},
+    {seg:'Ensino Médio',nome:'Ensino Médio 1ª Série — Manhã',parc:'12',val:'R$ 2.729,68'},
+    {seg:'Ensino Médio',nome:'Ensino Médio 2ª Série — Manhã',parc:'12',val:'R$ 2.729,68'},
+    {seg:'Ensino Médio',nome:'Ensino Médio 3ª Série — Manhã',parc:'12',val:'R$ 2.971,72'},
+  ],
+  mat:[
+    {seg:'Ed. Infantil',mat:'Programa Bilíngue',val:'R$ 2.391,69'},
+    {seg:'Ed. Infantil',mat:'Material Propósito',val:'R$ 1.328,67'},
+    {seg:'Fundamental',mat:'Programa Bilíngue 1º ao 5º Ano',val:'R$ 2.391,69'},
+    {seg:'Fundamental',mat:'Material Didático 1º ao 5º Ano',val:'R$ 1.811,90'},
+    {seg:'Fundamental',mat:'Material Didático 6º ao 9º Ano',val:'R$ 3.476,29'},
+    {seg:'Ensino Médio',mat:'Material Didático 1ª e 2ª Série',val:'R$ 3.962,98'},
+    {seg:'Ensino Médio',mat:'Material Didático 3ª Série',val:'R$ 3.962,98'},
+    {seg:'Taxas',mat:'TRD Regular até 2ª Série',val:'R$ 415,80'},
+  ],
+  feriados:[
+    {data:'09/ago',desc:'Dia dos Pais'},{data:'16/ago',desc:'Aniversário de Teresina'},
+    {data:'07/set',desc:'Independência do Brasil'},{data:'12/out',desc:'Nossa Senhora Aparecida'},
+    {data:'04 e 25/out',desc:'1º e 2º turno eleições'},{data:'02/nov',desc:'Finados'},
+    {data:'15/nov',desc:'Proclamação da República'},{data:'25/dez',desc:'Natal'},
+  ],
+  pontos:[
+    {periodo:'Julho',obs:'Férias escolares reduzem presença'},
+    {periodo:'Ago/Set',obs:'Melhor janela de conversão'},
+    {periodo:'Outubro',obs:'Cansaço acadêmico e feriados'},
+    {periodo:'Novembro',obs:'ENEM impacta Ensino Médio'},
+    {periodo:'Dezembro',obs:'Viagens e festas'},
+    {periodo:'Janeiro',obs:'Alta urgência para fechamento'},
+  ]
+};
+
+async function init(){
+  const cfgDB = await supa.getConfig('cfg_principal');
+  if(cfgDB) cfg = {...cfg,...cfgDB};
+  renderTudo();
+}
+
+function renderTudo(){renderCal();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
+
+function renderCal(){
+  document.getElementById('cal-grid').innerHTML=cfg.seletivos.map((s,i)=>`
+    <div class="sel-card">
+      <div class="sel-num">${s.n}º Teste</div>
+      <input class="sel-input" value="${s.data}" placeholder="Data" onchange="cfg.seletivos[${i}].data=this.value">
+      <input class="sel-obs" value="${s.obs||''}" placeholder="Observação" onchange="cfg.seletivos[${i}].obs=this.value">
+    </div>`).join('')+
+    `<button class="add-sel-btn" onclick="addSeletivo()">+ Novo seletivo</button>`;
+}
+
+function renderTabela(tipo){
+  const cols = {
+    promo: (r,i)=>`<div class="data-row" style="gap:6px;display:grid;grid-template-columns:0.8fr 1fr 1fr 0.7fr 1fr 0.7fr 1fr 22px">
+      <input value="${r.turno||''}" onchange="cfg.${tipo}[${i}].turno=this.value" placeholder="Turno">
+      <input value="${r.hab||''}" onchange="cfg.${tipo}[${i}].hab=this.value" placeholder="Habilitação">
+      <input value="${r.promo||''}" onchange="cfg.${tipo}[${i}].promo=this.value" placeholder="Promo">
+      <input value="${r.d27||''}" onchange="cfg.${tipo}[${i}].d27=this.value" placeholder="Desc 27">
+      <input value="${r.v27||''}" onchange="cfg.${tipo}[${i}].v27=this.value" placeholder="Valor 27">
+      <input value="${r.d26||''}" onchange="cfg.${tipo}[${i}].d26=this.value" placeholder="Desc 26">
+      <input value="${r.v26||''}" onchange="cfg.${tipo}[${i}].v26=this.value" placeholder="Valor 26">
+      <button class="del-btn" onclick="cfg.${tipo}.splice(${i},1);renderTabela('${tipo}')">×</button>
+    </div>`,
+    mens: (r,i)=>`<div class="data-row" style="display:grid;grid-template-columns:1fr 2fr 0.6fr 1fr 22px">
+      <input value="${r.seg||''}" onchange="cfg.${tipo}[${i}].seg=this.value" placeholder="Segmento">
+      <input value="${r.nome||''}" onchange="cfg.${tipo}[${i}].nome=this.value" placeholder="Nome do curso">
+      <input value="${r.parc||'12'}" onchange="cfg.${tipo}[${i}].parc=this.value" placeholder="Parc.">
+      <input value="${r.val||''}" onchange="cfg.${tipo}[${i}].val=this.value" placeholder="Valor">
+      <button class="del-btn" onclick="cfg.${tipo}.splice(${i},1);renderTabela('${tipo}')">×</button>
+    </div>`,
+    mat: (r,i)=>`<div class="data-row" style="display:grid;grid-template-columns:1fr 2fr 1fr 22px">
+      <input value="${r.seg||''}" onchange="cfg.${tipo}[${i}].seg=this.value" placeholder="Segmento">
+      <input value="${r.mat||''}" onchange="cfg.${tipo}[${i}].mat=this.value" placeholder="Material">
+      <input value="${r.val||''}" onchange="cfg.${tipo}[${i}].val=this.value" placeholder="Valor">
+      <button class="del-btn" onclick="cfg.${tipo}.splice(${i},1);renderTabela('${tipo}')">×</button>
+    </div>`,
+  };
+  document.getElementById(`${tipo}-lista`).innerHTML=cfg[tipo].map((r,i)=>cols[tipo](r,i)).join('');
+}
+
+function renderFeriados(){
+  document.getElementById('fer-lista').innerHTML=cfg.feriados.map((f,i)=>`
+    <div class="item-simples">
+      <input style="flex:1" value="${f.data||''}" placeholder="Data" onchange="cfg.feriados[${i}].data=this.value">
+      <input style="flex:2" value="${f.desc||''}" placeholder="Descrição" onchange="cfg.feriados[${i}].desc=this.value">
+      <button class="del-btn" onclick="cfg.feriados.splice(${i},1);renderFeriados()">×</button>
+    </div>`).join('');
+  document.getElementById('pontos-lista').innerHTML=cfg.pontos.map((p,i)=>`
+    <div class="item-simples">
+      <input style="flex:1" value="${p.periodo||''}" placeholder="Período" onchange="cfg.pontos[${i}].periodo=this.value">
+      <input style="flex:2" value="${p.obs||''}" placeholder="Observação" onchange="cfg.pontos[${i}].obs=this.value">
+      <button class="del-btn" onclick="cfg.pontos.splice(${i},1);renderFeriados()">×</button>
+    </div>`).join('');
+}
+
+function addSeletivo(){const n=cfg.seletivos.length+1;cfg.seletivos.push({n,data:'—',obs:'A definir'});renderCal();}
+function addRow(tipo){
+  if(tipo==='promo')cfg.promo.push({turno:'',hab:'',promo:'',d27:'',v27:'',d26:'',v26:''});
+  if(tipo==='mens')cfg.mens.push({seg:'',nome:'',parc:'12',val:''});
+  if(tipo==='mat')cfg.mat.push({seg:'',mat:'',val:''});
+  renderTabela(tipo);
+}
+function addFeriado(){cfg.feriados.push({data:'',desc:''});renderFeriados();}
+function addPonto(){cfg.pontos.push({periodo:'',obs:''});renderFeriados();}
+
+async function salvarCal(){
+  await supa.salvarConfig('seletivos',cfg.seletivos);
+  await supa.salvarConfig('cfg_principal',cfg);
+  mostrarSalvo('cal');
+}
+async function salvarTabela(tipo){
+  await supa.salvarConfig('cfg_principal',cfg);
+  mostrarSalvo(tipo);
+}
+async function salvarFeriados(){
+  await supa.salvarConfig('cfg_principal',cfg);
+  mostrarSalvo('fer');
+}
+
+function mostrarSalvo(tipo){
+  const el=document.getElementById('saved-'+tipo);
+  if(!el)return;
+  el.style.display='inline';
+  setTimeout(()=>el.style.display='none',2500);
+}
+
+function mudarTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','promo','mens','mat','feriados'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+init();
+</script>
+</body>
+</html>

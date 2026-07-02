@@ -11,63 +11,57 @@
   .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
   .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
   .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
-  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit}
+  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
   .nav-back:hover{color:#F5C842;border-color:#F5C842}
   .main{max-width:680px;margin:0 auto;padding:1.25rem 1rem 4rem}
 
-  /* ID SCREEN */
-  .id-screen{display:flex;flex-direction:column;align-items:center;padding:32px 0;gap:14px;text-align:center}
-  .id-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;max-width:400px}
-  .id-btn{padding:14px 8px;border-radius:10px;border:1px solid #2a2d3a;background:#1a1d27;color:#ddd;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
-  .id-btn:hover{border-color:#F5C842;color:#F5C842}
-  .id-custom{display:flex;gap:8px;width:100%;max-width:400px}
+  .id-screen{display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:14px;text-align:center}
+  .id-titulo{font-size:18px;font-weight:700;color:#fff}
+  .id-sub{font-size:13px;color:#666}
+  .id-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;max-width:380px}
+  .id-btn{padding:14px 8px;border-radius:10px;border:1px solid #2a2d3a;background:#1a1d27;color:#ddd;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+  .id-btn:hover{border-color:#F5C842;color:#F5C842;background:#1a1f35}
+  .id-custom{display:flex;gap:8px;width:100%;max-width:380px}
   .id-custom input{flex:1;font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
   .id-custom input:focus{outline:none;border-color:#F5C842}
-  .id-custom button{padding:10px 16px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .id-custom button{padding:10px 18px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+  .id-custom button:hover{background:#e8b820}
 
-  /* OP */
-  .op-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .op-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
   .op-user{display:flex;align-items:center;gap:8px}
   .op-avatar{width:32px;height:32px;border-radius:50%;background:#1a1f35;border:1.5px solid #F5C842;color:#F5C842;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .op-name{font-size:14px;font-weight:600;color:#fff}
   .op-sub{font-size:11px;color:#666}
-  .trocar-btn{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2a2d3a;background:transparent;color:#666;cursor:pointer;font-family:inherit}
+  .trocar-btn{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #2a2d3a;background:transparent;color:#666;cursor:pointer;font-family:inherit}
   .trocar-btn:hover{color:#F5C842;border-color:#F5C842}
 
-  /* AVISO */
   .aviso{background:#2a1a0a;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#fbbf24;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
 
-  /* META */
   .meta-box{background:#1a1d27;border-radius:10px;padding:14px;margin-bottom:12px;border:1px solid #2a2d3a}
   .meta-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
   .meta-label{font-size:12px;font-weight:600;color:#ddd}
   .meta-nums{font-size:12px;color:#666}
   .meta-bar-wrap{height:8px;background:#12141e;border-radius:4px;overflow:hidden;margin-bottom:8px}
   .meta-bar{height:8px;border-radius:4px;transition:width .3s}
-  .meta-bar.ok{background:#22c55e}
-  .meta-bar.warn{background:#f59e0b}
-  .meta-bar.bad{background:#ef4444}
+  .meta-bar.ok{background:#22c55e}.meta-bar.warn{background:#f59e0b}.meta-bar.bad{background:#ef4444}
   .meta-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .ms{text-align:center;background:#12141e;border-radius:6px;padding:7px 4px}
   .ms-val{font-size:16px;font-weight:700}
   .ms-val.s{color:#22c55e}.ms-val.w{color:#f59e0b}.ms-val.d{color:#ef4444}.ms-val.a{color:#F5C842}
   .ms-lbl{font-size:10px;color:#555;margin-top:1px}
 
-  /* MASSA */
   .massa-box{background:#1a1500;border:1px solid #f59e0b;border-radius:10px;padding:12px 14px;margin-bottom:12px}
-  .massa-title{font-size:12px;font-weight:600;color:#f59e0b;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+  .massa-title{font-size:12px;font-weight:600;color:#f59e0b;margin-bottom:8px}
   .massa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .massa-btn{padding:9px 4px;border-radius:8px;border:1px solid #3a2a00;background:#12141e;color:#f59e0b;font-size:11px;font-weight:500;cursor:pointer;text-align:center;font-family:inherit}
+  .massa-btn{padding:9px 4px;border-radius:8px;border:1px solid #3a2a00;background:#12141e;color:#f59e0b;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
   .massa-btn:hover{background:#2a1e00;border-color:#f59e0b}
   .massa-ok{font-size:11px;color:#22c55e;background:#0f2a1a;border-radius:6px;padding:5px 10px;margin-top:8px;display:none;border:1px solid #22c55e}
 
-  /* FILTROS */
   .filtros{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
   .f-btn{font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid #2a2d3a;background:#1a1d27;color:#888;cursor:pointer;font-weight:500;font-family:inherit}
   .f-btn.active{background:#1a1f35;color:#F5C842;border-color:#F5C842}
 
-  /* LEAD CARD */
-  .lead-card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:13px 14px;margin-bottom:8px;cursor:pointer}
+  .lead-card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
   .lead-card:hover{border-color:#3a3d4a}
   .lead-card.expandido{border-color:#F5C842}
   .lc-top{display:flex;align-items:center;gap:10px}
@@ -88,20 +82,18 @@
   .b-prop-nao{background:#2a1515;color:#f87171}
   .ultima-acao{font-size:10px;color:#555;margin-top:5px;display:flex;align-items:center;gap:4px}
 
-  /* PROP BOX */
   .prop-box{background:#0f2a1a;border:1px solid #22c55e;border-radius:8px;padding:10px 12px;margin:8px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .prop-box.sem{background:#2a1515;border-color:#ef4444}
   .prop-val{font-size:16px;font-weight:700;color:#22c55e}
   .prop-sem{font-size:12px;font-weight:500;color:#ef4444}
   .prop-detalhe{font-size:11px;color:#888;flex:1}
-  .prop-use{font-size:10px;background:#1a3a2a;color:#22c55e;border:1px solid #22c55e;border-radius:6px;padding:4px 8px;white-space:nowrap}
+  .prop-use{font-size:10px;background:#1a3a2a;color:#22c55e;border:1px solid #22c55e;border-radius:6px;padding:4px 8px;white-space:nowrap;flex-shrink:0}
 
-  /* AÇÃO PANEL */
   .acao-panel{display:none;border-top:1px solid #2a2d3a;margin-top:10px;padding-top:10px}
   .acao-panel.aberto{display:block}
   .acao-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#555;margin-bottom:6px}
   .acoes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
-  .acao-btn{padding:8px 4px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#888;font-size:11px;font-weight:500;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .acao-btn{padding:9px 4px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#888;font-size:11px;font-weight:500;cursor:pointer;text-align:center;font-family:inherit;transition:all .15s}
   .acao-btn:hover,.acao-btn.sel{border-color:#F5C842;background:#1a1f35;color:#F5C842}
   .acao-btn.danger{border-color:#ef4444;background:#2a1515;color:#ef4444}
   .acao-btn.success{border-color:#22c55e;background:#0f2a1a;color:#22c55e}
@@ -109,81 +101,81 @@
   .obs-inp:focus{border-color:#F5C842;outline:none}
   .salvar-btn{width:100%;padding:10px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
   .salvar-btn:hover{background:#e8b820}
-  .hist-wrap{margin-top:10px}
   .hist-item{font-size:11px;color:#888;padding:4px 0;border-bottom:1px solid #2a2d3a;display:flex;gap:8px}
   .hist-item:last-child{border-bottom:none}
 
+  .loading{text-align:center;padding:32px;color:#555;font-size:13px}
   .empty{padding:24px;text-align:center;font-size:13px;color:#555}
   #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
-
 <div id="auth-check">
   <div style="font-size:32px">🔒</div>
   <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
   <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
 </div>
-
 <nav class="nav">
   <div class="nav-logo">🎯 Propósito</div>
   <span class="nav-modulo">🎧 CDR / Inside Sales</span>
   <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
-
 <div class="main">
-  <!-- ID SCREEN -->
   <div id="id-wrap">
     <div class="id-screen">
       <div style="font-size:36px">👋</div>
-      <div style="font-size:18px;font-weight:700;color:#fff">Quem é você?</div>
-      <div style="font-size:13px;color:#666">Escolha seu nome para registrar as ações de hoje</div>
-      <div class="id-grid" id="id-grid"></div>
+      <div class="id-titulo">Quem é você?</div>
+      <div class="id-sub">Escolha seu nome para registrar as ações de hoje</div>
+      <div class="id-grid" id="id-grid">
+        <button class="id-btn" onclick="entrar('Dayane')">Dayane</button>
+        <button class="id-btn" onclick="entrar('CDR 1')">CDR 1</button>
+        <button class="id-btn" onclick="entrar('CDR 2')">CDR 2</button>
+        <button class="id-btn" onclick="entrar('CDR 3')">CDR 3</button>
+        <button class="id-btn" onclick="entrar('Analista')">Analista</button>
+        <button class="id-btn" onclick="entrar('Assistente')">Assistente</button>
+      </div>
       <div class="id-custom">
         <input type="text" id="nome-custom" placeholder="Outro nome...">
-        <button onclick="entrar(document.getElementById('nome-custom').value)">Entrar</button>
+        <button type="button" onclick="entrarCustom()">Entrar</button>
       </div>
     </div>
   </div>
-
-  <!-- OP SCREEN -->
   <div id="op-wrap" style="display:none">
     <div class="op-header">
       <div class="op-user">
-        <div class="op-avatar" id="op-avatar"></div>
-        <div><div class="op-name" id="op-name"></div><div class="op-sub" id="op-data"></div></div>
+        <div class="op-avatar" id="op-avatar">?</div>
+        <div>
+          <div class="op-name" id="op-name"></div>
+          <div class="op-sub" id="op-data"></div>
+        </div>
       </div>
-      <button class="trocar-btn" onclick="trocar()">↺ Trocar</button>
+      <button class="trocar-btn" type="button" onclick="trocar()">↺ Trocar</button>
     </div>
-
-    <div class="aviso">⚠️ <div><strong>Atenção:</strong> Se o cliente tiver proposta cadastrada, use o valor exato que aparecer na tela. Não negocie valores — encaminhe para o closer.</div></div>
-
-    <div class="meta-box" id="meta-box"></div>
-
+    <div class="aviso">⚠️ <div><strong>Atenção:</strong> Se o cliente tiver proposta cadastrada, use o valor exato. Não negocie — encaminhe para o closer.</div></div>
+    <div class="meta-box" id="meta-box"><div class="loading">⏳ Carregando...</div></div>
     <div class="massa-box">
-      <div class="massa-title">⚡ Ações em massa — registrar disparo coletivo</div>
+      <div class="massa-title">⚡ Ações em massa</div>
       <div class="massa-grid">
-        <button class="massa-btn" onclick="massa('URA')">📞 URA</button>
-        <button class="massa-btn" onclick="massa('Discador')">☎️ Discador</button>
-        <button class="massa-btn" onclick="massa('SMS')">💬 SMS</button>
-        <button class="massa-btn" onclick="massa('Blip/WhatsApp')">📱 Blip</button>
-        <button class="massa-btn" onclick="massa('E-mail')">📧 E-mail</button>
-        <button class="massa-btn" onclick="massa('Lembrete')">🔔 Lembrete</button>
+        <button class="massa-btn" type="button" onclick="massa('URA')">📞 URA</button>
+        <button class="massa-btn" type="button" onclick="massa('Discador')">☎️ Discador</button>
+        <button class="massa-btn" type="button" onclick="massa('SMS')">💬 SMS</button>
+        <button class="massa-btn" type="button" onclick="massa('Blip/WhatsApp')">📱 Blip</button>
+        <button class="massa-btn" type="button" onclick="massa('E-mail')">📧 E-mail</button>
+        <button class="massa-btn" type="button" onclick="massa('Lembrete')">🔔 Lembrete</button>
       </div>
       <div class="massa-ok" id="massa-ok"></div>
     </div>
-
     <div class="filtros" id="filtros"></div>
-    <div id="leads-lista"></div>
+    <div id="leads-lista"><div class="loading">⏳ Carregando leads...</div></div>
   </div>
 </div>
-
 <script src="supabase.js"></script>
 <script>
-if(sessionStorage.getItem('acesso_cdr')!=='1'){document.getElementById('auth-check').style.display='flex';}
+if(sessionStorage.getItem('acesso_cdr')!=='1'){
+  document.getElementById('auth-check').style.display='flex';
+}
 
 const HOJE=new Date();HOJE.setHours(0,0,0,0);
-const NOMES=['Dayane','CDR 1','CDR 2','CDR 3','Analista'];
 const ACOES_DEF=[
   {id:'ligou',label:'Ligou',emoji:'📞'},
   {id:'whatsapp',label:'WhatsApp',emoji:'📱'},
@@ -192,52 +184,74 @@ const ACOES_DEF=[
   {id:'nao-vai',label:'Não vai',emoji:'❌',danger:true},
   {id:'encaminhar',label:'→ Closer',emoji:'🤝'},
 ];
-const ETAPA_BADGE={'Inscrito':'b-inscrito','Confirmado no Teste':'b-confirmado','Não Compareceu no Teste':'b-ncomp','Compareceu no Teste':'b-comp','Entrevista Agendada':'b-ent','Proposta':'b-prop','Negociação':'b-neg'};
+const ETAPA_BADGE={
+  'Inscrito':'b-inscrito','Confirmado no Teste':'b-confirmado',
+  'Não Compareceu no Teste':'b-ncomp','Compareceu no Teste':'b-comp',
+  'Entrevista Agendada':'b-ent','Proposta':'b-prop','Negociação':'b-neg'
+};
 const ETAPAS_FLUXO=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação'];
 
-let usuario='',leads=[],propostas=[],acoes={},massaLog=[],filtro='pendentes',expandido=null,acaoSel={};
+let usuario='', leads=[], propostas=[], acoes={}, filtro='pendentes', expandido=null, acaoSel={};
 
 function fmt(v){if(!v||isNaN(v))return'—';return parseFloat(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
-async function init(){
-  // Carrega do Supabase
-  const leadsDB = await supa.getLeads();
-  leads = leadsDB.map(l=>({'Nome da pessoa':l.nome,'Etapa':l.etapa,'Status':l.status,'Processo seletivo':l.processo,'Unidade':l.unidade,'Nome - Oferta de curso':l.oferta,'Turno':l.turno,'Código de Inscrição':l.codigo_inscricao}));
-  const propDB = await supa.getPropostas();
-  propostas = propDB.map(p=>({'Aluno':p.aluno,'Série':p.serie,'Unidade':p.unidade,'Status':p.status,'COD. Inscrição':p.cod_inscricao,'Mensalidade à Vista (%)':p.mensalidade_vista,'Percentual de Desconto da Mensalidade (%)':p.desconto_mensalidade,'Matrícula à Vista (%)':p.matricula_vista,'Percentual de Desconto da Matrícula (%)':p.desconto_matricula,'Cadastrado Por':p.cadastrado_por}));
-  const acoesDB = await supa.getAcoesCDR();
-  acoesDB.forEach(a=>{ if(!acoes[a.lead_nome])acoes[a.lead_nome]=[]; acoes[a.lead_nome].push({acao:a.acao,obs:a.obs,cdr:a.cdr,hora:a.hora,data:a.data}); });
-  document.getElementById('id-grid').innerHTML=NOMES.map(n=>`<button class="id-btn" onclick="entrar('${n}')">${n}</button>`).join('');
+function entrarCustom(){
+  const nome=document.getElementById('nome-custom').value.trim();
+  if(nome) entrar(nome);
 }
 
-function salvar(){/* dados salvos no Supabase */}
-
 function entrar(nome){
-  if(!nome.trim())return;
+  if(!nome||!nome.trim())return;
   usuario=nome.trim();
   document.getElementById('id-wrap').style.display='none';
   document.getElementById('op-wrap').style.display='block';
   document.getElementById('op-avatar').textContent=usuario[0].toUpperCase();
   document.getElementById('op-name').textContent=usuario;
   document.getElementById('op-data').textContent=HOJE.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  carregarDados();
+}
+
+function trocar(){
+  usuario='';
+  document.getElementById('op-wrap').style.display='none';
+  document.getElementById('id-wrap').style.display='block';
+}
+
+async function carregarDados(){
+  document.getElementById('leads-lista').innerHTML='<div class="loading">⏳ Carregando leads...</div>';
+  leads = await supa.getLeads();
+  propostas = await supa.getPropostas();
+  const acoesDB = await supa.getAcoesCDR();
+  acoes={};
+  acoesDB.forEach(a=>{
+    if(!acoes[a.lead_nome])acoes[a.lead_nome]=[];
+    acoes[a.lead_nome].push({acao:a.acao,obs:a.obs,cdr:a.cdr,hora:a.hora,data:a.data});
+  });
   renderOp();
 }
 
-function trocar(){usuario='';document.getElementById('op-wrap').style.display='none';document.getElementById('id-wrap').style.display='block';}
-
 function getAcoes(lid){return acoes[lid]||[];}
 function ultimaAcao(lid){const a=getAcoes(lid);return a.length?a[a.length-1]:null;}
-function getProp(nome){return propostas.find(p=>p['Aluno']&&p['Aluno'].toLowerCase().trim()===nome.toLowerCase().trim())||null;}
-function leadsAtivos(){return leads.filter(l=>l['Status']!=='Perdido'&&ETAPAS_FLUXO.includes(l['Etapa']));}
+
+function getProp(nome){
+  return propostas.find(p=>{
+    const nomeP=(p['Aluno']||'').toLowerCase().trim();
+    const nomeL=nome.toLowerCase().trim();
+    return nomeP===nomeL||nomeP.includes(nomeL)||nomeL.includes(nomeP);
+  })||null;
+}
+
+function leadsAtivos(){
+  return leads.filter(l=>l['Status']!=='Perdido'&&ETAPAS_FLUXO.includes(l['Etapa']));
+}
 
 function calcMeta(){
   const todos=leadsAtivos();
   const conf=todos.filter(l=>getAcoes(l['Nome da pessoa']).some(a=>a.acao==='Confirmou! ✓')).length;
   const pend=todos.filter(l=>!getAcoes(l['Nome da pessoa']).length).length;
   const naoVao=todos.filter(l=>getAcoes(l['Nome da pessoa']).some(a=>a.acao==='Não vai')).length;
-  const cont=todos.filter(l=>getAcoes(l['Nome da pessoa']).length>0).length;
   const pct=todos.length>0?Math.round(conf/todos.length*100):0;
-  return{total:todos.length,conf,pend,naoVao,cont,pct};
+  return{total:todos.length,conf,pend,naoVao,pct};
 }
 
 function renderOp(){
@@ -254,21 +268,32 @@ function renderOp(){
     </div>`;
 
   const todos=leadsAtivos();
+  const comProp=todos.filter(l=>getProp(l['Nome da pessoa']));
+  const semProp=todos.filter(l=>!getProp(l['Nome da pessoa']));
+  const pendentes=todos.filter(l=>!getAcoes(l['Nome da pessoa']).length);
+
   const filtros=[
-    {id:'pendentes',label:`Pendentes (${todos.filter(l=>!getAcoes(l['Nome da pessoa']).length).length})`},
+    {id:'pendentes',label:`Pendentes (${pendentes.length})`},
     {id:'todos',label:`Todos (${todos.length})`},
-    {id:'com-prop',label:`Com proposta (${todos.filter(l=>getProp(l['Nome da pessoa'])).length})`},
-    {id:'sem-prop',label:`Sem proposta (${todos.filter(l=>!getProp(l['Nome da pessoa'])).length})`},
+    {id:'com-prop',label:`Com proposta (${comProp.length})`},
+    {id:'sem-prop',label:`Sem proposta (${semProp.length})`},
   ];
-  document.getElementById('filtros').innerHTML=filtros.map(f=>`<button class="f-btn ${filtro===f.id?'active':''}" onclick="setFiltro('${f.id}')">${f.label}</button>`).join('');
+  document.getElementById('filtros').innerHTML=filtros.map(f=>`
+    <button type="button" class="f-btn ${filtro===f.id?'active':''}" onclick="setFiltro('${f.id}')">${f.label}</button>`).join('');
 
   let lista=todos;
-  if(filtro==='pendentes')lista=todos.filter(l=>!getAcoes(l['Nome da pessoa']).length);
-  if(filtro==='com-prop')lista=todos.filter(l=>getProp(l['Nome da pessoa']));
-  if(filtro==='sem-prop')lista=todos.filter(l=>!getProp(l['Nome da pessoa']));
+  if(filtro==='pendentes')lista=pendentes;
+  if(filtro==='com-prop')lista=comProp;
+  if(filtro==='sem-prop')lista=semProp;
 
-  if(!lista.length&&!leads.length){document.getElementById('leads-lista').innerHTML='<div class="empty">Importe o CSV de Registros no Painel do Gerente para ver os leads aqui</div>';return;}
-  if(!lista.length){document.getElementById('leads-lista').innerHTML='<div class="empty">✓ Nenhum lead nesta categoria</div>';return;}
+  if(!lista.length&&!leads.length){
+    document.getElementById('leads-lista').innerHTML='<div class="empty">📭 Importe o CSV no Painel do Gerente para ver os leads aqui</div>';
+    return;
+  }
+  if(!lista.length){
+    document.getElementById('leads-lista').innerHTML='<div class="empty">✓ Nenhum lead nesta categoria</div>';
+    return;
+  }
 
   document.getElementById('leads-lista').innerHTML=lista.map(l=>{
     const lid=l['Nome da pessoa'];
@@ -276,17 +301,19 @@ function renderOp(){
     const ua=ultimaAcao(lid);
     const hist=getAcoes(lid);
     const isExp=expandido===lid;
-    const iniciais=(lid||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const iniciais=(lid||'?').split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
     const pill=ETAPA_BADGE[l['Etapa']]||'b-inscrito';
     const valMens=prop?prop['Mensalidade à Vista (%)']||prop['Matrícula à Vista (%)']||'':'';
     const descMens=prop?prop['Percentual de Desconto da Mensalidade (%)']||prop['Percentual de Desconto da Matrícula (%)']||'':'';
+    const lidSafe=lid.replace(/'/g,'&apos;').replace(/"/g,'&quot;');
+    const lidId=lid.replace(/\W/g,'_');
 
     return`<div class="lead-card ${isExp?'expandido':''}">
-      <div class="lc-top" onclick="toggle('${lid.replace(/'/g,"\\'")}')">
+      <div class="lc-top" onclick="toggle('${lidSafe}')">
         <div class="lc-avatar">${iniciais}</div>
         <div class="lc-info">
           <div class="lc-nome">${lid}</div>
-          <div class="lc-sub">${l['Nome - Oferta de curso']||''} · ${(l['Unidade']||'').replace('UNIDADE ','').replace('PROPÓSITO ','')}</div>
+          <div class="lc-sub">${l['Nome - Oferta de curso']||''} · ${l['Unidade']||''}</div>
         </div>
         <div class="lc-badges">
           <span class="badge ${pill}">${l['Etapa']}</span>
@@ -295,21 +322,25 @@ function renderOp(){
       </div>
       ${ua?`<div class="ultima-acao">↩ ${ua.acao} — ${ua.hora} — ${ua.cdr}</div>`:''}
       <div class="acao-panel ${isExp?'aberto':''}">
-        ${prop?
-          `<div class="prop-box">
-            <div><div style="font-size:10px;color:#22c55e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Proposta cadastrada</div>
-            <div class="prop-val">${fmt(valMens)}/mês</div>
-            <div class="prop-detalhe">${descMens?descMens+'% desc ·':''} ${prop['Série']||''} · por ${prop['Cadastrado Por']||''}</div></div>
+        ${prop?`<div class="prop-box">
+            <div>
+              <div style="font-size:10px;color:#22c55e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Proposta cadastrada</div>
+              <div class="prop-val">${fmt(valMens)}/mês</div>
+              <div class="prop-detalhe">${descMens?descMens+'% desc ·':''} ${prop['Série']||''}</div>
+            </div>
             <div class="prop-use">Use este valor</div>
           </div>`:
           `<div class="prop-box sem"><span class="prop-sem">⚠ Sem proposta — não mencione valores. Encaminhe para o closer se solicitado.</span></div>`}
         <div class="acao-label">Registrar ação</div>
         <div class="acoes-grid">
-          ${ACOES_DEF.map(a=>`<button class="acao-btn ${a.danger?'danger':a.success?'success':''} ${acaoSel[lid]===a.id?'sel':''}" onclick="selAcao('${lid.replace(/'/g,"\\'")}','${a.id}')">${a.emoji}<span>${a.label}</span></button>`).join('')}
+          ${ACOES_DEF.map(a=>`<button type="button" class="acao-btn ${a.danger?'danger':a.success?'success':''} ${acaoSel[lid]===a.id?'sel':''}" onclick="selAcao('${lidSafe}','${a.id}')">${a.emoji} ${a.label}</button>`).join('')}
         </div>
-        <textarea class="obs-inp" id="obs-${lid.replace(/\W/g,'_')}" placeholder="Observação (opcional)..."></textarea>
-        <button class="salvar-btn" onclick="salvarAcao('${lid.replace(/'/g,"\\'")}')">✓ Registrar ação</button>
-        ${hist.length?`<div class="hist-wrap"><div class="acao-label" style="margin-top:10px;margin-bottom:4px">Histórico</div>${hist.slice(-3).reverse().map(h=>`<div class="hist-item"><span style="flex:1"><strong style="color:#ddd">${h.acao}</strong>${h.obs?' — '+h.obs:''}</span><span style="color:#555;white-space:nowrap">${h.hora} · ${h.cdr}</span></div>`).join('')}</div>`:''}
+        <textarea class="obs-inp" id="obs-${lidId}" placeholder="Observação (opcional)..."></textarea>
+        <button type="button" class="salvar-btn" onclick="salvarAcao('${lidSafe}')">✓ Registrar ação</button>
+        ${hist.length?`<div style="margin-top:10px">
+          <div class="acao-label" style="margin-bottom:4px">Histórico recente</div>
+          ${hist.slice(-3).reverse().map(h=>`<div class="hist-item"><span style="flex:1"><strong style="color:#ddd">${h.acao}</strong>${h.obs?' — '+h.obs:''}</span><span style="color:#555;white-space:nowrap;flex-shrink:0">${h.hora} · ${h.cdr}</span></div>`).join('')}
+        </div>`:''}
       </div>
     </div>`;
   }).join('');
@@ -320,25 +351,27 @@ function selAcao(lid,id){acaoSel[lid]=id;renderOp();}
 function setFiltro(f){filtro=f;expandido=null;renderOp();}
 
 async function salvarAcao(lid){
-  const id=acaoSel[lid];if(!id)return;
-  const obsEl=document.getElementById('obs-'+lid.replace(/\W/g,'_'));
+  const id=acaoSel[lid];
+  if(!id){alert('Selecione uma ação antes de registrar.');return;}
+  const lidId=lid.replace(/\W/g,'_');
+  const obsEl=document.getElementById('obs-'+lidId);
+  const obs=obsEl?obsEl.value.trim():'';
+  const label=ACOES_DEF.find(a=>a.id===id)?.label||id;
   if(!acoes[lid])acoes[lid]=[];
-  const novaAcao = {acao:ACOES_DEF.find(a=>a.id===id)?.label||id,obs:obsEl?obsEl.value:'',cdr:usuario,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')};
+  const novaAcao={acao:label,obs,cdr:usuario,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),data:new Date().toLocaleDateString('pt-BR')};
   acoes[lid].push(novaAcao);
-  await supa.salvarAcaoCDR(lid, novaAcao.acao, novaAcao.obs, usuario);
   delete acaoSel[lid];expandido=null;
+  await supa.salvarAcaoCDR(lid,label,obs,usuario);
   renderOp();
 }
 
-function massa(tipo){
-  await supa.salvarMassa(tipo, usuario, leadsAtivos().length);
+async function massa(tipo){
+  await supa.salvarMassa(tipo,usuario,leadsAtivos().length);
   const ok=document.getElementById('massa-ok');
   ok.style.display='block';
   ok.textContent=`✓ ${tipo} registrado — ${leadsAtivos().length} leads — ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
   setTimeout(()=>ok.style.display='none',4000);
 }
-
-init();
 </script>
 </body>
 </html>
