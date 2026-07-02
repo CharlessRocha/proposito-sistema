@@ -310,6 +310,22 @@ function nomeAmigavel(processo){
   return processo.replace('TS ','').replace('(PROPOSITO ','(').replace('(CENTRO/SUL ','(C.Sul ');
 }
 
+let etapasFunil=[];
+const NIVEIS_PADRAO={
+  'Inscrito':'neutra','Confirmado no Teste':'neutra','Não Compareceu no Teste':'neutra',
+  'Compareceu no Teste':'progresso','Entrevista Agendada':'progresso',
+  'Proposta':'positiva','Negociação':'positiva','Matrícula':'sucesso'
+};
+function nivelEtapa(etapa){
+  const cfg=etapasFunil.find(e=>e.etapa===etapa);
+  if(cfg) return cfg.nivel;
+  return NIVEIS_PADRAO[etapa]||'neutra';
+}
+function isEngajado(etapa){
+  const n=nivelEtapa(etapa);
+  return n==='positiva'||n==='sucesso';
+}
+
 function parseData(str){
   if(!str||str==='—')return null;
   const m=str.match(/(\d+)\/(\w+)\/(\d+)/);
@@ -353,6 +369,7 @@ async function init(){
   if(cfgSel) seletivos = cfgSel;
   if(!seletivos.length) seletivos = SELETIVOS_DEFAULT;
   mapaProcessos = await supa.getConfig('mapa_processos') || [];
+  etapasFunil = await supa.getConfig('etapas_funil') || [];
   renderTudo();
 }
 
@@ -449,21 +466,21 @@ function renderKPIs(){
   const filtrados=getLeadsFiltrados(); // já filtra Status!=='Perdido' e pelo grupo do seletivo
   const total=filtrados.length;
   const perdidos=leads.filter(l=>l['Status']==='Perdido'&&pertenceAoGrupo(l['Processo seletivo'],proc)).length;
-  const compareceram=filtrados.filter(l=>compareceuReal(l['Etapa'])).length;
+  // Taxa de engajamento real: conta leads em etapas positivas ou de sucesso (Proposta, Negociação, Matrícula)
+  const engajados=filtrados.filter(l=>isEngajado(l['Etapa'])).length;
   const matriculas=filtrados.filter(l=>l['Etapa']==='Matrícula').length;
   const entAtrasadas=atividades.filter(a=>a['Status']==='Atrasada'&&pertenceAoGrupo(a['Nome - Processo seletivo'],proc)).length;
   const atividadesFiltradas=atividades.filter(a=>pertenceAoGrupo(a['Nome - Processo seletivo'],proc));
   const propostasFiltradas=proc?propostas.filter(p=>{
-    // Cruza proposta com lead pelo nome do aluno para saber o processo
     const lead=leads.find(l=>(l['Nome da pessoa']||'').toLowerCase().trim()===(p['Aluno']||'').toLowerCase().trim());
     return lead?pertenceAoGrupo(lead['Processo seletivo'],proc):false;
   }):propostas;
-  const taxaComp=total>0?Math.round(compareceram/total*100):0;
+  const taxaEngaj=total>0?Math.round(engajados/total*100):0;
   const countEl=document.getElementById('sel-count');
   if(countEl)countEl.textContent=proc?`${total} leads neste seletivo`:`${total} leads no total`;
   document.getElementById('kpi-grid').innerHTML=`
     <div class="kpi accent"><div class="kpi-label">Leads ativos</div><div class="kpi-val">${total}</div><div class="kpi-sub">${perdidos} perdidos ocultos</div></div>
-    <div class="kpi ${taxaComp>=80?'success':taxaComp>=60?'warning':'danger'}"><div class="kpi-label">Comparecimento</div><div class="kpi-val">${total?taxaComp+'%':'—'}</div><div class="kpi-sub">${compareceram} compareceram</div></div>
+    <div class="kpi ${taxaEngaj>=30?'success':taxaEngaj>=15?'warning':'danger'}"><div class="kpi-label">Taxa de engajamento</div><div class="kpi-val">${total?taxaEngaj+'%':'—'}</div><div class="kpi-sub">${engajados} em Proposta/Negociação</div></div>
     <div class="kpi ${matriculas>0?'success':'warning'}"><div class="kpi-label">Matrículas</div><div class="kpi-val">${matriculas||'—'}</div><div class="kpi-sub">Taxa ${total?Math.round(matriculas/total*100):0}%</div></div>
     <div class="kpi ${entAtrasadas>0?'danger':'success'}"><div class="kpi-label">Ent. atrasadas</div><div class="kpi-val">${atividadesFiltradas.length?entAtrasadas:'—'}</div><div class="kpi-sub">de ${atividadesFiltradas.length} agendadas</div></div>
     <div class="kpi accent"><div class="kpi-label">Propostas</div><div class="kpi-val">${propostasFiltradas.length||'—'}</div><div class="kpi-sub">cadastradas</div></div>`;

@@ -89,6 +89,7 @@
   <div class="tabs">
     <button class="tab active" onclick="mudarTab('cal')">📅 Calendário</button>
     <button class="tab" onclick="mudarTab('mapa')">🏷️ Nomes dos seletivos</button>
+    <button class="tab" onclick="mudarTab('funil')">🎯 Etapas do funil</button>
     <button class="tab" onclick="mudarTab('promo')">💵 Tabela promo</button>
     <button class="tab" onclick="mudarTab('mens')">💰 Mensalidades</button>
     <button class="tab" onclick="mudarTab('mat')">📚 Material</button>
@@ -129,6 +130,49 @@
     </div>
     <div style="background:#1a1f35;border:1px solid #2a2d3a;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#888;line-height:1.6">
       <strong style="color:#F5C842">Como funciona:</strong> Quando o sistema lê "TS 2027/01 (PROPOSITO LESTE)" no CSV, exibe "1º Teste — Leste" nos filtros e nos painéis. Facilita identificar rapidamente qual seletivo é qual.
+    </div>
+  </div>
+
+  <!-- ETAPAS DO FUNIL -->
+  <div class="panel" id="panel-funil">
+    <div style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">
+      Classifique cada etapa do funil por nível de avanço. O painel do gerente usa essa régua para calcular a <strong style="color:#aaa">taxa de engajamento real</strong> — não apenas quem compareceu fisicamente, mas quem avançou de verdade no processo.
+    </div>
+    <div class="section-label">
+      <span>Classificação das etapas</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-funil">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarFunil()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-col-header" style="grid-template-columns:1.5fr 1fr 22px;padding:7px 14px">
+        <span>Etapa do Rubeus</span><span>Classificação</span><span></span>
+      </div>
+      <div id="funil-lista"></div>
+      <button class="add-row-btn" onclick="addEtapa()">+ Nova etapa</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">
+      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#ef4444;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#888">Neutra</div>
+        <div style="font-size:10px;color:#555">Ainda sem avanço</div>
+      </div>
+      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#f59e0b;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#888">Em progresso</div>
+        <div style="font-size:10px;color:#555">Está andando</div>
+      </div>
+      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#22c55e;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#888">Positiva</div>
+        <div style="font-size:10px;color:#555">Engajado</div>
+      </div>
+      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#F5C842;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#888">Sucesso</div>
+        <div style="font-size:10px;color:#555">Convertido</div>
+      </div>
     </div>
   </div>
 
@@ -231,6 +275,16 @@ let cfg = {
     {codigo:'TS 2027/02 (CENTRO/SUL II)', nome:'2º Teste — Centro II'},
     {codigo:'TS 2027/02 (PROPOSITO JOCKEY)', nome:'2º Teste — Jockey'},
   ],
+  etapas_funil: [
+    {etapa:'Inscrito', nivel:'neutra'},
+    {etapa:'Confirmado no Teste', nivel:'neutra'},
+    {etapa:'Não Compareceu no Teste', nivel:'neutra'},
+    {etapa:'Compareceu no Teste', nivel:'progresso'},
+    {etapa:'Entrevista Agendada', nivel:'progresso'},
+    {etapa:'Proposta', nivel:'positiva'},
+    {etapa:'Negociação', nivel:'positiva'},
+    {etapa:'Matrícula', nivel:'sucesso'},
+  ],
   seletivos:[
     {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
     {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
@@ -299,7 +353,7 @@ async function init(){
   renderTudo();
 }
 
-function renderTudo(){renderCal();renderMapa();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
+function renderTudo(){renderCal();renderMapa();renderFunilEtapas();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
 
 function renderMapa(){
   if(!cfg.mapa_processos)cfg.mapa_processos=[];
@@ -315,6 +369,25 @@ async function salvarMapa(){
   await supa.salvarConfig('cfg_principal',cfg);
   await supa.salvarConfig('mapa_processos',cfg.mapa_processos);
   mostrarSalvo('mapa');
+}
+
+function renderFunilEtapas(){
+  if(!cfg.etapas_funil)cfg.etapas_funil=[];
+  const niveis={neutra:'🔴 Neutra',progresso:'🟡 Em progresso',positiva:'🟢 Positiva',sucesso:'🏆 Sucesso'};
+  document.getElementById('funil-lista').innerHTML=cfg.etapas_funil.map((e,i)=>`
+    <div class="item-simples">
+      <input style="flex:1.5" value="${e.etapa||''}" placeholder="Nome exato da etapa no Rubeus" onchange="cfg.etapas_funil[${i}].etapa=this.value">
+      <select style="flex:1;font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#ddd;font-family:inherit" onchange="cfg.etapas_funil[${i}].nivel=this.value">
+        ${Object.entries(niveis).map(([k,v])=>`<option value="${k}" ${e.nivel===k?'selected':''}>${v}</option>`).join('')}
+      </select>
+      <button class="del-btn" onclick="cfg.etapas_funil.splice(${i},1);renderFunilEtapas()">×</button>
+    </div>`).join('');
+}
+function addEtapa(){cfg.etapas_funil.push({etapa:'',nivel:'neutra'});renderFunilEtapas();}
+async function salvarFunil(){
+  await supa.salvarConfig('cfg_principal',cfg);
+  await supa.salvarConfig('etapas_funil',cfg.etapas_funil);
+  mostrarSalvo('funil');
 }
 
 function renderCal(){
@@ -403,7 +476,7 @@ function mostrarSalvo(tipo){
 }
 
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','promo','mens','mat','feriados'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','funil','promo','mens','mat','feriados'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }
