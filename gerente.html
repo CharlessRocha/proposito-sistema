@@ -507,29 +507,45 @@ function renderAlertas(){
 }
 
 function renderDatas(){
-  const eventos=[];
+  // Pega as tarefas pendentes de TODOS os seletivos ativos (janela -3 a +15 dias)
+  const tarefasUrgentes=[];
   seletivos.forEach(s=>{
     const d=parseData(s.data);if(!d)return;
-    const dias=diasAte(d);
-    if(dias>=-3&&dias<=45){
-      eventos.push({label:`${s.n}º Teste`,data:s.data,dias,tipo:'teste'});
-      if(dias>0&&dias<=20)eventos.push({label:`D-7 (${s.n}º Teste)`,data:fmtData(dataRel(d,-7)),dias:dias-7});
-      if(dias>0&&dias<=10)eventos.push({label:`D-1 (${s.n}º Teste)`,data:fmtData(dataRel(d,-1)),dias:dias-1});
-      if(dias<0&&dias>=-7)eventos.push({label:`D+1 pós ${s.n}º Teste`,data:fmtData(dataRel(d,1)),dias:dias+1});
-    }
+    const diasSel=diasAte(d);
+    if(diasSel<-15||diasSel>30)return; // só considera seletivos relevantes agora
+    const selId=`sel_${s.n}`;
+    const t=getTarefas(selId);
+    FASES_DEF.forEach(f=>f.tarefas.forEach(ta=>{
+      if(t[ta.id])return; // já concluída
+      const dataTarefa=dataRel(d,ta.dRel);
+      if(!dataTarefa)return;
+      const diasFalta=Math.round((dataTarefa-HOJE)/(1000*60*60*24));
+      // Só mostra tarefas futuras próximas (até 15 dias) ou já vencidas (até 5 dias atrás)
+      if(diasFalta>=-5&&diasFalta<=15){
+        tarefasUrgentes.push({
+          nome:ta.nome, resp:ta.resp, dias:diasFalta,
+          data:fmtData(dataTarefa), selNum:s.n, alerta:ta.alerta
+        });
+      }
+    }));
   });
-  eventos.sort((a,b)=>Math.abs(a.dias)-Math.abs(b.dias));
-  const unicos=[];const visto=new Set();
-  eventos.forEach(e=>{if(!visto.has(e.label)){visto.add(e.label);unicos.push(e);}});
-  document.getElementById('datas-body').innerHTML=unicos.slice(0,6).map(e=>{
+  // Ordena por urgência (mais perto de vencer primeiro, vencidas no topo)
+  tarefasUrgentes.sort((a,b)=>a.dias-b.dias);
+
+  document.getElementById('datas-body').innerHTML=tarefasUrgentes.slice(0,6).map(t=>{
     let cls='db-futuro';
-    if(e.dias===0)cls='db-urgente';
-    else if(e.dias<0&&e.dias>=-3)cls='db-proximo';
-    else if(e.dias<-3)cls='db-passado';
-    else if(e.dias<=7)cls='db-proximo';
-    const quando=e.dias===0?'Hoje':e.dias>0?`em ${e.dias}d`:`há ${Math.abs(e.dias)}d`;
-    return`<div class="data-item"><span class="data-badge ${cls}">${e.data}</span><span class="data-desc">${e.label}</span><span class="data-quando">${quando}</span></div>`;
-  }).join('')||'<div class="empty">Sem eventos próximos</div>';
+    let quando='';
+    if(t.dias<0){cls='db-urgente';quando=`atrasada há ${Math.abs(t.dias)}d`;}
+    else if(t.dias===0){cls='db-urgente';quando='hoje!';}
+    else if(t.dias<=3){cls='db-proximo';quando=`faltam ${t.dias}d`;}
+    else if(t.dias<=7){cls='db-proximo';quando=`faltam ${t.dias}d`;}
+    else{cls='db-futuro';quando=`faltam ${t.dias}d`;}
+    return`<div class="data-item">
+      <span class="data-badge ${cls}" style="min-width:auto;padding:2px 8px">${quando}</span>
+      <span class="data-desc">${t.nome}</span>
+      <span class="data-quando">${t.resp} · ${t.selNum}º Teste</span>
+    </div>`;
+  }).join('')||'<div class="empty">✓ Nenhuma tarefa urgente no momento</div>';
 }
 
 function renderPlaybook(){
