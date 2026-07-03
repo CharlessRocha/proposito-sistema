@@ -139,7 +139,13 @@ function fmtDataHora(dv){
   return {data:partes[0]||'', hora:partes[1]||'—'};
 }
 
-function getPropostaAuto(nome){
+function getPropostaAuto(nome, codigoExterno){
+  // Tenta primeiro pelo código (mais confiável) — Código externo da pessoa costuma bater com COD. Inscrição
+  if(codigoExterno){
+    const porCodigo=propostas.find(p=>(p['COD. Inscrição']||'').trim()===codigoExterno.trim());
+    if(porCodigo) return porCodigo;
+  }
+  // Fallback por nome
   if(!nome) return null;
   return propostas.find(p=>{
     const nomeP=(p['Aluno']||'').toLowerCase().trim();
@@ -204,13 +210,13 @@ function renderKPIs(){
   document.getElementById('badge-al').textContent=atrasadas||'';
 
   // Segunda linha: resultado das entrevistas realizadas
-  const comProposta=lista.filter(a=>getPropostaAuto(a['Contato'])||a['Resultado']==='sucesso').length;
+  const comProposta=lista.filter(a=>getPropostaAuto(a['Contato'], a['CodigoPessoa'])||a['Resultado']==='sucesso').length;
   const reagendou=lista.filter(a=>a['Resultado']==='reagendou').length;
   const semRetorno=lista.filter(a=>a['Resultado']==='sem_retorno').length;
   const desistiu=lista.filter(a=>a['Resultado']==='desistiu').length;
-  const pendente=lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']&&a['Status']!=='Atrasada'&&a['Status']!=='Planejada').length;
+  const pendente=lista.filter(a=>!getPropostaAuto(a['Contato'], a['CodigoPessoa'])&&!a['Resultado']&&a['Status']!=='Atrasada'&&a['Status']!=='Planejada').length;
   const outro=lista.filter(a=>a['Resultado']==='outro').length;
-  const matriculadoSemProposta=lista.filter(a=>isMatriculado(a)&&!getPropostaAuto(a['Contato'])).length;
+  const matriculadoSemProposta=lista.filter(a=>isMatriculado(a)&&!getPropostaAuto(a['Contato'], a['CodigoPessoa'])).length;
   document.getElementById('kpi-strip-resultado').innerHTML=`
     ${matriculadoSemProposta>0?`<div class="kpi danger" style="border:2px solid #ef4444"><div class="kpi-label">🚨 Matriculado sem proposta</div><div class="kpi-val">${matriculadoSemProposta}</div><div class="kpi-sub">cadastrar urgente</div></div>`:''}
     <div class="kpi success"><div class="kpi-label">✅ Deu certo</div><div class="kpi-val">${comProposta}</div><div class="kpi-sub">proposta cadastrada</div></div>
@@ -237,7 +243,7 @@ function rowHtml(a){
   const isOnline=a['Modalidade']==='online';
   const nomeC=(a['Contato']||'').replace(/'/g,"\\'");
   const linkSafe=(a['Link']||'').replace(/'/g,"\\'");
-  const propAuto=getPropostaAuto(a['Contato']);
+  const propAuto=getPropostaAuto(a['Contato'], a['CodigoPessoa']);
   const matriculado=isMatriculado(a);
   const resultado=a['Resultado']||'';
 
@@ -350,8 +356,8 @@ function renderTodas(){
     {id:'planejadas',label:`Planejadas (${lista.filter(a=>a['Status']==='Planejada').length})`},
     {id:'online',label:`Online (${lista.filter(a=>a['Modalidade']==='online').length})`},
     {id:'sem-tel',label:`Sem telefone (${lista.filter(a=>!a['Telefone']||a['Telefone']==='- - -').length})`},
-    {id:'sucesso',label:`✅ Deu certo (${lista.filter(a=>getPropostaAuto(a['Contato'])||a['Resultado']==='sucesso').length})`},
-    {id:'sem-resultado',label:`Sem resultado (${lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']).length})`},
+    {id:'sucesso',label:`✅ Deu certo (${lista.filter(a=>getPropostaAuto(a['Contato'], a['CodigoPessoa'])||a['Resultado']==='sucesso').length})`},
+    {id:'sem-resultado',label:`Sem resultado (${lista.filter(a=>!getPropostaAuto(a['Contato'], a['CodigoPessoa'])&&!a['Resultado']).length})`},
   ];
   document.getElementById('filtros-todas').innerHTML=filtros.map(f=>`
     <button type="button" class="f-btn ${filtroTodas===f.id?'active':''}" onclick="setFiltro('${f.id}')">${f.label}</button>`).join('');
@@ -361,8 +367,8 @@ function renderTodas(){
   if(filtroTodas==='planejadas')fl=lista.filter(a=>a['Status']==='Planejada');
   if(filtroTodas==='online')fl=lista.filter(a=>a['Modalidade']==='online');
   if(filtroTodas==='sem-tel')fl=lista.filter(a=>!a['Telefone']||a['Telefone']==='- - -');
-  if(filtroTodas==='sucesso')fl=lista.filter(a=>getPropostaAuto(a['Contato'])||a['Resultado']==='sucesso');
-  if(filtroTodas==='sem-resultado')fl=lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']);
+  if(filtroTodas==='sucesso')fl=lista.filter(a=>getPropostaAuto(a['Contato'], a['CodigoPessoa'])||a['Resultado']==='sucesso');
+  if(filtroTodas==='sem-resultado')fl=lista.filter(a=>!getPropostaAuto(a['Contato'], a['CodigoPessoa'])&&!a['Resultado']);
 
   fl=[...fl].sort((a,b)=>(a['Data de vencimento']||'').localeCompare(b['Data de vencimento']||''));
   document.getElementById('todas-lista').innerHTML=fl.length?fl.map(rowHtml).join(''):'<div class="empty">Nenhuma entrevista nesta categoria. Importe o CSV de Atividades no Painel do Gerente.</div>';
