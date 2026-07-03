@@ -96,6 +96,7 @@
   </div>
 
   <div class="kpi-strip" id="kpi-strip"></div>
+  <div class="kpi-strip" id="kpi-strip-resultado" style="margin-top:-8px"></div>
 
   <div class="tabs">
     <button class="tab active" onclick="mudarTab('todas')">📋 Todas</button>
@@ -129,6 +130,7 @@ const HOJE=new Date();HOJE.setHours(0,0,0,0);
 document.getElementById('data-hoje').textContent=HOJE.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
 
 let atividades=[];
+let propostas=[];
 let filtroTodas='todas';
 
 function fmtDataHora(dv){
@@ -136,8 +138,18 @@ function fmtDataHora(dv){
   return {data:partes[0]||'', hora:partes[1]||'—'};
 }
 
+function getPropostaAuto(nome){
+  if(!nome) return null;
+  return propostas.find(p=>{
+    const nomeP=(p['Aluno']||'').toLowerCase().trim();
+    const nomeA=nome.toLowerCase().trim();
+    return nomeP===nomeA||nomeP.includes(nomeA)||nomeA.includes(nomeP);
+  })||null;
+}
+
 async function init(){
   atividades = await supa.getAtividades();
+  propostas = await supa.getPropostas();
   popularUnidades();
   renderTudo();
 }
@@ -177,6 +189,20 @@ function renderKPIs(){
     <div class="kpi success"><div class="kpi-label">Ganhas</div><div class="kpi-val">${ganhas}</div><div class="kpi-sub">convertidas</div></div>
     <div class="kpi ${semTel>0?'warning':'success'}"><div class="kpi-label">Sem telefone</div><div class="kpi-val">${semTel}</div><div class="kpi-sub">de ${lista.length}</div></div>`;
   document.getElementById('badge-al').textContent=atrasadas||'';
+
+  // Segunda linha: resultado das entrevistas realizadas
+  const comProposta=lista.filter(a=>getPropostaAuto(a['Contato'])||a['Resultado']==='sucesso').length;
+  const reagendou=lista.filter(a=>a['Resultado']==='reagendou').length;
+  const semRetorno=lista.filter(a=>a['Resultado']==='sem_retorno').length;
+  const desistiu=lista.filter(a=>a['Resultado']==='desistiu').length;
+  const pendente=lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']&&a['Status']!=='Atrasada'&&a['Status']!=='Planejada').length;
+  const outro=lista.filter(a=>a['Resultado']==='outro').length;
+  document.getElementById('kpi-strip-resultado').innerHTML=`
+    <div class="kpi success"><div class="kpi-label">✅ Deu certo</div><div class="kpi-val">${comProposta}</div><div class="kpi-sub">proposta cadastrada</div></div>
+    <div class="kpi warning"><div class="kpi-label">🔁 Reagendou</div><div class="kpi-val">${reagendou}</div></div>
+    <div class="kpi"><div class="kpi-label">📵 Sem retorno</div><div class="kpi-val">${semRetorno}</div></div>
+    <div class="kpi danger"><div class="kpi-label">❌ Desistiu</div><div class="kpi-val">${desistiu}</div></div>
+    <div class="kpi"><div class="kpi-label">✏️ Outro</div><div class="kpi-val">${outro}</div></div>`;
 }
 
 function parseData(str){
@@ -197,6 +223,52 @@ function rowHtml(a){
   const isOnline=a['Modalidade']==='online';
   const nomeC=(a['Contato']||'').replace(/'/g,"\\'");
   const linkSafe=(a['Link']||'').replace(/'/g,"\\'");
+  const propAuto=getPropostaAuto(a['Contato']);
+  const resultado=a['Resultado']||'';
+
+  let resultadoHtml='';
+  if(propAuto){
+    resultadoHtml=`<div style="background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#4ade80;display:flex;align-items:center;gap:6px">
+      ✅ <strong>Proposta cadastrada</strong> <span style="color:#22c55e88">— detectado automaticamente no arquivo de propostas</span>
+    </div>`;
+  } else if(resultado==='sucesso'){
+    resultadoHtml=`<div style="background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#4ade80;display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>✅ <strong>Proposta cadastrada</strong> — marcado manualmente</span>
+      <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#4ade8088;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
+    </div>`;
+  } else if(resultado==='reagendou'){
+    resultadoHtml=`<div style="background:#1a1500;border:1px solid #f59e0b;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#fbbf24;display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>🔁 <strong>Cliente reagendou</strong>${a['ResultadoObs']?' — '+a['ResultadoObs']:''}</span>
+      <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#fbbf2488;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
+    </div>`;
+  } else if(resultado==='sem_retorno'){
+    resultadoHtml=`<div style="background:#1a1d27;border:1px solid #555;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#999;display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>📵 <strong>Não foi e sem retorno</strong>${a['ResultadoObs']?' — '+a['ResultadoObs']:''}</span>
+      <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#99999988;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
+    </div>`;
+  } else if(resultado==='desistiu'){
+    resultadoHtml=`<div style="background:#2a1515;border:1px solid #ef4444;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#f87171;display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>❌ <strong>Cliente desistiu</strong>${a['ResultadoObs']?' — '+a['ResultadoObs']:''}</span>
+      <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#f8717188;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
+    </div>`;
+  } else if(resultado==='outro'){
+    resultadoHtml=`<div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#aaa;display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>✏️ <strong>${a['ResultadoObs']||'Outro motivo'}</strong></span>
+      <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#aaaaaa88;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
+    </div>`;
+  } else {
+    resultadoHtml=`<div style="margin-top:8px">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#555;margin-bottom:5px">Resultado da entrevista</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button type="button" onclick="marcarResultado('${a['_id']}','sucesso')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #22c55e;background:#0f2a1a;color:#4ade80;cursor:pointer;font-family:inherit">✅ Deu certo</button>
+        <button type="button" onclick="marcarResultado('${a['_id']}','reagendou')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #f59e0b;background:#1a1500;color:#fbbf24;cursor:pointer;font-family:inherit">🔁 Reagendou</button>
+        <button type="button" onclick="marcarResultado('${a['_id']}','sem_retorno')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #555;background:#1a1d27;color:#999;cursor:pointer;font-family:inherit">📵 Sem retorno</button>
+        <button type="button" onclick="marcarResultado('${a['_id']}','desistiu')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #ef4444;background:#2a1515;color:#f87171;cursor:pointer;font-family:inherit">❌ Desistiu</button>
+        <button type="button" onclick="marcarOutro('${a['_id']}')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#888;cursor:pointer;font-family:inherit">✏️ Outro</button>
+      </div>
+    </div>`;
+  }
+
   return`<div class="ent-row">
     <div class="ent-top">
       <span class="sp ${cor(a['Status'])}">${a['Status']}</span>
@@ -222,7 +294,28 @@ function rowHtml(a){
         ${a['Link']?`<button type="button" class="copy-btn" onclick="copiarMsgEntrevista('${nomeC}','${data}','${hora}','${linkSafe}')">📋 Copiar mensagem</button>`:''}
       `:''}
     </div>
+    ${resultadoHtml}
   </div>`;
+}
+
+async function marcarResultado(id, resultado, obs){
+  await supa.atualizarAtividade(id, {resultado, resultado_obs: obs||null});
+  const a=atividades.find(x=>String(x['_id'])===String(id));
+  if(a){a['Resultado']=resultado;a['ResultadoObs']=obs||'';}
+  renderTudo();
+}
+
+function marcarOutro(id){
+  const motivo=prompt('Descreva o motivo:');
+  if(motivo===null)return;
+  marcarResultado(id,'outro',motivo);
+}
+
+async function limparResultado(id){
+  await supa.atualizarAtividade(id, {resultado:null, resultado_obs:null});
+  const a=atividades.find(x=>String(x['_id'])===String(id));
+  if(a){a['Resultado']='';a['ResultadoObs']='';}
+  renderTudo();
 }
 
 function renderTodas(){
@@ -233,6 +326,8 @@ function renderTodas(){
     {id:'planejadas',label:`Planejadas (${lista.filter(a=>a['Status']==='Planejada').length})`},
     {id:'online',label:`Online (${lista.filter(a=>a['Modalidade']==='online').length})`},
     {id:'sem-tel',label:`Sem telefone (${lista.filter(a=>!a['Telefone']||a['Telefone']==='- - -').length})`},
+    {id:'sucesso',label:`✅ Deu certo (${lista.filter(a=>getPropostaAuto(a['Contato'])||a['Resultado']==='sucesso').length})`},
+    {id:'sem-resultado',label:`Sem resultado (${lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']).length})`},
   ];
   document.getElementById('filtros-todas').innerHTML=filtros.map(f=>`
     <button type="button" class="f-btn ${filtroTodas===f.id?'active':''}" onclick="setFiltro('${f.id}')">${f.label}</button>`).join('');
@@ -242,6 +337,8 @@ function renderTodas(){
   if(filtroTodas==='planejadas')fl=lista.filter(a=>a['Status']==='Planejada');
   if(filtroTodas==='online')fl=lista.filter(a=>a['Modalidade']==='online');
   if(filtroTodas==='sem-tel')fl=lista.filter(a=>!a['Telefone']||a['Telefone']==='- - -');
+  if(filtroTodas==='sucesso')fl=lista.filter(a=>getPropostaAuto(a['Contato'])||a['Resultado']==='sucesso');
+  if(filtroTodas==='sem-resultado')fl=lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']);
 
   fl=[...fl].sort((a,b)=>(a['Data de vencimento']||'').localeCompare(b['Data de vencimento']||''));
   document.getElementById('todas-lista').innerHTML=fl.length?fl.map(rowHtml).join(''):'<div class="empty">Nenhuma entrevista nesta categoria. Importe o CSV de Atividades no Painel do Gerente.</div>';

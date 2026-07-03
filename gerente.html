@@ -722,6 +722,20 @@ function renderEntrevistas(){
     const hora=(a['Data de vencimento']||'—').split(' ')[1]||'—';
     const nomeC=(a['Contato']||'').replace(/'/g,"\\'");
     const linkSafe=(a['Link']||'').replace(/'/g,"\\'");
+    const temProposta=propostas.find(p=>{
+      const nomeP=(p['Aluno']||'').toLowerCase().trim();
+      const nomeA=(a['Contato']||'').toLowerCase().trim();
+      return nomeP===nomeA||nomeP.includes(nomeA)||nomeA.includes(nomeP);
+    });
+    const resultado=a['Resultado']||'';
+    let badgeResultado='';
+    if(temProposta) badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#0f2a1a;color:#4ade80">✅ Proposta cadastrada</span>`;
+    else if(resultado==='sucesso') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#0f2a1a;color:#4ade80">✅ Deu certo (manual)</span>`;
+    else if(resultado==='reagendou') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#1a1500;color:#fbbf24">🔁 Reagendou</span>`;
+    else if(resultado==='sem_retorno') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#1a1d27;color:#999;border:1px solid #2a2d3a">📵 Sem retorno</span>`;
+    else if(resultado==='desistiu') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#2a1515;color:#f87171">❌ Desistiu</span>`;
+    else if(resultado==='outro') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#1a1d27;color:#aaa;border:1px solid #2a2d3a">✏️ ${a['ResultadoObs']||'Outro'}</span>`;
+    else badgeResultado=`<span style="font-size:10px;color:#555">— sem resultado ainda</span>`;
     return`
     <div style="padding:9px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
       <div style="display:flex;align-items:center;gap:10px">
@@ -748,6 +762,7 @@ function renderEntrevistas(){
           ${a['Link']?`<button type="button" onclick="copiarMsgEntrevista('${nomeC}','${data}','${hora}','${linkSafe}')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #22c55e;background:#0f2a1a;color:#4ade80;cursor:pointer;font-family:inherit">📋 Copiar mensagem</button>`:''}
         `:''}
       </div>
+      <div style="margin-top:6px">${badgeResultado}</div>
     </div>`;
   };
   document.getElementById('ent-body').innerHTML=todas.length?

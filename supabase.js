@@ -34,6 +34,8 @@ const adapt = {
     'Telefone': a.telefone||'',        // telefone do contato
     'Modalidade': a.modalidade||'presencial',
     'Link': a.link_meet||'',
+    'Resultado': a.resultado||'',      // sucesso / reagendou / sem_retorno / desistiu / outro
+    'ResultadoObs': a.resultado_obs||'',
     '_id': a.id
   }),
   proposta: p => ({
