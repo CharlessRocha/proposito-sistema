@@ -299,7 +299,19 @@ const FASES_DEF=[
 const ETAPA_ORDER=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'];
 const ETAPA_COR={'Inscrito':'#3b82f6','Confirmado no Teste':'#f59e0b','Não Compareceu no Teste':'#ef4444','Compareceu no Teste':'#22c55e','Entrevista Agendada':'#a78bfa','Proposta':'#38bdf8','Negociação':'#fb923c','Matrícula':'#22c55e'};
 
-let leads=[], propostas=[], atividades=[], tarefas={}, seletivos=[], mapaProcessos=[];
+let leads=[], propostas=[], atividades=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
+
+// Combina tarefas padrão com as customizações salvas no Playbook (edições/exclusões/adições)
+function todasTarefasComFase(){
+  const todasPadrao=[];
+  FASES_DEF.forEach(f=>f.tarefas.forEach(ta=>todasPadrao.push({...ta,fase:f.id})));
+  const custom = tarefasCustom.filter(t=>!todasPadrao.find(p=>p.id===t.id));
+  const editadas = tarefasCustom.filter(t=>todasPadrao.find(p=>p.id===t.id));
+  return todasPadrao.map(t=>{
+    const edit=editadas.find(e=>e.id===t.id);
+    return edit?{...edit,fase:edit.fase||t.fase}:t;
+  }).concat(custom).filter(t=>!t.excluida);
+}
 
 // Converte código do Rubeus em nome amigável configurado
 function nomeAmigavel(processo){
@@ -370,6 +382,7 @@ async function init(){
   if(!seletivos.length) seletivos = SELETIVOS_DEFAULT;
   mapaProcessos = await supa.getConfig('mapa_processos') || [];
   etapasFunil = await supa.getConfig('etapas_funil') || [];
+  tarefasCustom = await supa.getConfig('tarefas_custom') || [];
   renderTudo();
 }
 
@@ -491,9 +504,9 @@ function renderAlertas(){
   const items=[];
   if(sa){
     const d=parseData(sa.data);const t=getTarefas(`sel_${sa.n}`);
-    FASES_DEF.forEach(f=>f.tarefas.forEach(ta=>{
+    todasTarefasComFase().forEach(ta=>{
       if(!t[ta.id]&&ta.alerta){const cor=prazoCor(d,ta.dRel);if(cor==='urgente'||cor==='proximo')items.push({ta,d,selId:`sel_${sa.n}`,cor});}
-    }));
+    });
   }
   atividades.filter(a=>a['Status']==='Atrasada').forEach(a=>items.push({tipo:'ent',nome:a['Contato'],desc:`Entrevista atrasada — venceu ${a['Data de vencimento']}`}));
   const ab=document.getElementById('alert-box');
@@ -509,13 +522,14 @@ function renderAlertas(){
 function renderDatas(){
   // Pega as tarefas pendentes de TODOS os seletivos ativos (janela -3 a +15 dias)
   const tarefasUrgentes=[];
+  const todas=todasTarefasComFase();
   seletivos.forEach(s=>{
     const d=parseData(s.data);if(!d)return;
     const diasSel=diasAte(d);
     if(diasSel<-15||diasSel>30)return; // só considera seletivos relevantes agora
     const selId=`sel_${s.n}`;
     const t=getTarefas(selId);
-    FASES_DEF.forEach(f=>f.tarefas.forEach(ta=>{
+    todas.forEach(ta=>{
       if(t[ta.id])return; // já concluída
       const dataTarefa=dataRel(d,ta.dRel);
       if(!dataTarefa)return;
@@ -527,7 +541,7 @@ function renderDatas(){
           data:fmtData(dataTarefa), selNum:s.n, alerta:ta.alerta
         });
       }
-    }));
+    });
   });
   // Ordena por urgência (mais perto de vencer primeiro, vencidas no topo)
   tarefasUrgentes.sort((a,b)=>a.dias-b.dias);
@@ -552,22 +566,23 @@ function renderPlaybook(){
   const sa=seletivoAtivo();
   if(!sa){document.getElementById('play-body').innerHTML='<div class="empty">Nenhum seletivo ativo</div>';document.getElementById('playbook-body').innerHTML='<div class="empty">Nenhum seletivo ativo nos próximos 15 dias</div>';return;}
   const d=parseData(sa.data);const t=getTarefas(`sel_${sa.n}`);
-  const pendentes=[];
-  FASES_DEF.forEach(f=>f.tarefas.forEach(ta=>{if(!t[ta.id])pendentes.push({...ta,fase:f});}));
+  const todas=todasTarefasComFase();
+  const pendentes=todas.filter(ta=>!t[ta.id]);
   pendentes.sort((a,b)=>{const ordem={urgente:0,proximo:1,ok:2,neutro:3};return(ordem[prazoCor(d,a.dRel)]||3)-(ordem[prazoCor(d,b.dRel)]||3);});
 
   document.getElementById('play-body').innerHTML=pendentes.slice(0,6).map(ta=>{
     const cor=prazoCor(d,ta.dRel);
-    return`<div class="play-row"><span class="play-fase pf-${ta.fase.badge}">${ta.fase.badge.toUpperCase()}</span><span class="play-nome">${ta.nome}</span><span class="play-prazo pp-${cor}">D${ta.dRel>=0?'+':''}${ta.dRel}=${fmtData(dataRel(d,ta.dRel))}</span></div>`;
+    return`<div class="play-row"><span class="play-fase pf-${ta.fase}">${ta.fase.toUpperCase()}</span><span class="play-nome">${ta.nome}</span><span class="play-prazo pp-${cor}">D${ta.dRel>=0?'+':''}${ta.dRel}=${fmtData(dataRel(d,ta.dRel))}</span></div>`;
   }).join('')||'<div class="empty" style="color:#22c55e">✓ Todas concluídas</div>';
 
-  // Playbook completo
+  // Playbook completo (por fase)
   document.getElementById('playbook-body').innerHTML=`<div style="font-size:13px;color:#888;margin-bottom:12px">${sa.n}º Teste — ${sa.data}</div>`+
     FASES_DEF.map(f=>{
-      const ft=f.tarefas.length,fd=f.tarefas.filter(ta=>t[ta.id]).length;
+      const faseTarefas=todas.filter(ta=>ta.fase===f.id);
+      const ft=faseTarefas.length,fd=faseTarefas.filter(ta=>t[ta.id]).length;
       return`<div class="card" style="margin-bottom:10px">
         <div class="card-head"><span class="card-title"><span class="play-fase pf-${f.badge}" style="margin-right:6px">${f.badge.toUpperCase()}</span>${f.label}</span><span style="font-size:10px;color:#555">${fd}/${ft}</span></div>
-        <div>${f.tarefas.map(ta=>{
+        <div>${faseTarefas.map(ta=>{
           const checked=!!t[ta.id];
           const cor=prazoCor(d,ta.dRel);
           return`<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #2a2d3a;${checked?'opacity:.45':''}">
