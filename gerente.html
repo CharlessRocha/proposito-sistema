@@ -392,6 +392,32 @@ function prazoCor(base,dRel){
   if(diff<0)return'urgente';if(diff<=3)return'proximo';if(diff<=7)return'ok';return'neutro';
 }
 function getTarefas(id){if(!tarefas[id])tarefas[id]={};return tarefas[id];}
+
+// Parser de CSV correto — respeita aspas, ponto-e-vírgula e quebras de linha dentro de campos
+// (o split ingênuo por ';' quebra o Rubeus, que usa aspas com caracteres especiais)
+function parseCSVCompleto(texto, delimitador=';'){
+  const linhas=[];
+  let linha=[];
+  let campo='';
+  let dentroAspas=false;
+  for(let i=0;i<texto.length;i++){
+    const c=texto[i];
+    if(dentroAspas){
+      if(c==='"'){
+        if(texto[i+1]==='"'){campo+='"';i++;}
+        else dentroAspas=false;
+      } else campo+=c;
+    } else {
+      if(c==='"') dentroAspas=true;
+      else if(c===delimitador){linha.push(campo);campo='';}
+      else if(c==='\r'){/* ignora */}
+      else if(c==='\n'){linha.push(campo);linhas.push(linha);linha=[];campo='';}
+      else campo+=c;
+    }
+  }
+  if(campo.length||linha.length){linha.push(campo);linhas.push(linha);}
+  return linhas.filter(l=>l.length>1||l[0]!=='');
+}
 function compareceuReal(etapa){return['Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'].includes(etapa);}
 // Adapta lead do Supabase para formato original
 function adaptLead(l){ return {'Nome da pessoa':l.nome,'Etapa':l.etapa,'Status':l.status,'Processo seletivo':l.processo,'Unidade':l.unidade,'Nome - Oferta de curso':l.oferta,'Turno':l.turno,'Data da criação':l.data_criacao,'Código de Inscrição':l.codigo_inscricao}; }
@@ -450,16 +476,17 @@ async function lerCSV(inp,tipo){
   const f=inp.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=async e=>{
-    const linhas=e.target.result.split('\n').filter(l=>l.trim());
-    const header=linhas[0].split(';').map(h=>h.replace(/^"|"$/g,'').trim());
-    const rows=linhas.slice(1).map(l=>{const cols=l.split(';').map(c=>c.replace(/^"|"$/g,'').trim());const obj={};header.forEach((h,i)=>obj[h]=cols[i]||'');return obj;});
+    const linhasCSV=parseCSVCompleto(e.target.result,';');
+    if(!linhasCSV.length)return;
+    const header=linhasCSV[0].map(h=>h.trim());
+    const rows=linhasCSV.slice(1).map(cols=>{const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;});
     if(tipo==='reg'){
       leads=rows.filter(r=>r['Nome da pessoa']&&r['Nome da pessoa']!='- - -');
       marcarOk('reg',leads.length+' (salvando...)');
       await supa.salvarLeads(leads);
       marcarOk('reg',leads.length);
     } else {
-      atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
+      atividades=rows.filter(r=>r['Telefones secundários']&&r['Telefones secundários']!='- - -');
       marcarOk('atv',atividades.length+' (salvando...)');
       await supa.salvarAtividades(atividades);
       marcarOk('atv',atividades.length);
@@ -689,29 +716,64 @@ function renderEntrevistas(){
     return;
   }
   const cor=s=>s==='Atrasada'?'background:#2a1515;color:#ef4444':s==='Ganho'?'background:#0f2a1a;color:#22c55e':'background:#1a1f35;color:#F5C842';
-  const rowHtml=a=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
-      <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;${cor(a['Status'])}">${a['Status']}</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:#ddd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a['Contato']}</div>
-        <div style="font-size:11px;color:#555;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
-          <span style="color:#aaa">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
-          <span>${a['Unidade']||''}</span>
-          <span style="color:#888">👤 ${a['Responsável']||'—'}</span>
-          ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#60a5fa">📞 ${a['Telefone']}</span>`:''}
+  const rowHtml=a=>{
+    const isOnline=a['Modalidade']==='online';
+    const data=(a['Data de vencimento']||'').split(' ')[0]||'';
+    const hora=(a['Data de vencimento']||'—').split(' ')[1]||'—';
+    const nomeC=(a['Contato']||'').replace(/'/g,"\\'");
+    const linkSafe=(a['Link']||'').replace(/'/g,"\\'");
+    return`
+    <div style="padding:9px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;${cor(a['Status'])}">${a['Status']}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;color:#ddd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a['Contato']}</div>
+          <div style="font-size:11px;color:#555;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
+            <span style="color:#aaa">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
+            <span>${a['Unidade']||''}</span>
+            <span style="color:#888">👤 ${a['Responsável']||'—'}</span>
+            ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#60a5fa">📞 ${a['Telefone']}</span>`:''}
+          </div>
+          <div style="font-size:10px;color:#666;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
         </div>
-        <div style="font-size:10px;color:#666;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:600;color:#F5C842">${hora}</div>
+          <div style="font-size:10px;color:#555">${data}</div>
+        </div>
       </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:12px;font-weight:600;color:#F5C842">${(a['Data de vencimento']||'—').split(' ')[1]||'—'}</div>
-        <div style="font-size:10px;color:#555">${(a['Data de vencimento']||'').split(' ')[0]||''}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <button type="button" onclick="toggleModalidade('${a['_id']}',${!isOnline})" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid ${isOnline?'#F5C842':'#2a2d3a'};background:${isOnline?'#1a1f35':'#12141e'};color:${isOnline?'#F5C842':'#888'};cursor:pointer;font-family:inherit">${isOnline?'🖥️ Online':'🏢 Presencial'}</button>
+        ${isOnline?`
+          <input type="text" placeholder="Cole o link do Meet..." value="${a['Link']||''}" onchange="salvarLinkMeet('${a['_id']}',this.value)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#60a5fa;flex:1;min-width:140px;font-family:inherit">
+          ${a['Link']?`<button type="button" onclick="copiarMsgEntrevista('${nomeC}','${data}','${hora}','${linkSafe}')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #22c55e;background:#0f2a1a;color:#4ade80;cursor:pointer;font-family:inherit">📋 Copiar mensagem</button>`:''}
+        `:''}
       </div>
     </div>`;
+  };
   document.getElementById('ent-body').innerHTML=todas.length?
     todas.slice(0,5).map(rowHtml).join('')+
     (todas.length>5?`<div style="font-size:11px;color:#555;text-align:center;padding:8px">+ ${todas.length-5} entrevistas na aba Entrevistas</div>`:'')
     :'<div class="empty">Nenhuma entrevista encontrada</div>';
   document.getElementById('entrevistas-full').innerHTML=todas.length?todas.map(rowHtml).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
+}
+
+async function toggleModalidade(id, novoOnline){
+  await supa.atualizarAtividade(id, {modalidade: novoOnline?'online':'presencial'});
+  const a=atividades.find(x=>String(x['_id'])===String(id));
+  if(a) a['Modalidade']=novoOnline?'online':'presencial';
+  renderEntrevistas();
+}
+
+async function salvarLinkMeet(id, link){
+  await supa.atualizarAtividade(id, {link_meet: link});
+  const a=atividades.find(x=>String(x['_id'])===String(id));
+  if(a) a['Link']=link;
+  renderEntrevistas();
+}
+
+function copiarMsgEntrevista(nome,data,hora,link){
+  const msg=`Olá ${nome}! Sua entrevista está agendada para ${data} às ${hora} — modalidade online.\nLink da reunião: ${link}`;
+  navigator.clipboard.writeText(msg).then(()=>alert('✓ Mensagem copiada! Cole no WhatsApp.')).catch(()=>alert('Não foi possível copiar automaticamente.'));
 }
 
 async function marcarTarefa(selId,taId){
