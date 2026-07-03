@@ -32,6 +32,8 @@ const adapt = {
     'Responsável': a.responsavel||'',  // entrevistador
     'Segmento': a.segmento||'',        // segmento pretendido
     'Telefone': a.telefone||'',        // telefone do contato
+    'Modalidade': a.modalidade||'presencial',
+    'Link': a.link_meet||'',
     '_id': a.id
   }),
   proposta: p => ({
@@ -151,6 +153,9 @@ const supa = {
     const rows = await this.get('atividades', '?order=data_vencimento&limit=1000');
     return rows.map(adapt.atividade);
   },
+  async atualizarAtividade(id, dados) {
+    return await this.update('atividades', dados, `id=eq.${id}`);
+  },
 
   // ── PROPOSTAS ──
   async salvarPropostas(propCSV) {
@@ -207,3 +212,45 @@ const supa = {
     try { return JSON.parse(rows[0].valor); } catch(e) { return rows[0].valor; }
   }
 };
+
+// ═══════════════════════════════════════════════
+// PLAYBOOK — Resolução de tarefas com versionamento por seletivo
+// Uma edição feita a partir do Nº Seletivo vale para ele e os seguintes,
+// nunca para seletivos anteriores.
+// ═══════════════════════════════════════════════
+function resolveTarefasSeletivo(basePadrao, customList, n) {
+  const baseMap = {};
+  basePadrao.forEach(t => baseMap[t.id] = t);
+  const porId = {};
+  (customList||[]).forEach(c => {
+    if(!porId[c.id]) porId[c.id] = [];
+    porId[c.id].push(c);
+  });
+  const resultado = [];
+  // Tarefas padrão — aplica a versão customizada mais recente que já estava em vigor em N
+  Object.values(baseMap).forEach(base => {
+    const versoes = (porId[base.id]||[])
+      .filter(v => v.apartir===undefined || v.apartir<=n)
+      .sort((a,b) => (b.apartir||0)-(a.apartir||0));
+    if(versoes.length){
+      const top = versoes[0];
+      if(top.excluida) return; // removida a partir de algum seletivo <= N
+      resultado.push({...base, ...top});
+    } else {
+      resultado.push(base);
+    }
+  });
+  // Tarefas customizadas novas (sem base padrão) — só existem a partir do seletivo em que foram criadas
+  Object.keys(porId).forEach(id => {
+    if(baseMap[id]) return;
+    const versoes = porId[id]
+      .filter(v => v.apartir===undefined || v.apartir<=n)
+      .sort((a,b) => (b.apartir||0)-(a.apartir||0));
+    if(!versoes.length) return;
+    const top = versoes[0];
+    if(top.excluida) return;
+    resultado.push(top);
+  });
+  return resultado;
+}
+window.resolveTarefasSeletivo = resolveTarefasSeletivo;

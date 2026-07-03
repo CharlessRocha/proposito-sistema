@@ -301,16 +301,54 @@ const ETAPA_COR={'Inscrito':'#3b82f6','Confirmado no Teste':'#f59e0b','Não Comp
 
 let leads=[], propostas=[], atividades=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
 
-// Combina tarefas padrão com as customizações salvas no Playbook (edições/exclusões/adições)
-function todasTarefasComFase(){
-  const todasPadrao=[];
-  FASES_DEF.forEach(f=>f.tarefas.forEach(ta=>todasPadrao.push({...ta,fase:f.id})));
-  const custom = tarefasCustom.filter(t=>!todasPadrao.find(p=>p.id===t.id));
-  const editadas = tarefasCustom.filter(t=>todasPadrao.find(p=>p.id===t.id));
-  return todasPadrao.map(t=>{
-    const edit=editadas.find(e=>e.id===t.id);
-    return edit?{...edit,fase:edit.fase||t.fase}:t;
-  }).concat(custom).filter(t=>!t.excluida);
+// Lista completa de tarefas padrão (mesma base usada no módulo Playbook)
+const TAREFAS_BASE_COMPLETA = [
+  {id:'p1',fase:'plan',nome:'Confirmar condição comercial e premiação com a diretoria',resp:'Gerente Comercial',dRel:-14,alerta:'Aprovação necessária antes de divulgar'},
+  {id:'p2',fase:'plan',nome:'Reunião com marketing — definir meta de leads do seletivo',resp:'Gerente Comercial',dRel:-14,alerta:'Cobrar MKT semanalmente'},
+  {id:'p3',fase:'plan',nome:'Cadastrar ofertas de curso no sistema de admissões',resp:'Assistente Comercial',dRel:-12,obs:'Pré-requisito: tabelas de preço atualizadas'},
+  {id:'p4',fase:'plan',nome:'Verificar landing page no ar e divulgação ativa',resp:'Gerente Comercial',dRel:-10},
+  {id:'p5',fase:'plan',nome:'Confirmar conteúdo jornada semana 1 entregue pelo MKT',resp:'Analista Comercial',dRel:-10,alerta:'Automação Blip depende desse conteúdo'},
+  {id:'p6',fase:'plan',nome:'Enviar condição e premiação no Grupo de Matriculadores',resp:'Gerente Comercial',dRel:-1,obs:'Após aprovação da diretoria'},
+  {id:'pre1',fase:'pre',nome:'Confirmar saldo da plataforma de telefonia (URA / discador / SMS)',resp:'Analista Comercial',dRel:-7,alerta:'Crítico — falta de saldo paralisa a confirmação'},
+  {id:'pre2',fase:'pre',nome:'Alocar CDRs conforme volume de inscritos',resp:'Gerente Comercial',dRel:-7,obs:'Até 40 inscritos = 2 CDRs · acima de 40 = 3 CDRs'},
+  {id:'pre3',fase:'pre',nome:'Confirmar provas + cartão resposta entregues pela gráfica',resp:'Gerente Comercial',dRel:-7,alerta:'Prova física deve estar na unidade até D-1'},
+  {id:'pre4',fase:'pre',nome:'Validar conteúdo jornada semana 2 entregue pelo MKT',resp:'Analista Comercial',dRel:-7},
+  {id:'pre5',fase:'pre',nome:'Montar escala do seletivo — matriculadores por unidade',resp:'Gerente Comercial',dRel:-6},
+  {id:'pre6',fase:'pre',nome:'Colocar escala na planilha de pagamento',resp:'Analista Comercial',dRel:-5},
+  {id:'pre7',fase:'pre',nome:'Confirmar escala dos outros setores',resp:'Gerente Comercial',dRel:-4,alerta:'Prazo máximo: quinta-feira antes do seletivo'},
+  {id:'pre8',fase:'pre',nome:'Enviar planilha de pagamento da escala',resp:'Analista Comercial',dRel:-4},
+  {id:'pre9',fase:'pre',nome:'Acompanhar meta de confirmação CDR — mínimo 80%',resp:'Gerente Comercial',dRel:-3,alerta:'Se <60% na quinta, acionar reforço'},
+  {id:'pre10',fase:'pre',nome:'Acionar URA + discador + SMS + Blip em massa',resp:'Analista Comercial',dRel:-3},
+  {id:'pre11',fase:'pre',nome:'Solicitar Ouro Branco: cartão gráfica + bombom Sr. Roberto',resp:'Gerente Comercial',dRel:-3},
+  {id:'pre12',fase:'pre',nome:'Solicitar notebooks ao TI para check-in',resp:'Gerente Comercial',dRel:-3},
+  {id:'pre13',fase:'pre',nome:'Verificar som, microfone e mesas nas unidades',resp:'Gerente Comercial',dRel:-1},
+  {id:'pre14',fase:'pre',nome:'Organizar salas com todos os materiais',resp:'Assistente Comercial',dRel:-1,obs:'Anamnese, propostas, tabelas, canetas'},
+  {id:'pre15',fase:'pre',nome:'Reunião de alinhamento com a equipe',resp:'Gerente Comercial',dRel:-1},
+  {id:'d1',fase:'dia',nome:'Chegar antes dos clientes no horário combinado',resp:'Gerente Comercial',dRel:0,alerta:'Se atrasar, avisar a equipe'},
+  {id:'d2',fase:'dia',nome:'Conferir postos: recepção, check-in, sala comercial, NIP',resp:'Gerente Comercial',dRel:0},
+  {id:'d3',fase:'dia',nome:'Confirmar NIP online com acesso às provas digitais',resp:'Analista Comercial',dRel:0},
+  {id:'d4',fase:'dia',nome:'Lançar notas no sistema — acionar automação Rubeus',resp:'Gerente Comercial',dRel:0,alerta:'Lançar no mesmo dia'},
+  {id:'d5',fase:'dia',nome:'Atualizar infantil manualmente no Rubeus → Compareceu',resp:'Analista Comercial',dRel:0,alerta:'Infantil não faz prova — mudança é manual'},
+  {id:'d6',fase:'dia',nome:'Confirmar fotos de todas as propostas no Grupo',resp:'Gerente Comercial',dRel:0,alerta:'Nenhuma entrevista termina sem foto'},
+  {id:'d7',fase:'dia',nome:'Posicionar pessoa na saída para quem não esperou',resp:'Gerente Comercial',dRel:0},
+  {id:'ps1',fase:'pos',nome:'Atualizar filtros no Rubeus: inside sales, closer, atividades',resp:'Analista Comercial',dRel:1,alerta:'Fazer em D+1 — atraso cega o funil'},
+  {id:'ps2',fase:'pos',nome:'Disparar Blip "msg de comparecimento"',resp:'Analista Comercial',dRel:1},
+  {id:'ps3',fase:'pos',nome:'Iniciar acionamento inside sales em D+1',resp:'Analista Comercial',dRel:1,alerta:'Acionamento começa em D+1 sem exceção'},
+  {id:'ps4',fase:'pos',nome:'Cadastrar propostas físicas no sistema de admissões',resp:'Assistente Comercial',dRel:1,alerta:'Fazer até D+1'},
+  {id:'ps5',fase:'pos',nome:'Enviar lembrete de agendamento de entrevistas',resp:'Assistente Comercial',dRel:2},
+  {id:'ps6',fase:'pos',nome:'Agendar entrevistas no Rubeus para quem compareceu',resp:'Analista Comercial',dRel:2},
+  {id:'ps7',fase:'pos',nome:'Atualizar indicações do seletivo na planilha',resp:'Gerente Comercial',dRel:2},
+  {id:'ps8',fase:'pos',nome:'Acompanhar meta de agendamento — War Room diário',resp:'Analista Comercial',dRel:5},
+  {id:'ps9',fase:'pos',nome:'Closer recebe leads em Negociação',resp:'Closer',dRel:6,alerta:'Após 5 dias em Proposta'},
+  {id:'ps10',fase:'pos',nome:'Relatório de resultado do seletivo',resp:'Gerente Comercial',dRel:7},
+  {id:'ps11',fase:'pos',nome:'Cadastrar próximo processo seletivo no sistema',resp:'Assistente Comercial',dRel:3,obs:'Ciclo começa em 15 dias'},
+];
+
+// Retorna as tarefas válidas para um seletivo específico, considerando o histórico de edições
+function todasTarefasComFase(seletivoNum){
+  const n = seletivoNum!==undefined ? seletivoNum : (seletivoFocado()?.n);
+  if(n===undefined||n===null) return TAREFAS_BASE_COMPLETA;
+  return window.resolveTarefasSeletivo(TAREFAS_BASE_COMPLETA, tarefasCustom, n);
 }
 
 // Converte código do Rubeus em nome amigável configurado
@@ -519,7 +557,7 @@ function renderAlertas(){
   const items=[];
   if(sa){
     const d=parseData(sa.data);const t=getTarefas(`sel_${sa.n}`);
-    todasTarefasComFase().forEach(ta=>{
+    todasTarefasComFase(sa.n).forEach(ta=>{
       if(!t[ta.id]&&ta.alerta){const cor=prazoCor(d,ta.dRel);if(cor==='urgente'||cor==='proximo')items.push({ta,d,selId:`sel_${sa.n}`,cor});}
     });
   }
@@ -537,7 +575,6 @@ function renderAlertas(){
 function renderDatas(){
   const proc=getProcessoSel();
   const tarefasUrgentes=[];
-  const todas=todasTarefasComFase();
   // Se um seletivo específico está selecionado, mostra só as tarefas dele.
   // Se "Todos" está selecionado, mostra as urgentes de todos os seletivos ativos.
   const seletivosParaMostrar = proc ? [seletivoFocado()].filter(Boolean) : seletivos;
@@ -547,6 +584,7 @@ function renderDatas(){
     if(!proc && (diasSel<-15||diasSel>30))return; // filtro de relevância só quando é visão geral
     const selId=`sel_${s.n}`;
     const t=getTarefas(selId);
+    const todas=todasTarefasComFase(s.n); // resolve as tarefas válidas para ESTE seletivo específico
     todas.forEach(ta=>{
       if(t[ta.id])return; // já concluída
       const dataTarefa=dataRel(d,ta.dRel);
@@ -584,7 +622,7 @@ function renderPlaybook(){
   const sa=seletivoFocado();
   if(!sa){document.getElementById('play-body').innerHTML='<div class="empty">Nenhum seletivo ativo</div>';document.getElementById('playbook-body').innerHTML='<div class="empty">Nenhum seletivo ativo nos próximos 15 dias</div>';return;}
   const d=parseData(sa.data);const t=getTarefas(`sel_${sa.n}`);
-  const todas=todasTarefasComFase();
+  const todas=todasTarefasComFase(sa.n);
   const pendentes=todas.filter(ta=>!t[ta.id]);
   pendentes.sort((a,b)=>{const ordem={urgente:0,proximo:1,ok:2,neutro:3};return(ordem[prazoCor(d,a.dRel)]||3)-(ordem[prazoCor(d,b.dRel)]||3);});
 

@@ -118,6 +118,9 @@
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
     <div class="modal-title" id="modal-title">Nova tarefa</div>
+    <div style="font-size:11px;color:#888;background:#12141e;border:1px solid #2a2d3a;border-radius:6px;padding:8px 10px;margin-bottom:12px;line-height:1.5">
+      ℹ️ Esta alteração vale a partir do seletivo selecionado <strong style="color:#F5C842" id="modal-seletivo-ref"></strong> em diante. Seletivos anteriores não são afetados.
+    </div>
     <div class="fg">
       <div class="fg-full"><label>Nome da tarefa</label><input type="text" id="f-nome" placeholder="Descreva a tarefa..."></div>
       <div><label>Responsável</label>
@@ -246,14 +249,14 @@ function prazoCor(base,dRel){
 }
 function getTarefas(id){if(!tarefas[id])tarefas[id]={};return tarefas[id];}
 
+function getSelNumAtual(){
+  const selId=document.getElementById('sel-seletivo').value;
+  return parseInt(selId.replace('sel_',''));
+}
+
 function todasTarefas(){
-  // Combina padrão com customizadas (sem duplicatas)
-  const custom = tarefasCustom.filter(t=>!TAREFAS_PADRAO.find(p=>p.id===t.id));
-  const editadas = tarefasCustom.filter(t=>TAREFAS_PADRAO.find(p=>p.id===t.id));
-  return TAREFAS_PADRAO.map(t=>{
-    const edit = editadas.find(e=>e.id===t.id);
-    return edit||t;
-  }).concat(custom).filter(t=>!t.excluida);
+  const n = getSelNumAtual();
+  return window.resolveTarefasSeletivo(TAREFAS_PADRAO, tarefasCustom, n);
 }
 
 async function init(){
@@ -365,6 +368,8 @@ async function marcarTarefa(selId,taId){
 function novaTarefa(faseId){
   editandoId=null;faseEditando=faseId;
   document.getElementById('modal-title').textContent='Nova tarefa';
+  const s=seletivos.find(x=>x.n===getSelNumAtual());
+  document.getElementById('modal-seletivo-ref').textContent=s?`${s.n}º Teste (${s.data})`:'';
   document.getElementById('f-nome').value='';
   document.getElementById('f-resp').value='Gerente Comercial';
   document.getElementById('f-drel').value='-7';
@@ -380,6 +385,8 @@ function editarTarefa(taId, faseId){
   const ta=todas.find(t=>t.id===taId);if(!ta)return;
   editandoId=taId;faseEditando=faseId;
   document.getElementById('modal-title').textContent='Editar tarefa';
+  const s=seletivos.find(x=>x.n===getSelNumAtual());
+  document.getElementById('modal-seletivo-ref').textContent=s?`${s.n}º Teste (${s.data})`:'';
   document.getElementById('f-nome').value=ta.nome;
   document.getElementById('f-resp').value=ta.resp||'Gerente Comercial';
   document.getElementById('f-drel').value=String(ta.dRel);
@@ -397,14 +404,11 @@ function excluirTarefa(taId, faseId){
 
 async function confirmarDelete(){
   if(!editandoId)return;
-  // Se é tarefa padrão, adiciona como excluída na lista custom
-  const isPadrao=TAREFAS_PADRAO.find(t=>t.id===editandoId);
-  if(isPadrao){
-    tarefasCustom=tarefasCustom.filter(t=>t.id!==editandoId);
-    tarefasCustom.push({id:editandoId,excluida:true});
-  } else {
-    tarefasCustom=tarefasCustom.filter(t=>t.id!==editandoId);
-  }
+  const n = getSelNumAtual();
+  // Remove versão anterior já registrada para este mesmo seletivo (evita duplicidade)
+  tarefasCustom=tarefasCustom.filter(t=>!(t.id===editandoId&&t.apartir===n));
+  // Marca como excluída a partir deste seletivo em diante — não afeta seletivos anteriores
+  tarefasCustom.push({id:editandoId, apartir:n, excluida:true});
   await supa.salvarConfig('tarefas_custom',tarefasCustom);
   fecharModal();renderPlaybook();
 }
@@ -412,8 +416,11 @@ async function confirmarDelete(){
 async function salvarTarefa(){
   const nome=document.getElementById('f-nome').value.trim();
   if(!nome){alert('Informe o nome da tarefa');return;}
+  const n = getSelNumAtual();
+  const id = editandoId||`custom_${Date.now()}`;
   const nova={
-    id: editandoId||`custom_${Date.now()}`,
+    id,
+    apartir: n, // vale a partir deste seletivo em diante — não afeta os anteriores
     fase: document.getElementById('f-fase').value,
     nome,
     resp: document.getElementById('f-resp').value,
@@ -421,8 +428,8 @@ async function salvarTarefa(){
     obs: document.getElementById('f-obs').value||undefined,
     alerta: document.getElementById('f-alerta').value||undefined,
   };
-  // Remove entrada antiga se existir
-  tarefasCustom=tarefasCustom.filter(t=>t.id!==nova.id);
+  // Remove só a versão já registrada para ESTE seletivo (mantém histórico de outros)
+  tarefasCustom=tarefasCustom.filter(t=>!(t.id===id&&t.apartir===n));
   tarefasCustom.push(nova);
   await supa.salvarConfig('tarefas_custom',tarefasCustom);
   fecharModal();renderPlaybook();
