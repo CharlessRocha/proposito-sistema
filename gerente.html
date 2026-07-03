@@ -364,6 +364,21 @@ function seletivoAtivo(){
     ||seletivos.find(s=>{const d=parseData(s.data);return d&&diasAte(d)>0;});
 }
 
+// Se o usuário escolheu um seletivo específico no filtro do topo, usa ele.
+// Senão, usa o detectado automaticamente pela proximidade da data.
+function seletivoFocado(){
+  const proc=getProcessoSel();
+  if(proc){
+    const m=proc.match(/^(\d+)/); // extrai o número do nome amigável, ex: "1º Seletivo" → 1
+    if(m){
+      const num=parseInt(m[1]);
+      const s=seletivos.find(x=>x.n===num);
+      if(s)return s;
+    }
+  }
+  return seletivoAtivo();
+}
+
 async function init(){
   document.getElementById('data-hoje').textContent=HOJE.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   // Carrega tarefas do Supabase
@@ -500,7 +515,7 @@ function renderKPIs(){
 }
 
 function renderAlertas(){
-  const sa=seletivoAtivo();
+  const sa=seletivoFocado();
   const items=[];
   if(sa){
     const d=parseData(sa.data);const t=getTarefas(`sel_${sa.n}`);
@@ -520,13 +535,16 @@ function renderAlertas(){
 }
 
 function renderDatas(){
-  // Pega as tarefas pendentes de TODOS os seletivos ativos (janela -3 a +15 dias)
+  const proc=getProcessoSel();
   const tarefasUrgentes=[];
   const todas=todasTarefasComFase();
-  seletivos.forEach(s=>{
+  // Se um seletivo específico está selecionado, mostra só as tarefas dele.
+  // Se "Todos" está selecionado, mostra as urgentes de todos os seletivos ativos.
+  const seletivosParaMostrar = proc ? [seletivoFocado()].filter(Boolean) : seletivos;
+  seletivosParaMostrar.forEach(s=>{
     const d=parseData(s.data);if(!d)return;
     const diasSel=diasAte(d);
-    if(diasSel<-15||diasSel>30)return; // só considera seletivos relevantes agora
+    if(!proc && (diasSel<-15||diasSel>30))return; // filtro de relevância só quando é visão geral
     const selId=`sel_${s.n}`;
     const t=getTarefas(selId);
     todas.forEach(ta=>{
@@ -534,8 +552,8 @@ function renderDatas(){
       const dataTarefa=dataRel(d,ta.dRel);
       if(!dataTarefa)return;
       const diasFalta=Math.round((dataTarefa-HOJE)/(1000*60*60*24));
-      // Só mostra tarefas futuras próximas (até 15 dias) ou já vencidas (até 5 dias atrás)
-      if(diasFalta>=-5&&diasFalta<=15){
+      const janelaOk = proc ? (diasFalta>=-30&&diasFalta<=60) : (diasFalta>=-5&&diasFalta<=15);
+      if(janelaOk){
         tarefasUrgentes.push({
           nome:ta.nome, resp:ta.resp, dias:diasFalta,
           data:fmtData(dataTarefa), selNum:s.n, alerta:ta.alerta
@@ -563,7 +581,7 @@ function renderDatas(){
 }
 
 function renderPlaybook(){
-  const sa=seletivoAtivo();
+  const sa=seletivoFocado();
   if(!sa){document.getElementById('play-body').innerHTML='<div class="empty">Nenhum seletivo ativo</div>';document.getElementById('playbook-body').innerHTML='<div class="empty">Nenhum seletivo ativo nos próximos 15 dias</div>';return;}
   const d=parseData(sa.data);const t=getTarefas(`sel_${sa.n}`);
   const todas=todasTarefasComFase();
