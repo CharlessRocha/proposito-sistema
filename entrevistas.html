@@ -131,6 +131,7 @@ document.getElementById('data-hoje').textContent=HOJE.toLocaleDateString('pt-BR'
 
 let atividades=[];
 let propostas=[];
+let leads=[];
 let filtroTodas='todas';
 
 function fmtDataHora(dv){
@@ -147,9 +148,21 @@ function getPropostaAuto(nome){
   })||null;
 }
 
+// Cruza pela chave real (Código externo da pessoa) — muito mais confiável que nome
+function getLeadPorCodigo(codigoPessoa){
+  if(!codigoPessoa) return null;
+  return leads.find(l=>l['CodigoExterno']&&l['CodigoExterno']===codigoPessoa)||null;
+}
+
+function isMatriculado(a){
+  const lead=getLeadPorCodigo(a['CodigoPessoa']);
+  return lead && lead['Etapa']==='Matrícula';
+}
+
 async function init(){
   atividades = await supa.getAtividades();
   propostas = await supa.getPropostas();
+  leads = await supa.getLeads();
   popularUnidades();
   renderTudo();
 }
@@ -197,12 +210,13 @@ function renderKPIs(){
   const desistiu=lista.filter(a=>a['Resultado']==='desistiu').length;
   const pendente=lista.filter(a=>!getPropostaAuto(a['Contato'])&&!a['Resultado']&&a['Status']!=='Atrasada'&&a['Status']!=='Planejada').length;
   const outro=lista.filter(a=>a['Resultado']==='outro').length;
+  const matriculadoSemProposta=lista.filter(a=>isMatriculado(a)&&!getPropostaAuto(a['Contato'])).length;
   document.getElementById('kpi-strip-resultado').innerHTML=`
+    ${matriculadoSemProposta>0?`<div class="kpi danger" style="border:2px solid #ef4444"><div class="kpi-label">🚨 Matriculado sem proposta</div><div class="kpi-val">${matriculadoSemProposta}</div><div class="kpi-sub">cadastrar urgente</div></div>`:''}
     <div class="kpi success"><div class="kpi-label">✅ Deu certo</div><div class="kpi-val">${comProposta}</div><div class="kpi-sub">proposta cadastrada</div></div>
     <div class="kpi warning"><div class="kpi-label">🔁 Reagendou</div><div class="kpi-val">${reagendou}</div></div>
     <div class="kpi"><div class="kpi-label">📵 Sem retorno</div><div class="kpi-val">${semRetorno}</div></div>
-    <div class="kpi danger"><div class="kpi-label">❌ Desistiu</div><div class="kpi-val">${desistiu}</div></div>
-    <div class="kpi"><div class="kpi-label">✏️ Outro</div><div class="kpi-val">${outro}</div></div>`;
+    <div class="kpi danger"><div class="kpi-label">❌ Desistiu</div><div class="kpi-val">${desistiu}</div></div>`;
 }
 
 function parseData(str){
@@ -224,12 +238,22 @@ function rowHtml(a){
   const nomeC=(a['Contato']||'').replace(/'/g,"\\'");
   const linkSafe=(a['Link']||'').replace(/'/g,"\\'");
   const propAuto=getPropostaAuto(a['Contato']);
+  const matriculado=isMatriculado(a);
   const resultado=a['Resultado']||'';
 
   let resultadoHtml='';
-  if(propAuto){
+  if(matriculado && !propAuto){
+    // Caso crítico: aluno já matriculado nos Registros mas SEM proposta cadastrada
+    resultadoHtml=`<div style="background:#2a1515;border:2px solid #ef4444;border-radius:6px;padding:8px 10px;margin-top:6px;font-size:11px;color:#f87171;display:flex;align-items:center;gap:6px">
+      🚨 <strong>Matriculado mas SEM proposta cadastrada!</strong> Cadastre a proposta urgente no sistema de admissões.
+    </div>`;
+  } else if(matriculado){
     resultadoHtml=`<div style="background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#4ade80;display:flex;align-items:center;gap:6px">
-      ✅ <strong>Proposta cadastrada</strong> <span style="color:#22c55e88">— detectado automaticamente no arquivo de propostas</span>
+      🎓 <strong>Matriculado</strong> <span style="color:#22c55e88">— confirmado nos Registros</span>
+    </div>`;
+  } else if(propAuto){
+    resultadoHtml=`<div style="background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#4ade80;display:flex;align-items:center;gap:6px">
+      ✅ <strong>Proposta cadastrada</strong> <span style="color:#22c55e88">— detectado automaticamente</span>
     </div>`;
   } else if(resultado==='sucesso'){
     resultadoHtml=`<div style="background:#0f2a1a;border:1px solid #22c55e;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#4ade80;display:flex;align-items:center;justify-content:space-between;gap:6px">

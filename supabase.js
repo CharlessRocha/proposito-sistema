@@ -18,6 +18,7 @@ const adapt = {
     'Data da criação': l.data_criacao||'',
     'Nome do responsável': l.responsavel||'',
     'Código de Inscrição': l.codigo_inscricao||'',
+    'CodigoExterno': l.codigo_externo||'',
     '_id': l.id
   }),
   atividade: a => ({
@@ -36,6 +37,7 @@ const adapt = {
     'Link': a.link_meet||'',
     'Resultado': a.resultado||'',      // sucesso / reagendou / sem_retorno / desistiu / outro
     'ResultadoObs': a.resultado_obs||'',
+    'CodigoPessoa': a.codigo_pessoa||'', // chave real para cruzar com Registros
     '_id': a.id
   }),
   proposta: p => ({
@@ -65,7 +67,8 @@ const csv2supa = {
     turno: l['Turno']||'',
     data_criacao: l['Data da criação']||'',
     responsavel: l['Nome do responsável']||'',
-    codigo_inscricao: l['Código de Inscrição']||l['Código da Inscrição']||''
+    codigo_inscricao: l['Código de Inscrição']||l['Código da Inscrição']||'',
+    codigo_externo: l['Código externo da pessoa']||''
   }),
   atividade: a => ({
     // Mapeamento DIRETO e correto — confirmado após corrigir o parser de CSV
@@ -81,7 +84,8 @@ const csv2supa = {
     data_vencimento: a['Data de vencimento']||'',   // data e hora da entrevista
     responsavel: a['Responsável']||'',              // entrevistador
     segmento: a['Nome - Oferta de curso']||'',
-    telefone: a['Telefone da pessoa']||''           // telefone principal
+    telefone: a['Telefone da pessoa']||'',          // telefone principal
+    codigo_pessoa: a['Código externo da pessoa']||'' // chave real para cruzar com Registros
   }),
   proposta: p => ({
     aluno: p['Aluno']||'',
