@@ -486,7 +486,7 @@ async function lerCSV(inp,tipo){
       await supa.salvarLeads(leads);
       marcarOk('reg',leads.length);
     } else {
-      atividades=rows.filter(r=>r['Telefones secundários']&&r['Telefones secundários']!='- - -');
+      atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
       marcarOk('atv',atividades.length+' (salvando...)');
       await supa.salvarAtividades(atividades);
       marcarOk('atv',atividades.length);

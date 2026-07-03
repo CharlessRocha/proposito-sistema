@@ -66,21 +66,20 @@ const csv2supa = {
     codigo_inscricao: l['Código de Inscrição']||l['Código da Inscrição']||''
   }),
   atividade: a => ({
-    // Mapeamento REAL das colunas do Rubeus — confirmado pelo CSV de 02/07/27
-    contato: a['Telefones secundários']||'',       // col P [15]: nome da pessoa
-    atividade: a['Atividade']||'',                 // col B [1]: tipo de atividade
-    status: a['Contato_Relacionado_aluno']||'',    // col AD [29]: Atrasada/Planejada/Ganho
-    etapa: a['Forma de contato']||'',              // col X [23]: etapa no funil
-    processo: a['Objeção']||'',                    // col W [22]: processo seletivo
-    unidade: (a['Status do registro']||'')         // col S [18]: unidade real
+    // Mapeamento DIRETO e correto — confirmado após corrigir o parser de CSV
+    // (o parser antigo desalinhava por causa do campo "Descrição" que tem ; dentro de aspas)
+    contato: a['Contato']||'',                     // nome da pessoa
+    atividade: a['Atividade']||'',
+    status: a['Status']||'',                       // Atrasada / Planejada / Ganho
+    etapa: a['Etapa']||'',                          // Entrevista Agendada / Proposta / Matrícula
+    processo: a['Nome - Processo seletivo']||'',
+    unidade: (a['Unidade']||'')
              .replace('UNIDADE ','').replace('PROPÓSITO ','').trim(),
-    oferta: (a['Resumo da Atividade']||'')         // col D [3]: "Segmento: X"
-            .replace('Segmento: ','').trim(),
-    data_vencimento: a['Status']||'',              // col AB [27]: data e hora da entrevista
-    responsavel: a['Responsável']||'',             // col N [13]: entrevistador
-    segmento: (a['Resumo da Atividade']||'')       // col D [3]: segmento
-              .replace('Segmento: ','').trim(),
-    telefone: a['Telefone da pessoa']||''          // col O [14]: telefone
+    oferta: a['Nome - Oferta de curso']||'',        // segmento pretendido
+    data_vencimento: a['Data de vencimento']||'',   // data e hora da entrevista
+    responsavel: a['Responsável']||'',              // entrevistador
+    segmento: a['Nome - Oferta de curso']||'',
+    telefone: a['Telefone da pessoa']||''           // telefone principal
   }),
   proposta: p => ({
     aluno: p['Aluno']||'',
