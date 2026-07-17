@@ -145,7 +145,7 @@
   <div class="page-sub" id="data-hoje"></div>
 
   <!-- IMPORTS -->
-  <div class="import-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem">
+  <div class="import-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem">
     <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
       <div style="font-size:20px;margin-bottom:4px">👥</div>
       <div style="font-size:12px;font-weight:500;color:#ddd">Registros-CRM</div>
@@ -166,6 +166,13 @@
       <div style="font-size:10px;color:#666;margin-top:2px">Entrevistas agendadas</div>
       <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-atv"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'atv')">
+    </label>
+    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-mat" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+      <div style="font-size:20px;margin-bottom:4px">🎓</div>
+      <div style="font-size:12px;font-weight:500;color:#ddd">Matrículas</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Matrículas efetivadas</div>
+      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-mat"></div>
+      <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'mat')">
     </label>
   </div>
 
@@ -191,6 +198,7 @@
   <div class="tabs">
     <button class="tab active" onclick="mudarTab('painel')">Painel</button>
     <button class="tab" onclick="mudarTab('funil')">Funil</button>
+    <button class="tab" onclick="mudarTab('conversao')">Conversão</button>
     <button class="tab" onclick="mudarTab('playbook')">Playbook</button>
     <button class="tab" onclick="mudarTab('entrevistas')">Entrevistas</button>
   </div>
@@ -230,6 +238,63 @@
           <div class="card-body"><div id="dist-turno"></div></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- CONVERSÃO -->
+  <div class="panel" id="panel-conversao">
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-head"><span class="card-title">🎯 Filtros</span></div>
+      <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <div>
+          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Unidade</label>
+          <select id="conv-unidade" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Data inicial (pré-matrícula)</label>
+          <input type="date" id="conv-data-ini" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+        </div>
+        <div>
+          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Data final (pré-matrícula)</label>
+          <input type="date" id="conv-data-fim" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+        </div>
+        <div>
+          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Matriculador</label>
+          <select id="conv-matriculador" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-head"><span class="card-title">📈 Taxa de conversão</span></div>
+      <div class="card-body">
+        <div id="conv-barra"></div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-head"><span class="card-title">🏢 Matrículas por unidade</span></div>
+        <div class="card-body"><div id="conv-unidade-body"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">🏆 Corrida dos 5 primeiros</span><span style="font-size:10px;color:#555">mín. 50 propostas cadastradas</span></div>
+        <div class="card-body"><div id="conv-ranking"></div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matrículas sem proposta correspondente</span><span id="conv-sem-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body"><div id="conv-sem-proposta"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#fbbf24">🔍 Correspondências aproximadas — revisar na base</span><span id="conv-aprox-badge" style="font-size:10px;background:#1a1500;color:#fbbf24;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body"><div id="conv-aproximadas"></div></div>
     </div>
   </div>
 
@@ -299,7 +364,7 @@ const FASES_DEF=[
 const ETAPA_ORDER=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'];
 const ETAPA_COR={'Inscrito':'#3b82f6','Confirmado no Teste':'#f59e0b','Não Compareceu no Teste':'#ef4444','Compareceu no Teste':'#22c55e','Entrevista Agendada':'#a78bfa','Proposta':'#38bdf8','Negociação':'#fb923c','Matrícula':'#22c55e'};
 
-let leads=[], propostas=[], atividades=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
+let leads=[], propostas=[], atividades=[], matriculas=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
 
 // Lista completa de tarefas padrão (mesma base usada no módulo Playbook)
 const TAREFAS_BASE_COMPLETA = [
@@ -455,6 +520,8 @@ async function init(){
   if(propostas.length) marcarOk('prop',propostas.length);
   atividades = await supa.getAtividades();
   if(atividades.length) marcarOk('atv',atividades.length);
+  matriculas = await supa.getMatriculas();
+  if(matriculas.length) marcarOk('mat',matriculas.length);
   // Seletivos e mapa de nomes do Supabase
   const cfgSel = await supa.getConfig('seletivos');
   if(cfgSel) seletivos = cfgSel;
@@ -485,11 +552,16 @@ async function lerCSV(inp,tipo){
       marcarOk('reg',leads.length+' (salvando...)');
       await supa.salvarLeads(leads);
       marcarOk('reg',leads.length);
-    } else {
+    } else if(tipo==='atv') {
       atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
       marcarOk('atv',atividades.length+' (salvando...)');
       await supa.salvarAtividades(atividades);
       marcarOk('atv',atividades.length);
+    } else if(tipo==='mat') {
+      matriculas=rows.filter(r=>r['NOME']&&r['NOME']!='- - -');
+      marcarOk('mat',matriculas.length+' (salvando...)');
+      await supa.salvarMatriculas(matriculas);
+      marcarOk('mat',matriculas.length);
     }
     renderTudo();
   };
@@ -798,9 +870,231 @@ async function marcarTarefa(selId,taId){
 }
 
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['painel','funil','playbook','entrevistas'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['painel','funil','conversao','playbook','entrevistas'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
+  if(id==='conversao') renderConversao();
+}
+
+// ═══════════════════════════════════════════════
+// BARRA DE CONVERSÃO — Entrevistas → Matrículas
+// ═══════════════════════════════════════════════
+let todasPropostasHistorico=[]; // acumulado de todos os seletivos, para checar elegibilidade 50+
+
+function parseDataBR(str){
+  if(!str) return null;
+  const m=(str||'').match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(!m) return null;
+  return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+}
+
+// Normaliza nome: remove acentos, minúsculas, espaços extras
+function normalizarNome(s){
+  return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+
+// Distância de Levenshtein — mede quantas edições separam duas strings
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=[];
+  for(let i=0;i<=m;i++){dp.push([i]);}
+  for(let j=1;j<=n;j++){dp[0][j]=j;}
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+// Similaridade de 0 a 1 entre dois nomes (1 = idêntico)
+function similaridadeNomes(a,b){
+  const na=normalizarNome(a), nb=normalizarNome(b);
+  if(!na||!nb) return 0;
+  if(na===nb) return 1;
+  const dist=levenshtein(na,nb);
+  const maxLen=Math.max(na.length,nb.length);
+  return 1-(dist/maxLen);
+}
+
+const LIMIAR_MATCH=0.84; // abaixo disso, considera "sem correspondência"
+
+// Encontra a melhor proposta correspondente a um nome, com nível de confiança
+function encontrarPropostaComScore(nome){
+  if(!nome) return null;
+  let melhor=null, melhorScore=0;
+  todasPropostasHistorico.forEach(p=>{
+    const score=similaridadeNomes(nome, p['Aluno']);
+    if(score>melhorScore){melhorScore=score;melhor=p;}
+  });
+  if(!melhor||melhorScore<LIMIAR_MATCH) return null;
+  return {proposta:melhor, score:melhorScore, exata: melhorScore>=0.999};
+}
+
+function getPropostaPorNome(nome){
+  const r=encontrarPropostaComScore(nome);
+  return r?r.proposta:null;
+}
+
+function popularFiltrosConversao(){
+  const unidades=[...new Set(matriculas.map(m=>m['Filial']).filter(Boolean))].sort();
+  const selU=document.getElementById('conv-unidade');
+  const atualU=selU.value;
+  selU.innerHTML='<option value="">Todas</option>'+unidades.map(u=>`<option ${u===atualU?'selected':''}>${u}</option>`).join('');
+
+  // Matriculadores = quem cadastrou a proposta do aluno matriculado (cruzado por nome)
+  const matriculadores=new Set();
+  matriculas.forEach(m=>{
+    const prop=getPropostaPorNome(m['Nome']);
+    if(prop && prop['Cadastrado Por']) matriculadores.add(prop['Cadastrado Por']);
+  });
+  const selM=document.getElementById('conv-matriculador');
+  const atualM=selM.value;
+  selM.innerHTML='<option value="">Todos</option>'+[...matriculadores].sort().map(m=>`<option ${m===atualM?'selected':''}>${m}</option>`).join('');
+}
+
+function getMatriculasFiltradas(){
+  const unidade=document.getElementById('conv-unidade')?.value||'';
+  const dataIni=document.getElementById('conv-data-ini')?.value||'';
+  const dataFim=document.getElementById('conv-data-fim')?.value||'';
+  const matriculador=document.getElementById('conv-matriculador')?.value||'';
+
+  let lista=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
+  if(unidade) lista=lista.filter(m=>m['Filial']===unidade);
+  if(dataIni||dataFim){
+    lista=lista.filter(m=>{
+      const d=parseDataBR(m['DataPreMatricula']);
+      if(!d) return false;
+      if(dataIni && d<new Date(dataIni)) return false;
+      if(dataFim && d>new Date(dataFim)) return false;
+      return true;
+    });
+  }
+  if(matriculador){
+    lista=lista.filter(m=>{
+      const prop=getPropostaPorNome(m['Nome']);
+      return prop && prop['Cadastrado Por']===matriculador;
+    });
+  }
+  return lista;
+}
+
+async function renderConversao(){
+  if(!todasPropostasHistorico.length) todasPropostasHistorico = await supa.getTodasPropostas();
+  popularFiltrosConversao();
+
+  const matFiltradas=getMatriculasFiltradas();
+  const totalMatriculas=matFiltradas.length;
+  const totalEntrevistas=atividades.length; // total de entrevistas já realizadas/agendadas
+  const pct=totalEntrevistas>0?Math.round(totalMatriculas/totalEntrevistas*100):0;
+
+  document.getElementById('conv-barra').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div>
+        <div style="font-size:12px;color:#666">Entrevistas realizadas</div>
+        <div style="font-size:24px;font-weight:700;color:#F5C842">${totalEntrevistas}</div>
+      </div>
+      <div style="font-size:20px;color:#555">→</div>
+      <div>
+        <div style="font-size:12px;color:#666">Matrículas efetivadas</div>
+        <div style="font-size:24px;font-weight:700;color:#22c55e">${totalMatriculas}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px;color:#666">Taxa de conversão</div>
+        <div style="font-size:28px;font-weight:700;color:${pct>=15?'#22c55e':pct>=5?'#f59e0b':'#ef4444'}">${pct}%</div>
+      </div>
+    </div>
+    <div style="height:10px;background:#12141e;border-radius:6px;overflow:hidden">
+      <div style="height:10px;border-radius:6px;background:linear-gradient(90deg,#F5C842,#22c55e);width:${Math.min(pct,100)}%;transition:width .3s"></div>
+    </div>`;
+
+  // Por unidade
+  const porUnidade={};
+  matFiltradas.forEach(m=>{const u=m['Filial']||'Sem unidade';porUnidade[u]=(porUnidade[u]||0)+1;});
+  document.getElementById('conv-unidade-body').innerHTML=Object.entries(porUnidade).sort((a,b)=>b[1]-a[1]).map(([u,n])=>`
+    <div class="dist-item"><span class="dist-label">${u}</span><span class="dist-val">${n}</span><span class="dist-pct">${totalMatriculas?Math.round(n/totalMatriculas*100):0}%</span></div>
+  `).join('')||'<div class="empty">Sem dados</div>';
+
+  // ── Evidenciar matrículas sem proposta e correspondências aproximadas ──
+  const semProposta=[];
+  const aproximadas=[];
+  matFiltradas.forEach(m=>{
+    const r=encontrarPropostaComScore(m['Nome']);
+    if(!r){
+      semProposta.push(m);
+    } else if(!r.exata){
+      aproximadas.push({matricula:m, proposta:r.proposta, score:r.score});
+    }
+  });
+
+  document.getElementById('conv-sem-badge').textContent=semProposta.length||'';
+  document.getElementById('conv-sem-proposta').innerHTML=semProposta.length?semProposta.map(m=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <span style="color:#f87171">🚨</span>
+      <div style="flex:1">
+        <div style="font-weight:600;color:#fff">${m['Nome']}</div>
+        <div style="font-size:11px;color:#666">${m['Filial']} · Matriculado em ${m['DataMatricula']}</div>
+      </div>
+      <span style="font-size:10px;color:#f87171">cadastrar proposta</span>
+    </div>`).join(''):'<div class="empty" style="color:#22c55e">✓ Todas as matrículas têm proposta correspondente</div>';
+
+  document.getElementById('conv-aprox-badge').textContent=aproximadas.length||'';
+  document.getElementById('conv-aproximadas').innerHTML=aproximadas.length?aproximadas.map(a=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <span style="color:#fbbf24">🔍</span>
+      <div style="flex:1">
+        <div style="font-size:11px;color:#666">Matrícula: <strong style="color:#ddd">${a.matricula['Nome']}</strong></div>
+        <div style="font-size:11px;color:#666">Proposta: <strong style="color:#ddd">${a.proposta['Aluno']}</strong></div>
+      </div>
+      <span style="font-size:11px;font-weight:600;color:#fbbf24">${Math.round(a.score*100)}% similar</span>
+    </div>`).join(''):'<div class="empty" style="color:#22c55e">✓ Todas as correspondências são exatas</div>';
+
+  // Ranking dos 5 primeiros — só quem tem 50+ propostas cadastradas (histórico acumulado)
+  const propostasPorPessoa={};
+  todasPropostasHistorico.forEach(p=>{
+    const nome=p['Cadastrado Por'];
+    if(!nome) return;
+    if(!propostasPorPessoa[nome]) propostasPorPessoa[nome]=new Set();
+    propostasPorPessoa[nome].add(p['COD. Inscrição']||p['Aluno']);
+  });
+
+  const matriculasPorPessoa={};
+  matFiltradas.forEach(m=>{
+    const prop=getPropostaPorNome(m['Nome']);
+    if(!prop || !prop['Cadastrado Por']) return;
+    const nome=prop['Cadastrado Por'];
+    matriculasPorPessoa[nome]=(matriculasPorPessoa[nome]||0)+1;
+  });
+
+  const elegiveis=Object.keys(matriculasPorPessoa).filter(nome=>
+    (propostasPorPessoa[nome]?.size||0) >= 50
+  );
+  const ranking=elegiveis
+    .map(nome=>({nome, matriculas:matriculasPorPessoa[nome], propostas:propostasPorPessoa[nome].size}))
+    .sort((a,b)=>b.matriculas-a.matriculas)
+    .slice(0,5);
+
+  const totalCandidatos=Object.keys(matriculasPorPessoa).length;
+  const totalElegiveis=elegiveis.length;
+
+  if(!ranking.length){
+    document.getElementById('conv-ranking').innerHTML=`<div class="empty">
+      Nenhum matriculador com 50+ propostas cadastradas ainda.<br>
+      <span style="font-size:11px;color:#444">${totalCandidatos} pessoa(s) com matrículas, mas nenhuma atingiu o mínimo de propostas para entrar no ranking.</span>
+    </div>`;
+  } else {
+    const medalhas=['🥇','🥈','🥉','4º','5º'];
+    document.getElementById('conv-ranking').innerHTML=ranking.map((r,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a">
+        <span style="font-size:16px;width:28px;text-align:center">${medalhas[i]}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:#fff">${r.nome}</div>
+          <div style="font-size:10px;color:#555">${r.propostas} propostas cadastradas</div>
+        </div>
+        <div style="font-size:18px;font-weight:700;color:#22c55e">${r.matriculas}</div>
+      </div>`).join('') +
+      (totalCandidatos>totalElegiveis?`<div style="font-size:10px;color:#555;margin-top:8px;padding-top:8px;border-top:1px solid #2a2d3a">${totalCandidatos-totalElegiveis} pessoa(s) fora do ranking por não atingir 50 propostas ainda</div>`:'');
+  }
 }
 
 init();

@@ -52,6 +52,22 @@ const adapt = {
     'Percentual de Desconto da Matrícula (%)': p.desconto_matricula||'',
     'Cadastrado Por': p.cadastrado_por||'',
     '_id': p.id
+  }),
+  matricula: m => ({
+    'RA': m.ra||'',
+    'Nome': m.nome||'',
+    'Filial': (m.filial||'').replace(/^\d+-\d+\//,'').trim(),
+    'DataMatricula': m.dt_matricula||'',
+    'DataPreMatricula': m.dt_prematricula||'',
+    'UsuarioPreMatricula': m.usuario_prematricula||'',
+    'UsuarioCriacao': m.usuario_criacao||'',
+    'Turno': m.turno||'',
+    'Curso': m.curso||'',
+    'Habilitacao': m.habilitacao||'',
+    'StatusMatricula': m.status_matricula||'',
+    'TipoMatricula': m.tipo_matricula||'',
+    'PeriodoLetivo': m.periodo_letivo||'',
+    '_id': m.id
   })
 };
 
@@ -98,6 +114,21 @@ const csv2supa = {
     matricula_vista: p['Matrícula à Vista (%)']||'',
     desconto_matricula: p['Percentual de Desconto da Matrícula (%)']||'',
     cadastrado_por: p['Cadastrado Por']||''
+  }),
+  matricula: m => ({
+    ra: m['RA']||'',
+    nome: m['NOME']||'',
+    filial: m['FILIAL']||'',
+    dt_matricula: m['DTMATRICULA']||'',
+    dt_prematricula: m['DT_PREMATRICULA']||'',
+    usuario_prematricula: m['USUARIO_PREMATRICULA']||'',
+    usuario_criacao: m['USUARIOCRIACAO']||'',
+    turno: m['TURNO']||'',
+    curso: m['CURSO']||'',
+    habilitacao: m['HABILITACAO']||'',
+    status_matricula: m['STATUSMATRICULA']||'',
+    tipo_matricula: m['TIPOMATRICULA']||'',
+    periodo_letivo: m['PERIODOLETIVO']||''
   })
 };
 
@@ -162,7 +193,7 @@ const supa = {
     return await this.update('atividades', dados, `id=eq.${id}`);
   },
 
-  // ── PROPOSTAS ──
+  // ── PROPOSTAS (usuário sempre exporta a lista acumulada completa) ──
   async salvarPropostas(propCSV) {
     await this.del('propostas', 'id=gte.0');
     if (!propCSV.length) return;
@@ -170,8 +201,28 @@ const supa = {
     for(let i=0; i<rows.length; i+=100) await this.insert('propostas', rows.slice(i,i+100));
   },
   async getPropostas() {
-    const rows = await this.get('propostas', '?status=eq.ATIVO&limit=1000');
+    const rows = await this.get('propostas', '?status=eq.ATIVO&limit=5000');
     return rows.map(adapt.proposta);
+  },
+  // Todas as propostas já cadastradas por uma pessoa (para checar elegibilidade de 50+)
+  async getTodasPropostas() {
+    const rows = await this.get('propostas', '?limit=5000');
+    return rows.map(adapt.proposta);
+  },
+
+  // ── MATRÍCULAS ──
+  async salvarMatriculas(matCSV) {
+    if (!matCSV.length) return;
+    const rows = matCSV.map(csv2supa.matricula);
+    const ras = [...new Set(rows.map(r=>r.ra).filter(Boolean))];
+    for (const ra of ras) {
+      await this.del('matriculas', `ra=eq.${encodeURIComponent(ra)}`);
+    }
+    for(let i=0; i<rows.length; i+=100) await this.insert('matriculas', rows.slice(i,i+100));
+  },
+  async getMatriculas() {
+    const rows = await this.get('matriculas', '?limit=5000');
+    return rows.map(adapt.matricula);
   },
 
   // ── PLAYBOOK ──
