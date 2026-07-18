@@ -282,7 +282,7 @@
         <div class="card-body"><div id="conv-unidade-body"></div></div>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">🏆 Corrida dos 5 primeiros</span><span style="font-size:10px;color:#555">mín. 50 propostas cadastradas</span></div>
+        <div class="card-head"><span class="card-title">🚀 Corrida da Conversão — Top 5</span><span style="font-size:10px;color:#555">validado com 50+ propostas cadastradas</span></div>
         <div class="card-body"><div id="conv-ranking"></div></div>
       </div>
     </div>
@@ -993,14 +993,19 @@ async function renderConversao(){
   const matFiltradas=getMatriculasFiltradas(false);
   const matParaRanking=getMatriculasFiltradas(true); // ranking sempre mostra todos, ignora filtro de matriculador
   const totalMatriculas=matFiltradas.length;
-  const totalEntrevistas=atividades.length; // total de entrevistas já realizadas/agendadas
-  const pct=totalEntrevistas>0?Math.round(totalMatriculas/totalEntrevistas*100):0;
+
+  // Conversão real = Propostas cadastradas → Matrículas (não entrevistas)
+  const unidadeSel=document.getElementById('conv-unidade')?.value||'';
+  let propostasBase=todasPropostasHistorico;
+  if(unidadeSel) propostasBase=propostasBase.filter(p=>(p['Unidade']||'').includes(unidadeSel)||unidadeSel.includes(p['Unidade']||''));
+  const totalPropostas=propostasBase.length;
+  const pct=totalPropostas>0?Math.round(totalMatriculas/totalPropostas*100):0;
 
   document.getElementById('conv-barra').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <div>
-        <div style="font-size:12px;color:#666">Entrevistas realizadas</div>
-        <div style="font-size:24px;font-weight:700;color:#F5C842">${totalEntrevistas}</div>
+        <div style="font-size:12px;color:#666">Propostas cadastradas</div>
+        <div style="font-size:24px;font-weight:700;color:#F5C842">${totalPropostas}</div>
       </div>
       <div style="font-size:20px;color:#555">→</div>
       <div>
@@ -1009,7 +1014,7 @@ async function renderConversao(){
       </div>
       <div style="text-align:right">
         <div style="font-size:12px;color:#666">Taxa de conversão</div>
-        <div style="font-size:28px;font-weight:700;color:${pct>=15?'#22c55e':pct>=5?'#f59e0b':'#ef4444'}">${pct}%</div>
+        <div style="font-size:28px;font-weight:700;color:${pct>=40?'#22c55e':pct>=20?'#f59e0b':'#ef4444'}">${pct}%</div>
       </div>
     </div>
     <div style="height:10px;background:#12141e;border-radius:6px;overflow:hidden">
@@ -1077,8 +1082,9 @@ async function renderConversao(){
   const elegiveis=Object.keys(matriculasPorPessoa).filter(nome=>
     (propostasPorPessoa[nome]?.size||0) >= 50
   );
-  const ranking=elegiveis
-    .map(nome=>({nome, matriculas:matriculasPorPessoa[nome], propostas:propostasPorPessoa[nome].size}))
+  // Sempre mostra os 5 primeiros por quantidade de matrículas — elegibilidade só sinaliza validação
+  const ranking=Object.keys(matriculasPorPessoa)
+    .map(nome=>({nome, matriculas:matriculasPorPessoa[nome], propostas:propostasPorPessoa[nome]?.size||0, validado:(propostasPorPessoa[nome]?.size||0)>=50}))
     .sort((a,b)=>b.matriculas-a.matriculas)
     .slice(0,5);
 
@@ -1086,10 +1092,7 @@ async function renderConversao(){
   const totalElegiveis=elegiveis.length;
 
   if(!ranking.length){
-    document.getElementById('conv-ranking').innerHTML=`<div class="empty">
-      Nenhum matriculador com 50+ propostas cadastradas ainda.<br>
-      <span style="font-size:11px;color:#444">${totalCandidatos} pessoa(s) com matrículas, mas nenhuma atingiu o mínimo de propostas para entrar no ranking.</span>
-    </div>`;
+    document.getElementById('conv-ranking').innerHTML=`<div class="empty">Nenhuma matrícula cruzada com proposta ainda.</div>`;
   } else {
     const medalhas=['🥇','🥈','🥉','4º','5º'];
     document.getElementById('conv-ranking').innerHTML=ranking.map((r,i)=>`
@@ -1097,11 +1100,10 @@ async function renderConversao(){
         <span style="font-size:16px;width:28px;text-align:center">${medalhas[i]}</span>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:#fff">${r.nome}</div>
-          <div style="font-size:10px;color:#555">${r.propostas} propostas cadastradas</div>
+          <div style="font-size:10px;color:${r.validado?'#22c55e':'#f59e0b'}">${r.validado?`✅ Validado — ${r.propostas} propostas`:`⏳ Precisa de 50 propostas para validar (tem ${r.propostas})`}</div>
         </div>
         <div style="font-size:18px;font-weight:700;color:#22c55e">${r.matriculas}</div>
-      </div>`).join('') +
-      (totalCandidatos>totalElegiveis?`<div style="font-size:10px;color:#555;margin-top:8px;padding-top:8px;border-top:1px solid #2a2d3a">${totalCandidatos-totalElegiveis} pessoa(s) fora do ranking por não atingir 50 propostas ainda</div>`:'');
+      </div>`).join('');
   }
 
   // ── Ranking completo — TODAS as pessoas com propostas cadastradas, do 1º ao último ──
