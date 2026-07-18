@@ -148,8 +148,8 @@
   <div class="import-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem">
     <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
       <div style="font-size:20px;margin-bottom:4px">👥</div>
-      <div style="font-size:12px;font-weight:500;color:#ddd">Registros-CRM</div>
-      <div style="font-size:10px;color:#666;margin-top:2px">Leads e funil do Rubeus</div>
+      <div style="font-size:12px;font-weight:500;color:#ddd">Funil Rubeus Completo</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Todos os leads e etapas</div>
       <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-reg"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'reg')">
     </label>
@@ -292,6 +292,16 @@
       <div class="card-body" style="max-height:420px;overflow-y:auto;padding:0">
         <div id="conv-ranking-completo"></div>
       </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matriculados no Rubeus mas não encontrados no TOTVS</span><span id="conv-rub-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body"><div id="conv-rub-sem-totvs"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matriculados no TOTVS mas não encontrados no Rubeus</span><span id="conv-totvs-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body"><div id="conv-totvs-sem-rubeus"></div></div>
     </div>
 
     <div class="card" style="margin-top:12px">
@@ -577,18 +587,50 @@ async function lerCSV(inp,tipo){
 
 async function lerProp(inp){
   const f=inp.files[0];if(!f)return;
+  marcarOk('prop','lendo arquivo...');
   const r=new FileReader();
   r.onload=async e=>{
-    const doc=(new DOMParser()).parseFromString(e.target.result,'text/html');
-    const rows=[...doc.querySelectorAll('tr')];
-    if(rows.length<2)return;
-    const headers=[...rows[1].querySelectorAll('td')].map(td=>td.textContent.trim());
-    propostas=rows.slice(2).map(row=>{const cells=[...row.querySelectorAll('td')].map(td=>td.textContent.trim());const obj={};headers.forEach((h,i)=>obj[h]=cells[i]||'');return obj;}).filter(p=>p['Aluno']&&p['Status']==='ATIVO');
-    marcarOk('prop',propostas.length+' (salvando...)');
-    await supa.salvarPropostas(propostas);
-    marcarOk('prop',propostas.length);
-    renderTudo();
+    try{
+      let linhasProp=[];
+      // Tentativa 1: formato HTML disfarçado de XLS (padrão do sistema de admissões)
+      const doc=(new DOMParser()).parseFromString(e.target.result,'text/html');
+      const trs=[...doc.querySelectorAll('tr')];
+      if(trs.length>=3){
+        const headers=[...trs[1].querySelectorAll('td')].map(td=>td.textContent.trim());
+        linhasProp=trs.slice(2).map(row=>{
+          const cells=[...row.querySelectorAll('td')].map(td=>td.textContent.trim());
+          const obj={};headers.forEach((h,i)=>obj[h]=cells[i]||'');return obj;
+        }).filter(p=>p['Aluno']);
+      }
+      // Tentativa 2: se não achou nada assim, tenta como CSV puro
+      if(!linhasProp.length){
+        const csvRows=parseCSVCompleto(e.target.result,';');
+        if(csvRows.length>=2){
+          const header=csvRows[0].map(h=>h.trim());
+          linhasProp=csvRows.slice(1).map(cols=>{
+            const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;
+          }).filter(p=>p['Aluno']);
+        }
+      }
+      if(!linhasProp.length){
+        marcarOk('prop','');
+        document.getElementById('iz-prop').style.borderColor='#ef4444';
+        alert('Não consegui reconhecer o formato deste arquivo de Propostas.\n\nVerifique se é o arquivo certo exportado do sistema de admissões (formato .xls ou .csv).');
+        return;
+      }
+      propostas=linhasProp.filter(p=>p['Status']==='ATIVO');
+      if(!propostas.length) propostas=linhasProp; // se não tiver coluna Status, usa tudo mesmo
+      marcarOk('prop',propostas.length+' (salvando...)');
+      await supa.salvarPropostas(propostas);
+      marcarOk('prop',propostas.length);
+      renderTudo();
+    }catch(err){
+      console.error('Erro ao importar propostas:',err);
+      marcarOk('prop','');
+      alert('Erro ao processar o arquivo de Propostas: '+err.message);
+    }
   };
+  r.onerror=()=>{ alert('Não foi possível ler o arquivo.'); };
   r.readAsText(f,'latin-1');
 }
 
@@ -1061,6 +1103,42 @@ async function renderConversao(){
       </div>
       <span style="font-size:11px;font-weight:600;color:#fbbf24">${Math.round(a.score*100)}% similar</span>
     </div>`).join(''):'<div class="empty" style="color:#22c55e">✓ Todas as correspondências são exatas</div>';
+
+  // ── Comparativo Rubeus × TOTVS: alunos matriculados nos dois sistemas devem bater ──
+  const leadsMatriculados=leads.filter(l=>l['Etapa']==='Matrícula');
+  const totvsMatriculados=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
+
+  function existeSimilar(nome, listaNomes){
+    return listaNomes.some(n=>similaridadeNomes(nome,n)>=LIMIAR_MATCH);
+  }
+
+  const nomesTotvs=totvsMatriculados.map(m=>m['Nome']);
+  const rubeusSemTotvs=leadsMatriculados.filter(l=>!existeSimilar(l['Nome da pessoa'],nomesTotvs));
+
+  const nomesRubeus=leadsMatriculados.map(l=>l['Nome da pessoa']);
+  const totvsSemRubeus=totvsMatriculados.filter(m=>!existeSimilar(m['Nome'],nomesRubeus));
+
+  document.getElementById('conv-rub-badge').textContent=rubeusSemTotvs.length||'';
+  document.getElementById('conv-rub-sem-totvs').innerHTML=rubeusSemTotvs.length?rubeusSemTotvs.map(l=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <span style="color:#f87171">🚨</span>
+      <div style="flex:1">
+        <div style="font-weight:600;color:#fff">${l['Nome da pessoa']}</div>
+        <div style="font-size:11px;color:#666">${l['Unidade']||''} · ${l['Processo seletivo']||''}</div>
+      </div>
+      <span style="font-size:10px;color:#f87171">verificar no TOTVS</span>
+    </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do Rubeus foram encontrados no TOTVS</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS para comparar</div>');
+
+  document.getElementById('conv-totvs-badge').textContent=totvsSemRubeus.length||'';
+  document.getElementById('conv-totvs-sem-rubeus').innerHTML=totvsSemRubeus.length?totvsSemRubeus.map(m=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <span style="color:#f87171">🚨</span>
+      <div style="flex:1">
+        <div style="font-weight:600;color:#fff">${m['Nome']}</div>
+        <div style="font-size:11px;color:#666">${m['Filial']||''} · Matriculado em ${m['DataMatricula']||''}</div>
+      </div>
+      <span style="font-size:10px;color:#f87171">verificar no Rubeus</span>
+    </div>`).join(''):(leads.length?'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do TOTVS foram encontrados no Rubeus</div>':'<div class="empty">Importe o Funil Rubeus Completo para comparar</div>');
 
   // Ranking dos 5 primeiros — só quem tem 50+ propostas cadastradas (histórico acumulado)
   const propostasPorPessoa={};
