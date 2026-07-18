@@ -288,6 +288,13 @@
     </div>
 
     <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#555">por % de conversão</span></div>
+      <div class="card-body" style="max-height:420px;overflow-y:auto;padding:0">
+        <div id="conv-ranking-completo"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
       <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matrículas sem proposta correspondente</span><span id="conv-sem-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-sem-proposta"></div></div>
     </div>
@@ -953,11 +960,11 @@ function popularFiltrosConversao(){
   selM.innerHTML='<option value="">Todos</option>'+[...matriculadores].sort().map(m=>`<option ${m===atualM?'selected':''}>${m}</option>`).join('');
 }
 
-function getMatriculasFiltradas(){
+function getMatriculasFiltradas(ignorarMatriculador){
   const unidade=document.getElementById('conv-unidade')?.value||'';
   const dataIni=document.getElementById('conv-data-ini')?.value||'';
   const dataFim=document.getElementById('conv-data-fim')?.value||'';
-  const matriculador=document.getElementById('conv-matriculador')?.value||'';
+  const matriculador=ignorarMatriculador?'':(document.getElementById('conv-matriculador')?.value||'');
 
   let lista=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
   if(unidade) lista=lista.filter(m=>m['Filial']===unidade);
@@ -983,7 +990,8 @@ async function renderConversao(){
   if(!todasPropostasHistorico.length) todasPropostasHistorico = await supa.getTodasPropostas();
   popularFiltrosConversao();
 
-  const matFiltradas=getMatriculasFiltradas();
+  const matFiltradas=getMatriculasFiltradas(false);
+  const matParaRanking=getMatriculasFiltradas(true); // ranking sempre mostra todos, ignora filtro de matriculador
   const totalMatriculas=matFiltradas.length;
   const totalEntrevistas=atividades.length; // total de entrevistas já realizadas/agendadas
   const pct=totalEntrevistas>0?Math.round(totalMatriculas/totalEntrevistas*100):0;
@@ -1059,7 +1067,7 @@ async function renderConversao(){
   });
 
   const matriculasPorPessoa={};
-  matFiltradas.forEach(m=>{
+  matParaRanking.forEach(m=>{
     const prop=getPropostaPorNome(m['Nome']);
     if(!prop || !prop['Cadastrado Por']) return;
     const nome=prop['Cadastrado Por'];
@@ -1095,6 +1103,27 @@ async function renderConversao(){
       </div>`).join('') +
       (totalCandidatos>totalElegiveis?`<div style="font-size:10px;color:#555;margin-top:8px;padding-top:8px;border-top:1px solid #2a2d3a">${totalCandidatos-totalElegiveis} pessoa(s) fora do ranking por não atingir 50 propostas ainda</div>`:'');
   }
+
+  // ── Ranking completo — TODAS as pessoas com propostas cadastradas, do 1º ao último ──
+  const todosNomes=new Set([...Object.keys(propostasPorPessoa)]);
+  const listaCompleta=[...todosNomes].map(nome=>{
+    const totalProp=propostasPorPessoa[nome]?.size||0;
+    const totalMat=matriculasPorPessoa[nome]||0;
+    const conv=totalProp>0?(totalMat/totalProp*100):0;
+    return {nome, propostas:totalProp, matriculas:totalMat, conversao:conv, elegivel:totalProp>=50};
+  }).sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas);
+
+  document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #2a2d3a">
+      <span style="font-size:11px;color:#555;width:24px;text-align:center;flex-shrink:0">${i+1}º</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:#ddd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
+        <div style="font-size:10px;color:#555">${p.propostas} propostas · ${p.matriculas} matrículas${p.elegivel?' · <span style="color:#22c55e">elegível pro top 5</span>':' · <span style="color:#666">abaixo de 50 propostas</span>'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:16px;font-weight:700;color:${p.conversao>=15?'#22c55e':p.conversao>=5?'#f59e0b':'#666'}">${p.conversao.toFixed(1)}%</div>
+      </div>
+    </div>`).join(''):'<div class="empty">Sem dados de propostas cadastradas ainda</div>';
 }
 
 init();
