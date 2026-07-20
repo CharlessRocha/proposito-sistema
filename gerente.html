@@ -315,6 +315,11 @@
     </div>
 
     <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matriculados no Rubeus mas não encontrados no TOTVS</span><span id="conv-rubtot-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body"><div id="conv-rub-sem-totvs"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
       <div class="card-head"><span class="card-title" style="color:#fbbf24">🔄 Matriculado no TOTVS mas em outra etapa no Rubeus — atualizar</span><span id="conv-divergente-badge" style="font-size:10px;background:#1a1500;color:#fbbf24;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-etapa-divergente"></div></div>
     </div>
@@ -465,6 +470,7 @@ function nomeAmigavel(processo){
 }
 
 let etapasFunil=[];
+let mapaMatriculadores=[]; // fusão de variações de nome para o mesmo matriculador
 const NIVEIS_PADRAO={
   'Inscrito':'neutra','Confirmado no Teste':'neutra','Não Compareceu no Teste':'neutra',
   'Compareceu no Teste':'progresso','Entrevista Agendada':'progresso',
@@ -478,6 +484,20 @@ function nivelEtapa(etapa){
 function isEngajado(etapa){
   const n=nivelEtapa(etapa);
   return n==='positiva'||n==='sucesso';
+}
+
+// Normaliza o nome do matriculador usando os grupos configurados na Central
+function nomeCanonicoMatriculador(nome){
+  if(!nome) return nome;
+  const nomeL=nome.toLowerCase().trim();
+  for(const grupo of mapaMatriculadores){
+    if(!grupo.canonico||!grupo.variantes) continue;
+    const variantes=grupo.variantes.split(',').map(v=>v.toLowerCase().trim());
+    if(variantes.includes(nomeL)||grupo.canonico.toLowerCase().trim()===nomeL){
+      return grupo.canonico;
+    }
+  }
+  return nome;
 }
 
 function parseData(str){
@@ -496,6 +516,16 @@ function prazoCor(base,dRel){
   if(diff<0)return'urgente';if(diff<=3)return'proximo';if(diff<=7)return'ok';return'neutro';
 }
 function getTarefas(id){if(!tarefas[id])tarefas[id]={};return tarefas[id];}
+
+// Detecta e corrige encoding automaticamente — tenta UTF-8, cai para ISO-8859-1 se detectar corrupção
+function decodeSmart(buffer){
+  const utf8=new TextDecoder('utf-8').decode(buffer);
+  const bad=(utf8.match(/\uFFFD/g)||[]).length;
+  if(bad>0){
+    return new TextDecoder('iso-8859-1').decode(buffer);
+  }
+  return utf8;
+}
 
 // Parser de CSV correto — respeita aspas, ponto-e-vírgula e quebras de linha dentro de campos
 // (o split ingênuo por ';' quebra o Rubeus, que usa aspas com caracteres especiais)
@@ -568,6 +598,7 @@ async function init(){
   mapaProcessos = await supa.getConfig('mapa_processos') || [];
   etapasFunil = await supa.getConfig('etapas_funil') || [];
   tarefasCustom = await supa.getConfig('tarefas_custom') || [];
+  mapaMatriculadores = await supa.getConfig('matriculadores') || [];
   renderTudo();
 }
 
@@ -582,7 +613,8 @@ async function lerCSV(inp,tipo){
   const f=inp.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=async e=>{
-    const linhasCSV=parseCSVCompleto(e.target.result,';');
+    const texto=decodeSmart(e.target.result);
+    const linhasCSV=parseCSVCompleto(texto,';');
     if(!linhasCSV.length)return;
     const header=linhasCSV[0].map(h=>h.trim());
     const rows=linhasCSV.slice(1).map(cols=>{const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;});
@@ -597,14 +629,18 @@ async function lerCSV(inp,tipo){
       await supa.salvarAtividades(atividades);
       marcarOk('atv',atividades.length);
     } else if(tipo==='mat') {
-      matriculas=rows.filter(r=>r['NOME']&&r['NOME']!='- - -');
+      // Filtra matrículas de migração: RA precisa começar com 26 ou 27 (coorte atual)
+      const todasMat=rows.filter(r=>r['NOME']&&r['NOME']!='- - -');
+      const raValido=r=>{const ra=(r['RA']||'').toString().trim();return ra.startsWith('26')||ra.startsWith('27');};
+      matriculas=todasMat.filter(raValido);
+      const excluidasMigracao=todasMat.length-matriculas.length;
       marcarOk('mat',matriculas.length+' (salvando...)');
       await supa.salvarMatriculas(matriculas);
-      marcarOk('mat',matriculas.length);
+      marcarOk('mat',matriculas.length+(excluidasMigracao?` (${excluidasMigracao} migração excluída)`:''));
     }
     renderTudo();
   };
-  r.readAsText(f,'ISO-8859-1');
+  r.readAsArrayBuffer(f);
 }
 
 async function lerProp(inp){
@@ -613,9 +649,10 @@ async function lerProp(inp){
   const r=new FileReader();
   r.onload=async e=>{
     try{
+      const texto=decodeSmart(e.target.result);
       let linhasProp=[];
       // Tentativa 1: formato HTML disfarçado de XLS (padrão do sistema de admissões)
-      const doc=(new DOMParser()).parseFromString(e.target.result,'text/html');
+      const doc=(new DOMParser()).parseFromString(texto,'text/html');
       const trs=[...doc.querySelectorAll('tr')];
       if(trs.length>=3){
         const headers=[...trs[1].querySelectorAll('td')].map(td=>td.textContent.trim());
@@ -626,7 +663,7 @@ async function lerProp(inp){
       }
       // Tentativa 2: se não achou nada assim, tenta como CSV puro
       if(!linhasProp.length){
-        const csvRows=parseCSVCompleto(e.target.result,';');
+        const csvRows=parseCSVCompleto(texto,';');
         if(csvRows.length>=2){
           const header=csvRows[0].map(h=>h.trim());
           linhasProp=csvRows.slice(1).map(cols=>{
@@ -653,7 +690,7 @@ async function lerProp(inp){
     }
   };
   r.onerror=()=>{ alert('Não foi possível ler o arquivo.'); };
-  r.readAsText(f,'latin-1');
+  r.readAsArrayBuffer(f);
 }
 
 function getProcessoSel(){ return document.getElementById('sel-processo')?.value||''; }
@@ -1017,7 +1054,7 @@ function popularFiltrosConversao(){
   const matriculadores=new Set();
   matriculas.forEach(m=>{
     const prop=getPropostaPorNome(m['Nome']);
-    if(prop && prop['Cadastrado Por']) matriculadores.add(prop['Cadastrado Por']);
+    if(prop && prop['Cadastrado Por']) matriculadores.add(nomeCanonicoMatriculador(prop['Cadastrado Por']));
   });
   const selM=document.getElementById('conv-matriculador');
   const atualM=selM.value;
@@ -1044,7 +1081,7 @@ function getMatriculasFiltradas(ignorarMatriculador){
   if(matriculador){
     lista=lista.filter(m=>{
       const prop=getPropostaPorNome(m['Nome']);
-      return prop && prop['Cadastrado Por']===matriculador;
+      return prop && nomeCanonicoMatriculador(prop['Cadastrado Por'])===matriculador;
     });
   }
   return lista;
@@ -1055,6 +1092,8 @@ async function renderConversao(){
   popularFiltrosConversao();
 
   const unidadeSel=document.getElementById('conv-unidade')?.value||'';
+  let totvsMatriculados=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
+  if(unidadeSel) totvsMatriculados=totvsMatriculados.filter(m=>m['Filial']===unidadeSel);
   const matFiltradas=getMatriculasFiltradas(false);
   const matParaRanking=getMatriculasFiltradas(true);
 
@@ -1088,13 +1127,24 @@ async function renderConversao(){
       <span style="font-size:10px;color:#f87171">cadastrar proposta</span>
     </div>`).join(''):'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do Rubeus têm proposta cadastrada</div>';
 
+  // Rubeus matriculado mas não encontrado no TOTVS ainda (mostra nome + etapa)
+  const nomesTotvsAtual=totvsMatriculados.map(m=>m['Nome']);
+  const rubeusSemTotvs=leadsMatriculados.filter(l=>!nomesTotvsAtual.some(n=>similaridadeNomes(l['Nome da pessoa'],n)>=LIMIAR_MATCH));
+  document.getElementById('conv-rubtot-badge').textContent=rubeusSemTotvs.length||'';
+  document.getElementById('conv-rub-sem-totvs').innerHTML=rubeusSemTotvs.length?rubeusSemTotvs.map(l=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+      <span style="color:#f87171">🚨</span>
+      <div style="flex:1">
+        <div style="font-weight:600;color:#fff">${l['Nome da pessoa']}</div>
+        <div style="font-size:11px;color:#666">${l['Unidade']||''} · ${l['Processo seletivo']||''}</div>
+      </div>
+      <span style="font-size:11px;font-weight:600;color:#f87171">Etapa: "${l['Etapa']||'—'}"</span>
+    </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do Rubeus foram encontrados no TOTVS</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS</div>');
+
   // ═══════════════════════════════════════════════
   // ETAPA 2 — TOTVS (Matriculado) × Rubeus
   // Para cada matrícula real, checa se o Rubeus já está atualizado
   // ═══════════════════════════════════════════════
-  let totvsMatriculados=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
-  if(unidadeSel) totvsMatriculados=totvsMatriculados.filter(m=>m['Filial']===unidadeSel);
-
   const step2=totvsMatriculados.map(m=>{
     const leadMatch=leads.find(l=>similaridadeNomes(m['Nome'], l['Nome da pessoa'])>=LIMIAR_MATCH);
     return {matricula:m, lead:leadMatch};
@@ -1131,7 +1181,7 @@ async function renderConversao(){
   // ═══════════════════════════════════════════════
   const propostasPorPessoa={};
   todasPropostasHistorico.forEach(p=>{
-    const nome=p['Cadastrado Por'];
+    const nome=nomeCanonicoMatriculador(p['Cadastrado Por']);
     if(!nome) return;
     if(!propostasPorPessoa[nome]) propostasPorPessoa[nome]=new Set();
     propostasPorPessoa[nome].add(p['COD. Inscrição']||p['Aluno']);
@@ -1143,7 +1193,7 @@ async function renderConversao(){
     const r=encontrarPropostaComScore(m['Nome']);
     if(!r) return;
     if(!r.exata) aproximadas.push({matricula:m, proposta:r.proposta, score:r.score});
-    const nome=r.proposta['Cadastrado Por'];
+    const nome=nomeCanonicoMatriculador(r.proposta['Cadastrado Por']);
     if(!nome) return;
     matriculasPorPessoa[nome]=(matriculasPorPessoa[nome]||0)+1;
   });

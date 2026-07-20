@@ -90,6 +90,7 @@
     <button class="tab active" onclick="mudarTab('cal')">📅 Calendário</button>
     <button class="tab" onclick="mudarTab('mapa')">🏷️ Nomes dos seletivos</button>
     <button class="tab" onclick="mudarTab('funil')">🎯 Etapas do funil</button>
+    <button class="tab" onclick="mudarTab('matric')">🙋 Matriculadores</button>
     <button class="tab" onclick="mudarTab('promo')">💵 Tabela promo</button>
     <button class="tab" onclick="mudarTab('mens')">💰 Mensalidades</button>
     <button class="tab" onclick="mudarTab('mat')">📚 Material</button>
@@ -173,6 +174,26 @@
         <div style="font-size:11px;color:#888">Sucesso</div>
         <div style="font-size:10px;color:#555">Convertido</div>
       </div>
+    </div>
+  </div>
+
+  <!-- MATRICULADORES -->
+  <div class="panel" id="panel-matric">
+    <div style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">
+      Uma mesma pessoa pode aparecer com nomes diferentes no campo "Cadastrado Por" das Propostas
+      (ex: <strong style="color:#F5C842">"LETICYA MARIA LIMA MESQUITA"</strong> e <strong style="color:#F5C842">"Letícia Lima"</strong>).
+      Agrupe as variações aqui para que o ranking de conversão conte como uma pessoa só.
+    </div>
+    <div class="section-label">
+      <span>Fusão de nomes de matriculadores</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-matric">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarMatric()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div id="matric-lista"></div>
+      <button class="add-row-btn" onclick="addGrupoMatric()">+ Novo grupo de nomes</button>
     </div>
   </div>
 
@@ -285,6 +306,9 @@ let cfg = {
     {etapa:'Negociação', nivel:'positiva'},
     {etapa:'Matrícula', nivel:'sucesso'},
   ],
+  matriculadores: [
+    // {canonico:'Letícia Lima Mesquita', variantes:'LETICYA MARIA LIMA MESQUITA, Letícia Lima'}
+  ],
   seletivos:[
     {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
     {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
@@ -353,7 +377,7 @@ async function init(){
   renderTudo();
 }
 
-function renderTudo(){renderCal();renderMapa();renderFunilEtapas();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
+function renderTudo(){renderCal();renderMapa();renderFunilEtapas();renderMatric();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
 
 function renderMapa(){
   if(!cfg.mapa_processos)cfg.mapa_processos=[];
@@ -388,6 +412,22 @@ async function salvarFunil(){
   await supa.salvarConfig('cfg_principal',cfg);
   await supa.salvarConfig('etapas_funil',cfg.etapas_funil);
   mostrarSalvo('funil');
+}
+
+function renderMatric(){
+  if(!cfg.matriculadores)cfg.matriculadores=[];
+  document.getElementById('matric-lista').innerHTML=cfg.matriculadores.map((m,i)=>`
+    <div class="item-simples" style="align-items:flex-start;padding:10px 14px">
+      <input style="flex:1;margin-top:2px" value="${m.canonico||''}" placeholder="Nome canônico (ex: Letícia Lima Mesquita)" onchange="cfg.matriculadores[${i}].canonico=this.value">
+      <input style="flex:2;margin-top:2px" value="${m.variantes||''}" placeholder="Variações encontradas nas propostas, separadas por vírgula" onchange="cfg.matriculadores[${i}].variantes=this.value">
+      <button class="del-btn" onclick="cfg.matriculadores.splice(${i},1);renderMatric()">×</button>
+    </div>`).join('')||'<div class="empty" style="padding:16px;font-size:12px;color:#555">Nenhum grupo criado ainda</div>';
+}
+function addGrupoMatric(){cfg.matriculadores.push({canonico:'',variantes:''});renderMatric();}
+async function salvarMatric(){
+  await supa.salvarConfig('cfg_principal',cfg);
+  await supa.salvarConfig('matriculadores',cfg.matriculadores);
+  mostrarSalvo('matric');
 }
 
 function renderCal(){
@@ -476,7 +516,7 @@ function mostrarSalvo(tipo){
 }
 
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','funil','promo','mens','mat','feriados'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','funil','matric','promo','mens','mat','feriados'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }
