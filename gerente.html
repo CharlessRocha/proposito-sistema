@@ -282,7 +282,7 @@
         <div class="card-body"><div id="conv-unidade-body"></div></div>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">🚀 Corrida da Conversão — Top 5</span><span style="font-size:10px;color:#555">validado com 50+ propostas cadastradas</span></div>
+        <div class="card-head"><span class="card-title">🚀 Conversão — Top 5</span><span style="font-size:10px;color:#555">validado com 50+ propostas cadastradas</span></div>
         <div class="card-body"><div id="conv-ranking"></div></div>
       </div>
     </div>
@@ -1245,7 +1245,11 @@ async function renderConversao(){
 
   // Top 5 — sempre mostra, sinaliza validação de 50+
   const ranking=Object.keys(matriculasPorPessoa)
-    .map(nome=>({nome, matriculas:matriculasPorPessoa[nome], propostas:propostasPorPessoa[nome]?.size||0, validado:(propostasPorPessoa[nome]?.size||0)>=50}))
+    .map(nome=>{
+      const props=propostasPorPessoa[nome]?.size||0;
+      const mats=matriculasPorPessoa[nome];
+      return {nome, matriculas:mats, propostas:props, validado:props>=50, conversao:props>0?(mats/props*100):0};
+    })
     .sort((a,b)=>b.matriculas-a.matriculas)
     .slice(0,5);
 
@@ -1260,7 +1264,10 @@ async function renderConversao(){
           <div style="font-size:13px;font-weight:600;color:#fff">${r.nome}</div>
           <div style="font-size:10px;color:${r.validado?'#22c55e':'#f59e0b'}">${r.validado?`✅ Validado — ${r.propostas} propostas`:`⏳ Precisa de 50 propostas para validar (tem ${r.propostas})`}</div>
         </div>
-        <div style="font-size:18px;font-weight:700;color:#22c55e">${r.matriculas}</div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:20px;font-weight:700;color:#22c55e">${r.conversao.toFixed(1)}%</div>
+          <div style="font-size:10px;color:#666">${r.matriculas} matrícula${r.matriculas===1?'':'s'}</div>
+        </div>
       </div>`).join('');
   }
 
