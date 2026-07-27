@@ -227,7 +227,7 @@ const supa = {
 
   // ── PLAYBOOK ──
   async salvarTarefa(selId, tarefaId, concluida) {
-    return await this.upsert('playbook_tarefas', {sel_id:selId, tarefa_id:tarefaId, concluida, atualizado_em:new Date().toISOString()});
+    return await this.req('POST', 'playbook_tarefas', [{sel_id:selId, tarefa_id:tarefaId, concluida, atualizado_em:new Date().toISOString()}], '?on_conflict=sel_id,tarefa_id');
   },
   async getTarefas() { return await this.get('playbook_tarefas', '?limit=2000'); },
 
@@ -249,18 +249,26 @@ const supa = {
   },
 
   // ── ENTREVISTAS ──
-  async salvarEntrevista(ent) { return await this.upsert('entrevistas', ent); },
+  async salvarEntrevista(ent) { return await this.req('POST', 'entrevistas', [ent], '?on_conflict=id'); },
   async getEntrevistas() { return await this.get('entrevistas', '?order=data.desc,hora.desc&limit=500'); },
   async updateEntrevista(id, data) { return await this.update('entrevistas', data, `id=eq.${id}`); },
 
   // ── NEGOCIAÇÕES ──
-  async salvarNegociacao(neg) { return await this.upsert('negociacoes', neg); },
+  async salvarNegociacao(neg) { return await this.req('POST', 'negociacoes', [neg], '?on_conflict=id'); },
   async getNegociacoes() { return await this.get('negociacoes', '?order=criado_em.desc&limit=200'); },
   async updateNegociacao(id, data) { return await this.update('negociacoes', data, `id=eq.${id}`); },
 
+  // ── NOTAS DE ACOMPANHAMENTO — persistem entre seletivos, ligadas à tarefa (não ao ciclo) ──
+  async salvarNota(tarefaId, nota, autor) {
+    return await this.insert('tarefa_notas', {tarefa_id:tarefaId, nota, autor, criado_em:new Date().toISOString()});
+  },
+  async getTodasNotas() {
+    return await this.get('tarefa_notas', '?order=criado_em.desc&limit=3000');
+  },
+
   // ── CONFIG / CALENDÁRIO ──
   async salvarConfig(chave, valor) {
-    return await this.upsert('config', {chave, valor:JSON.stringify(valor), atualizado_em:new Date().toISOString()});
+    return await this.req('POST', 'config', [{chave, valor:JSON.stringify(valor), atualizado_em:new Date().toISOString()}], '?on_conflict=chave');
   },
   async getConfig(chave) {
     const rows = await this.get('config', `?chave=eq.${chave}&limit=1`);
