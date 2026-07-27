@@ -57,6 +57,24 @@
   .t-alerta{font-size:10px;color:#f87171;background:#2a1515;border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block}
   .t-obs{font-size:10px;color:#555;font-style:italic;margin-top:2px}
   .t-actions{display:flex;gap:4px;flex-shrink:0;margin-top:1px}
+  .drag-handle{color:#444;cursor:grab;font-size:14px;padding:0 2px;flex-shrink:0;margin-top:2px;user-select:none}
+  .drag-handle:hover{color:#F5C842}
+  .tarefa[draggable="true"]{transition:opacity .15s}
+  .t-notas-btn{font-size:10px;color:#666;background:#12141e;border:1px solid #2a2d3a;border-radius:20px;padding:1px 8px;cursor:pointer;font-family:inherit}
+  .t-notas-btn:hover{color:#F5C842;border-color:#F5C842}
+  .t-notas-panel{display:none;margin-top:8px;background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px}
+  .t-notas-panel.aberto{display:block}
+  .t-notas-lista{max-height:160px;overflow-y:auto;margin-bottom:8px}
+  .t-nota-item{padding:6px 0;border-bottom:1px solid #2a2d3a;font-size:12px}
+  .t-nota-item:last-child{border-bottom:none}
+  .t-nota-texto{color:#ddd;display:block}
+  .t-nota-meta{color:#555;font-size:10px;margin-top:2px;display:block}
+  .t-nota-vazio{color:#555;font-size:11px;font-style:italic;padding:6px 0}
+  .t-nota-add{display:flex;gap:6px}
+  .t-nota-add input{font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
+  .t-nota-add input:first-child{flex:1}
+  .t-nota-add button{font-size:12px;padding:6px 12px;border-radius:6px;border:none;background:#F5C842;color:#0f1117;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .t-nota-add button:hover{background:#e8b820}
   .t-btn{width:22px;height:22px;border-radius:5px;border:1px solid #2a2d3a;background:transparent;color:#555;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:inherit}
   .t-btn:hover{background:#2a2d3a;color:#ddd}
   .t-btn.del:hover{background:#2a1515;color:#f87171;border-color:#ef4444}
@@ -232,6 +250,7 @@ const SELETIVOS_PADRAO=[
 ];
 
 let seletivos=[], tarefas={}, tarefasCustom=[], editandoId=null, faseEditando=null;
+let notasPorTarefa={}, ordemTarefas={}, notasAbertas=new Set(), dragTarefaId=null, dragFaseId=null;
 
 function parseData(str){
   if(!str||str==='—')return null;
@@ -271,6 +290,17 @@ async function init(){
   const cfgTarefas = await supa.getConfig('tarefas_custom');
   seletivos = cfgSel || SELETIVOS_PADRAO;
   tarefasCustom = cfgTarefas || [];
+
+  // Notas de acompanhamento — persistem entre seletivos, ligadas à tarefa
+  const notasDB = await supa.getTodasNotas();
+  notasPorTarefa={};
+  notasDB.forEach(n=>{
+    if(!notasPorTarefa[n.tarefa_id]) notasPorTarefa[n.tarefa_id]=[];
+    notasPorTarefa[n.tarefa_id].push(n);
+  });
+
+  // Ordem customizada das tarefas (drag-and-drop)
+  ordemTarefas = await supa.getConfig('ordem_tarefas') || {};
 
   const sel=document.getElementById('sel-seletivo');
   sel.innerHTML=seletivos.map(s=>`<option value="sel_${s.n}">${s.n}º Teste — ${s.data}${s.obs?' ('+s.obs+')':''}</option>`).join('');
@@ -314,21 +344,35 @@ function renderPlaybook(){
           <span class="fase-prog">${fd}/${ft}</span>
           <span class="fase-chev" id="${chevId}">▼</span>
         </div>
-        <div class="fase-body" id="${bodyId}">
-          ${faseTarefas.map(ta=>{
+        <div class="fase-body" id="${bodyId}" ondragover="onDragOverFase(event)" ondrop="onDropFase(event,'${f.id}','${selId}')">
+          ${aplicarOrdem(faseTarefas,f.id).map(ta=>{
             const checked=!!t[ta.id];
             const cor=d?prazoCor(d,ta.dRel):'n';
             const pl=`D${ta.dRel>=0?'+':''}${ta.dRel}${d?' = '+fmtData(dataRel(d,ta.dRel)):''}`;
-            return`<div class="tarefa ${checked?'done':''}">
+            const notas=notasPorTarefa[ta.id]||[];
+            const notasAberta=notasAbertas.has(ta.id);
+            return`<div class="tarefa ${checked?'done':''}" draggable="true" ondragstart="onDragStart(event,'${ta.id}','${f.id}')" ondragend="onDragEnd(event)" data-tarefa-id="${ta.id}">
+              <span class="drag-handle" title="Arrastar para reordenar">⠿</span>
               <div class="check ${checked?'checked':''}" onclick="marcarTarefa('${selId}','${ta.id}')">${checked?'✓':''}</div>
               <div class="t-info">
                 <div class="t-nome">${ta.nome}</div>
                 <div class="t-meta">
                   <span class="t-resp">${ta.resp}</span>
                   <span class="t-prazo tp-${cor}">${pl}</span>
+                  <button type="button" class="t-notas-btn" onclick="toggleNotas('${ta.id}')">📝 Notas${notas.length?` (${notas.length})`:''}</button>
                 </div>
                 ${ta.obs?`<div class="t-obs">${ta.obs}</div>`:''}
                 ${ta.alerta&&!checked?`<div class="t-alerta">⚠ ${ta.alerta}</div>`:''}
+                <div class="t-notas-panel ${notasAberta?'aberto':''}" id="notas-${ta.id}">
+                  <div class="t-notas-lista">
+                    ${notas.length?notas.map(n=>`<div class="t-nota-item"><span class="t-nota-texto">${n.nota}</span><span class="t-nota-meta">${n.autor||'—'} · ${new Date(n.criado_em).toLocaleDateString('pt-BR')}</span></div>`).join(''):'<div class="t-nota-vazio">Nenhuma nota ainda — registre decisões da reunião aqui.</div>'}
+                  </div>
+                  <div class="t-nota-add">
+                    <input type="text" id="nota-input-${ta.id}" placeholder="Ex: decidido reforçar CDR nas próximas 48h...">
+                    <input type="text" id="nota-autor-${ta.id}" placeholder="Seu nome" style="max-width:110px">
+                    <button type="button" onclick="adicionarNota('${ta.id}')">Adicionar</button>
+                  </div>
+                </div>
               </div>
               <div class="t-actions">
                 <button class="t-btn" onclick="editarTarefa('${ta.id}','${f.id}')" title="Editar">✏️</button>
@@ -356,6 +400,72 @@ function renderPlaybook(){
 function toggleFase(bodyId,chevId){
   const b=document.getElementById(bodyId);const c=document.getElementById(chevId);
   if(b){b.classList.toggle('open');if(c)c.classList.toggle('open');}
+}
+
+// Aplica a ordem customizada (drag-and-drop) sobre a lista de tarefas de uma fase
+function aplicarOrdem(faseTarefas, faseId){
+  const ordem=ordemTarefas[faseId];
+  if(!ordem||!ordem.length) return faseTarefas;
+  const porId={};faseTarefas.forEach(t=>porId[t.id]=t);
+  const ordenadas=ordem.map(id=>porId[id]).filter(Boolean);
+  const faltando=faseTarefas.filter(t=>!ordem.includes(t.id));
+  return [...ordenadas, ...faltando];
+}
+
+function onDragStart(ev,tarefaId,faseId){
+  dragTarefaId=tarefaId;
+  dragFaseId=faseId;
+  ev.currentTarget.style.opacity='0.4';
+}
+function onDragEnd(ev){
+  ev.currentTarget.style.opacity='1';
+}
+function onDragOverFase(ev){
+  ev.preventDefault();
+  const body=ev.currentTarget;
+  const afterEl=elementoDepoisDoY(body, ev.clientY);
+  const dragging=body.querySelector(`[data-tarefa-id="${dragTarefaId}"]`);
+  if(!dragging) return;
+  if(afterEl==null) body.appendChild(dragging);
+  else body.insertBefore(dragging, afterEl);
+}
+function elementoDepoisDoY(container, y){
+  const els=[...container.querySelectorAll('.tarefa:not([style*="opacity: 0.4"])')];
+  return els.reduce((closest,child)=>{
+    const box=child.getBoundingClientRect();
+    const offset=y-box.top-box.height/2;
+    if(offset<0 && offset>closest.offset) return {offset, element:child};
+    return closest;
+  }, {offset:-Infinity, element:null}).element;
+}
+async function onDropFase(ev, faseId, selId){
+  ev.preventDefault();
+  if(dragFaseId!==faseId){dragTarefaId=null;dragFaseId=null;return;} // não permite mover entre fases diferentes
+  const body=ev.currentTarget;
+  const novaOrdem=[...body.querySelectorAll('.tarefa')].map(el=>el.getAttribute('data-tarefa-id'));
+  ordemTarefas[faseId]=novaOrdem;
+  await supa.salvarConfig('ordem_tarefas', ordemTarefas);
+  dragTarefaId=null;dragFaseId=null;
+  renderPlaybook();
+}
+
+// Notas de acompanhamento — persistem entre seletivos
+function toggleNotas(tarefaId){
+  if(notasAbertas.has(tarefaId)) notasAbertas.delete(tarefaId);
+  else notasAbertas.add(tarefaId);
+  renderPlaybook();
+}
+async function adicionarNota(tarefaId){
+  const inp=document.getElementById('nota-input-'+tarefaId);
+  const autorInp=document.getElementById('nota-autor-'+tarefaId);
+  const texto=inp.value.trim();
+  if(!texto){alert('Escreva a nota antes de adicionar.');return;}
+  const autor=autorInp.value.trim()||'—';
+  await supa.salvarNota(tarefaId, texto, autor);
+  if(!notasPorTarefa[tarefaId]) notasPorTarefa[tarefaId]=[];
+  notasPorTarefa[tarefaId].unshift({tarefa_id:tarefaId, nota:texto, autor, criado_em:new Date().toISOString()});
+  notasAbertas.add(tarefaId);
+  renderPlaybook();
 }
 
 async function marcarTarefa(selId,taId){
