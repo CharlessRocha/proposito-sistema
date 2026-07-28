@@ -5,81 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Configurações — Propósito</title>
 <style>
+  .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
+  .nav-jump:hover{border-color:#b8860b}
+
+  /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
+  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
+  body{-webkit-font-smoothing:antialiased}
+  .card,.kpi,.lead-card,.neg-item,.ent-row,.sala,.sel-card,.fase,.alerta-card,.ld-grupo,.doc-card,.t-notas-panel{box-shadow:0 1px 2px rgba(43,38,32,.04), 0 1px 6px rgba(43,38,32,.03)}
+  .card:hover,.kpi:hover,.lead-card:hover,.doc-card:hover{box-shadow:0 2px 6px rgba(43,38,32,.06), 0 4px 14px rgba(43,38,32,.05)}
+  button,.tab,.f-btn,.acao-btn,.modulo-btn,.id-btn,.save-btn,.add-btn,.nav-back{transition:all .15s ease}
+  button:active{transform:scale(.97)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#c9bfa8}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
-  .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
-  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
-  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
-  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;color:#4a4238;min-height:100vh}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#ffffff;border-bottom:1px solid #e8e0d0;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#b8860b;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#7d7364;background:#f5f1e8;padding:3px 10px;border-radius:20px;border:1px solid #e8e0d0}
+  .nav-back{font-size:12px;color:#7d7364;background:none;border:1px solid #e8e0d0;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#b8860b;border-color:#b8860b}
   .main{max-width:800px;margin:0 auto;padding:1.25rem 1rem 4rem}
-  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a;flex-wrap:wrap}
-  .tab{flex:1;min-width:80px;padding:7px 8px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
-  .tab.active{background:#252840;color:#fff;border:1px solid #2a2d3a}
+  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#ffffff;border-radius:8px;padding:4px;border:1px solid #e8e0d0;flex-wrap:wrap}
+  .tab{flex:1;min-width:80px;padding:7px 8px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#7d7364;cursor:pointer;text-align:center;font-family:inherit}
+  .tab.active{background:#fff3d6;color:#2b2620;border:1px solid #e8e0d0}
   .panel{display:none}.panel.active{display:block}
-  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#555;margin-bottom:8px;margin-top:16px;display:flex;align-items:center;justify-content:space-between}
+  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#a89e8f;margin-bottom:8px;margin-top:16px;display:flex;align-items:center;justify-content:space-between}
   .section-label:first-child{margin-top:0}
-  .card{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:10px}
-  .card-head{padding:10px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;display:flex;align-items:center;justify-content:space-between}
-  .card-title{font-size:13px;font-weight:600;color:#ddd}
+  .card{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:10px}
+  .card-head{padding:10px 14px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-size:13px;font-weight:600;color:#3d362c}
   .save-btn{padding:8px 16px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-  .save-btn:hover{background:#e8b820}
-  .saved-msg{font-size:11px;color:#22c55e;display:none}
+  .save-btn:hover{background:#d4a017}
+  .saved-msg{font-size:11px;color:#16a34a;display:none}
 
   /* CALENDÁRIO */
   .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;padding:14px}
-  .sel-card{background:#12141e;border-radius:8px;padding:10px 12px;border:1px solid #2a2d3a}
-  .sel-num{font-size:10px;font-weight:700;color:#F5C842;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
-  .sel-input{width:100%;font-size:13px;font-weight:500;border:none;background:transparent;color:#fff;padding:0;margin-bottom:3px;font-family:inherit}
+  .sel-card{background:#f5f1e8;border-radius:8px;padding:10px 12px;border:1px solid #e8e0d0}
+  .sel-num{font-size:10px;font-weight:700;color:#b8860b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+  .sel-input{width:100%;font-size:13px;font-weight:500;border:none;background:transparent;color:#2b2620;padding:0;margin-bottom:3px;font-family:inherit}
   .sel-input:focus{outline:none;border-bottom:1px solid #F5C842}
-  .sel-obs{width:100%;font-size:11px;border:none;background:transparent;color:#555;padding:0;font-family:inherit}
-  .sel-obs:focus{outline:none;border-bottom:1px solid #555}
-  .add-sel-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:8px;border:1.5px dashed #2a2d3a;background:transparent;color:#555;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
-  .add-sel-btn:hover{border-color:#F5C842;color:#F5C842}
+  .sel-obs{width:100%;font-size:11px;border:none;background:transparent;color:#a89e8f;padding:0;font-family:inherit}
+  .sel-obs:focus{outline:none;border-bottom:1px solid #a89e8f}
+  .add-sel-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:8px;border:1.5px dashed #e8e0d0;background:transparent;color:#a89e8f;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .add-sel-btn:hover{border-color:#b8860b;color:#b8860b}
 
   /* TABELA PREÇOS */
   .tbl-wrap{overflow:hidden}
-  .tbl-col-header{display:grid;padding:7px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px;gap:6px}
-  .data-row{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid #2a2d3a;gap:6px;background:#1a1d27}
+  .tbl-col-header{display:grid;padding:7px 14px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;font-size:10px;font-weight:600;color:#a89e8f;text-transform:uppercase;letter-spacing:.5px;gap:6px}
+  .data-row{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid #e8e0d0;gap:6px;background:#ffffff}
   .data-row:last-child{border-bottom:none}
-  .data-row:hover{background:#1f2235}
-  .data-row input,.data-row select{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#ddd;width:100%;font-family:inherit}
-  .data-row input:hover,.data-row select:hover{border-color:#2a2d3a;background:#12141e}
-  .data-row input:focus,.data-row select:focus{border-color:#F5C842;outline:none;background:#12141e}
-  .del-btn{width:22px;height:22px;border-radius:5px;border:1px solid #2a2d3a;background:transparent;color:#555;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-  .del-btn:hover{background:#2a1515;color:#f87171;border-color:#ef4444}
-  .add-row-btn{padding:7px 14px;border:none;background:transparent;color:#555;font-size:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit;border-top:1px solid #2a2d3a}
-  .add-row-btn:hover{color:#F5C842;background:#1f2235}
+  .data-row:hover{background:#f7f3ea}
+  .data-row input,.data-row select{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#3d362c;width:100%;font-family:inherit}
+  .data-row input:hover,.data-row select:hover{border-color:#e8e0d0;background:#f5f1e8}
+  .data-row input:focus,.data-row select:focus{border-color:#b8860b;outline:none;background:#f5f1e8}
+  .del-btn{width:22px;height:22px;border-radius:5px;border:1px solid #e8e0d0;background:transparent;color:#a89e8f;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .del-btn:hover{background:#fdecec;color:#ef4444;border-color:#dc2626}
+  .add-row-btn{padding:7px 14px;border:none;background:transparent;color:#a89e8f;font-size:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit;border-top:1px solid #e8e0d0}
+  .add-row-btn:hover{color:#b8860b;background:#f7f3ea}
 
   /* FERIADOS / PONTOS */
   .lista-simples{padding:0}
-  .item-simples{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid #2a2d3a}
+  .item-simples{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid #e8e0d0}
   .item-simples:last-child{border-bottom:none}
-  .item-simples input{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#ddd;font-family:inherit}
-  .item-simples input:hover{border-color:#2a2d3a;background:#12141e}
-  .item-simples input:focus{border-color:#F5C842;outline:none;background:#12141e}
+  .item-simples input{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#3d362c;font-family:inherit}
+  .item-simples input:hover{border-color:#e8e0d0;background:#f5f1e8}
+  .item-simples input:focus{border-color:#b8860b;outline:none;background:#f5f1e8}
 
-  .loading{text-align:center;padding:24px;color:#555;font-size:13px}
-  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  .loading{text-align:center;padding:24px;color:#a89e8f;font-size:13px}
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
 <div id="auth-check">
   <div style="font-size:32px">🔒</div>
-  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
+  <div style="color:#2b2620;font-size:16px;font-weight:600">Acesso restrito</div>
   <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
 </div>
 <nav class="nav">
   <div class="nav-logo">🎯 Propósito</div>
   <span class="nav-modulo">⚙️ Configurações</span>
-  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+  <select class="nav-jump" onchange="if(this.value)window.location.href=this.value"><option value="">🔀 Outros módulos...</option><option value="gerente.html">🏠 Painel do Gerente</option><option value="cdr.html">🎧 CDR / Inside Sales</option><option value="closer.html">🤝 Closer</option><option value="entrevistas.html">📋 Entrevistas</option><option value="playbook.html">✅ Playbook</option><option value="matriculador.html">📄 Guia do Matriculador</option></select><button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
 <div class="main">
   <div style="margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
     <div>
-      <div style="font-size:20px;font-weight:700;color:#fff">Central de configurações</div>
-      <div style="font-size:12px;color:#666;margin-top:2px">Fonte de verdade — alimenta todos os módulos</div>
+      <div style="font-size:20px;font-weight:700;color:#2b2620">Central de configurações</div>
+      <div style="font-size:12px;color:#948a7c;margin-top:2px">Fonte de verdade — alimenta todos os módulos</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <span class="saved-msg" id="saved-global">✓ Salvo!</span>
@@ -111,9 +126,9 @@
 
   <!-- MAPA DE SELETIVOS -->
   <div class="panel" id="panel-mapa">
-    <div style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">
+    <div style="font-size:12px;color:#948a7c;margin-bottom:12px;line-height:1.6">
       Configure nomes amigáveis para cada seletivo. O sistema usa esses nomes nos filtros e nos painéis.<br>
-      <strong style="color:#aaa">Código do Rubeus</strong> = exatamente como aparece no CSV (ex: <code style="color:#F5C842;background:#12141e;padding:1px 5px;border-radius:4px">TS 2027/01 (PROPOSITO LESTE)</code>)
+      <strong style="color:#5c5346">Código do Rubeus</strong> = exatamente como aparece no CSV (ex: <code style="color:#b8860b;background:#f5f1e8;padding:1px 5px;border-radius:4px">TS 2027/01 (PROPOSITO LESTE)</code>)
     </div>
     <div class="section-label">
       <span>Mapeamento de processos seletivos</span>
@@ -129,15 +144,15 @@
       <div id="mapa-lista"></div>
       <button class="add-row-btn" onclick="addMapa()">+ Novo mapeamento</button>
     </div>
-    <div style="background:#1a1f35;border:1px solid #2a2d3a;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#888;line-height:1.6">
-      <strong style="color:#F5C842">Como funciona:</strong> Quando o sistema lê "TS 2027/01 (PROPOSITO LESTE)" no CSV, exibe "1º Teste — Leste" nos filtros e nos painéis. Facilita identificar rapidamente qual seletivo é qual.
+    <div style="background:#fff3d6;border:1px solid #e8e0d0;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;color:#7d7364;line-height:1.6">
+      <strong style="color:#b8860b">Como funciona:</strong> Quando o sistema lê "TS 2027/01 (PROPOSITO LESTE)" no CSV, exibe "1º Teste — Leste" nos filtros e nos painéis. Facilita identificar rapidamente qual seletivo é qual.
     </div>
   </div>
 
   <!-- ETAPAS DO FUNIL -->
   <div class="panel" id="panel-funil">
-    <div style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">
-      Classifique cada etapa do funil por nível de avanço. O painel do gerente usa essa régua para calcular a <strong style="color:#aaa">taxa de engajamento real</strong> — não apenas quem compareceu fisicamente, mas quem avançou de verdade no processo.
+    <div style="font-size:12px;color:#948a7c;margin-bottom:12px;line-height:1.6">
+      Classifique cada etapa do funil por nível de avanço. O painel do gerente usa essa régua para calcular a <strong style="color:#5c5346">taxa de engajamento real</strong> — não apenas quem compareceu fisicamente, mas quem avançou de verdade no processo.
     </div>
     <div class="section-label">
       <span>Classificação das etapas</span>
@@ -154,34 +169,34 @@
       <button class="add-row-btn" onclick="addEtapa()">+ Nova etapa</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">
-      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
-        <div style="width:12px;height:12px;border-radius:50%;background:#ef4444;margin:0 auto 6px"></div>
-        <div style="font-size:11px;color:#888">Neutra</div>
-        <div style="font-size:10px;color:#555">Ainda sem avanço</div>
+      <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#7d7364">Neutra</div>
+        <div style="font-size:10px;color:#a89e8f">Ainda sem avanço</div>
       </div>
-      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
-        <div style="width:12px;height:12px;border-radius:50%;background:#f59e0b;margin:0 auto 6px"></div>
-        <div style="font-size:11px;color:#888">Em progresso</div>
-        <div style="font-size:10px;color:#555">Está andando</div>
+      <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#d97706;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#7d7364">Em progresso</div>
+        <div style="font-size:10px;color:#a89e8f">Está andando</div>
       </div>
-      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
-        <div style="width:12px;height:12px;border-radius:50%;background:#22c55e;margin:0 auto 6px"></div>
-        <div style="font-size:11px;color:#888">Positiva</div>
-        <div style="font-size:10px;color:#555">Engajado</div>
+      <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:#16a34a;margin:0 auto 6px"></div>
+        <div style="font-size:11px;color:#7d7364">Positiva</div>
+        <div style="font-size:10px;color:#a89e8f">Engajado</div>
       </div>
-      <div style="background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px;text-align:center">
+      <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
         <div style="width:12px;height:12px;border-radius:50%;background:#F5C842;margin:0 auto 6px"></div>
-        <div style="font-size:11px;color:#888">Sucesso</div>
-        <div style="font-size:10px;color:#555">Convertido</div>
+        <div style="font-size:11px;color:#7d7364">Sucesso</div>
+        <div style="font-size:10px;color:#a89e8f">Convertido</div>
       </div>
     </div>
   </div>
 
   <!-- MATRICULADORES -->
   <div class="panel" id="panel-matric">
-    <div style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">
+    <div style="font-size:12px;color:#948a7c;margin-bottom:12px;line-height:1.6">
       Uma mesma pessoa pode aparecer com nomes diferentes no campo "Cadastrado Por" das Propostas
-      (ex: <strong style="color:#F5C842">"LETICYA MARIA LIMA MESQUITA"</strong> e <strong style="color:#F5C842">"Letícia Lima"</strong>).
+      (ex: <strong style="color:#b8860b">"LETICYA MARIA LIMA MESQUITA"</strong> e <strong style="color:#b8860b">"Letícia Lima"</strong>).
       Agrupe as variações aqui para que o ranking de conversão conte como uma pessoa só.
     </div>
     <div class="section-label">
@@ -401,7 +416,7 @@ function renderFunilEtapas(){
   document.getElementById('funil-lista').innerHTML=cfg.etapas_funil.map((e,i)=>`
     <div class="item-simples">
       <input style="flex:1.5" value="${e.etapa||''}" placeholder="Nome exato da etapa no Rubeus" onchange="cfg.etapas_funil[${i}].etapa=this.value">
-      <select style="flex:1;font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#ddd;font-family:inherit" onchange="cfg.etapas_funil[${i}].nivel=this.value">
+      <select style="flex:1;font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#3d362c;font-family:inherit" onchange="cfg.etapas_funil[${i}].nivel=this.value">
         ${Object.entries(niveis).map(([k,v])=>`<option value="${k}" ${e.nivel===k?'selected':''}>${v}</option>`).join('')}
       </select>
       <button class="del-btn" onclick="cfg.etapas_funil.splice(${i},1);renderFunilEtapas()">×</button>
@@ -421,7 +436,7 @@ function renderMatric(){
       <input style="flex:1;margin-top:2px" value="${m.canonico||''}" placeholder="Nome canônico (ex: Letícia Lima Mesquita)" onchange="cfg.matriculadores[${i}].canonico=this.value">
       <input style="flex:2;margin-top:2px" value="${m.variantes||''}" placeholder="Variações encontradas nas propostas, separadas por vírgula" onchange="cfg.matriculadores[${i}].variantes=this.value">
       <button class="del-btn" onclick="cfg.matriculadores.splice(${i},1);renderMatric()">×</button>
-    </div>`).join('')||'<div class="empty" style="padding:16px;font-size:12px;color:#555">Nenhum grupo criado ainda</div>';
+    </div>`).join('')||'<div class="empty" style="padding:16px;font-size:12px;color:#a89e8f">Nenhum grupo criado ainda</div>';
 }
 function addGrupoMatric(){cfg.matriculadores.push({canonico:'',variantes:''});renderMatric();}
 async function salvarMatric(){

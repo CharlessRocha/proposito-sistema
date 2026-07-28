@@ -5,139 +5,154 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Colégio Propósito — Painel do Gerente</title>
 <style>
+  .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
+  .nav-jump:hover{border-color:#b8860b}
+
+  /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
+  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
+  body{-webkit-font-smoothing:antialiased}
+  .card,.kpi,.lead-card,.neg-item,.ent-row,.sala,.sel-card,.fase,.alerta-card,.ld-grupo,.doc-card,.t-notas-panel{box-shadow:0 1px 2px rgba(43,38,32,.04), 0 1px 6px rgba(43,38,32,.03)}
+  .card:hover,.kpi:hover,.lead-card:hover,.doc-card:hover{box-shadow:0 2px 6px rgba(43,38,32,.06), 0 4px 14px rgba(43,38,32,.05)}
+  button,.tab,.f-btn,.acao-btn,.modulo-btn,.id-btn,.save-btn,.add-btn,.nav-back{transition:all .15s ease}
+  button:active{transform:scale(.97)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#c9bfa8}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;color:#4a4238;min-height:100vh}
 
   /* NAV */
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
-  .nav-logo{color:#F5C842;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
-  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit}
-  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#ffffff;border-bottom:1px solid #e8e0d0;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#b8860b;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .nav-modulo{font-size:12px;color:#7d7364;background:#f5f1e8;padding:3px 10px;border-radius:20px;border:1px solid #e8e0d0}
+  .nav-back{font-size:12px;color:#7d7364;background:none;border:1px solid #e8e0d0;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#b8860b;border-color:#b8860b}
 
   /* MAIN */
   .main{max-width:900px;margin:0 auto;padding:1.5rem 1rem 4rem}
-  .page-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
-  .page-sub{font-size:13px;color:#666;margin-bottom:1.5rem}
+  .page-title{font-size:22px;font-weight:700;color:#2b2620;margin-bottom:4px}
+  .page-sub{font-size:13px;color:#948a7c;margin-bottom:1.5rem}
 
   /* TABS */
-  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a}
-  .tab{flex:1;padding:8px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
-  .tab.active{background:#252840;color:#fff;border:1px solid #2a2d3a}
+  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#ffffff;border-radius:8px;padding:4px;border:1px solid #e8e0d0}
+  .tab{flex:1;padding:8px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#7d7364;cursor:pointer;text-align:center;font-family:inherit}
+  .tab.active{background:#fff3d6;color:#2b2620;border:1px solid #e8e0d0}
   .panel{display:none}.panel.active{display:block}
 
   /* IMPORT */
   .import-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
-  .iz{border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;cursor:pointer;background:#1a1d27;text-align:center;transition:border-color .15s}
-  .iz:hover{border-color:#F5C842}
-  .iz.loaded{border-color:#22c55e;background:#0f2a1a}
+  .iz{border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;cursor:pointer;background:#ffffff;text-align:center;transition:border-color .15s}
+  .iz:hover{border-color:#b8860b}
+  .iz.loaded{border-color:#16a34a;background:#eafaf0}
   .iz-icon{font-size:20px;margin-bottom:4px}
-  .iz-title{font-size:12px;font-weight:500;color:#ddd}
-  .iz-sub{font-size:10px;color:#666;margin-top:2px}
-  .iz-ok{font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none}
+  .iz-title{font-size:12px;font-weight:500;color:#3d362c}
+  .iz-sub{font-size:10px;color:#948a7c;margin-top:2px}
+  .iz-ok{font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none}
 
   /* KPI */
   .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem}
-  .kpi{background:#1a1d27;border-radius:8px;padding:12px;border:1px solid #2a2d3a}
-  .kpi-label{font-size:10px;color:#666;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
-  .kpi-val{font-size:20px;font-weight:700;color:#fff}
-  .kpi-sub{font-size:10px;color:#888;margin-top:2px}
-  .kpi.success .kpi-val{color:#22c55e}
-  .kpi.warning .kpi-val{color:#f59e0b}
-  .kpi.danger .kpi-val{color:#ef4444}
-  .kpi.accent .kpi-val{color:#F5C842}
+  .kpi{background:#ffffff;border-radius:8px;padding:12px;border:1px solid #e8e0d0}
+  .kpi-label{font-size:10px;color:#948a7c;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+  .kpi-val{font-size:20px;font-weight:700;color:#2b2620}
+  .kpi-sub{font-size:10px;color:#7d7364;margin-top:2px}
+  .kpi.success .kpi-val{color:#16a34a}
+  .kpi.warning .kpi-val{color:#d97706}
+  .kpi.danger .kpi-val{color:#dc2626}
+  .kpi.accent .kpi-val{color:#b8860b}
 
   /* ALERT */
-  .alert-box{background:#2a1515;border:1px solid #ef4444;border-radius:8px;padding:12px 14px;margin-bottom:1.25rem;display:none}
+  .alert-box{background:#fdecec;border:1px solid #dc2626;border-radius:8px;padding:12px 14px;margin-bottom:1.25rem;display:none}
   .alert-box.show{display:block}
-  .alert-title{font-size:12px;font-weight:600;color:#ef4444;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-  .alert-item{font-size:12px;color:#fca5a5;padding:3px 0;display:flex;align-items:flex-start;gap:8px}
+  .alert-title{font-size:12px;font-weight:600;color:#dc2626;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .alert-item{font-size:12px;color:#f87171;padding:3px 0;display:flex;align-items:flex-start;gap:8px}
 
   /* CARD */
-  .card{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:12px}
-  .card-head{padding:11px 14px;border-bottom:1px solid #2a2d3a;display:flex;align-items:center;justify-content:space-between;background:#1f2235}
-  .card-title{font-size:13px;font-weight:600;color:#ddd;display:flex;align-items:center;gap:6px}
+  .card{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:12px}
+  .card-head{padding:11px 14px;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between;background:#f7f3ea}
+  .card-title{font-size:13px;font-weight:600;color:#3d362c;display:flex;align-items:center;gap:6px}
   .card-body{padding:14px}
 
   /* FUNIL */
-  .funil-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #2a2d3a}
+  .funil-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e8e0d0}
   .funil-row:last-child{border-bottom:none}
-  .funil-nome{font-size:12px;color:#aaa;flex:1}
-  .funil-bar-wrap{width:90px;height:5px;background:#12141e;border-radius:3px;overflow:hidden;flex-shrink:0}
+  .funil-nome{font-size:12px;color:#5c5346;flex:1}
+  .funil-bar-wrap{width:90px;height:5px;background:#f5f1e8;border-radius:3px;overflow:hidden;flex-shrink:0}
   .funil-bar{height:5px;border-radius:3px}
-  .funil-num{font-size:14px;font-weight:600;color:#fff;min-width:28px;text-align:right}
-  .funil-pct{font-size:10px;color:#666;min-width:30px;text-align:right}
+  .funil-num{font-size:14px;font-weight:600;color:#2b2620;min-width:28px;text-align:right}
+  .funil-pct{font-size:10px;color:#948a7c;min-width:30px;text-align:right}
 
   /* MAIN GRID */
   .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 
   /* DATA ITEM */
-  .data-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #2a2d3a;font-size:12px}
+  .data-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #e8e0d0;font-size:12px}
   .data-item:last-child{border-bottom:none}
   .data-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;flex-shrink:0;min-width:50px;text-align:center}
-  .db-urgente{background:#2a1515;color:#ef4444}
-  .db-proximo{background:#2a1e0f;color:#f59e0b}
-  .db-futuro{background:#1a1f35;color:#F5C842}
-  .db-passado{background:#1a1d27;color:#555}
-  .data-desc{color:#ccc;flex:1}
-  .data-quando{font-size:10px;color:#666;flex-shrink:0}
+  .db-urgente{background:#fdecec;color:#dc2626}
+  .db-proximo{background:#fff6e0;color:#d97706}
+  .db-futuro{background:#fff3d6;color:#b8860b}
+  .db-passado{background:#ffffff;color:#a89e8f}
+  .data-desc{color:#4a4238;flex:1}
+  .data-quando{font-size:10px;color:#948a7c;flex-shrink:0}
 
   /* PLAY ROW */
-  .play-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #2a2d3a}
+  .play-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e8e0d0}
   .play-row:last-child{border-bottom:none}
   .play-fase{font-size:9px;font-weight:600;padding:2px 6px;border-radius:10px;flex-shrink:0;text-transform:uppercase}
-  .pf-plan{background:#1a1535;color:#a78bfa}
-  .pf-pre{background:#1a1f35;color:#F5C842}
-  .pf-dia{background:#2a1e0f;color:#f59e0b}
-  .pf-pos{background:#0f2a1a;color:#22c55e}
-  .play-nome{font-size:12px;color:#ccc;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pf-plan{background:#f5edff;color:#8b5cf6}
+  .pf-pre{background:#fff3d6;color:#b8860b}
+  .pf-dia{background:#fff6e0;color:#d97706}
+  .pf-pos{background:#eafaf0;color:#16a34a}
+  .play-nome{font-size:12px;color:#4a4238;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .play-prazo{font-size:10px;padding:1px 6px;border-radius:20px;flex-shrink:0}
-  .pp-urgente{background:#2a1515;color:#ef4444}
-  .pp-proximo{background:#2a1e0f;color:#f59e0b}
-  .pp-ok{background:#0f2a1a;color:#22c55e}
-  .pp-neutro{background:#1a1d27;color:#666;border:1px solid #2a2d3a}
+  .pp-urgente{background:#fdecec;color:#dc2626}
+  .pp-proximo{background:#fff6e0;color:#d97706}
+  .pp-ok{background:#eafaf0;color:#16a34a}
+  .pp-neutro{background:#ffffff;color:#948a7c;border:1px solid #e8e0d0}
 
   /* ENT ROW */
-  .ent-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #2a2d3a;font-size:12px}
+  .ent-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e8e0d0;font-size:12px}
   .ent-item:last-child{border-bottom:none}
-  .ep-at{background:#2a1515;color:#ef4444}
-  .ep-pl{background:#1a1f35;color:#F5C842}
-  .ent-nome{flex:1;color:#ddd;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .ent-info{font-size:10px;color:#666;flex-shrink:0}
+  .ep-at{background:#fdecec;color:#dc2626}
+  .ep-pl{background:#fff3d6;color:#b8860b}
+  .ent-nome{flex:1;color:#3d362c;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ent-info{font-size:10px;color:#948a7c;flex-shrink:0}
 
   /* SECTION LABEL */
-  .section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#555;margin-bottom:8px;margin-top:14px}
+  .section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#a89e8f;margin-bottom:8px;margin-top:14px}
   .section-label:first-child{margin-top:0}
 
   /* DIST */
-  .dist-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #2a2d3a;font-size:12px}
+  .dist-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #e8e0d0;font-size:12px}
   .dist-item:last-child{border-bottom:none}
-  .dist-label{color:#aaa;flex:1}
-  .dist-val{font-weight:600;color:#fff}
-  .dist-pct{font-size:10px;color:#666;min-width:30px;text-align:right}
+  .dist-label{color:#5c5346;flex:1}
+  .dist-val{font-weight:600;color:#2b2620}
+  .dist-pct{font-size:10px;color:#948a7c;min-width:30px;text-align:right}
 
   /* MARCAR BTN */
-  .marcar-btn{font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #22c55e;background:#0f2a1a;color:#22c55e;cursor:pointer;white-space:nowrap;font-family:inherit}
-  .marcar-btn:hover{background:#22c55e;color:#0f1117}
+  .marcar-btn{font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #16a34a;background:#eafaf0;color:#16a34a;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .marcar-btn:hover{background:#16a34a;color:#0f1117}
 
-  .empty{padding:20px;text-align:center;font-size:13px;color:#555}
+  .empty{padding:20px;text-align:center;font-size:13px;color:#a89e8f}
   .badge-small{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;margin-left:4px}
 </style>
 </head>
 <body>
 
-<div id="auth-check" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+<div id="auth-check" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px">
   <div style="font-size:32px">🔒</div>
-  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
-  <div style="color:#666;font-size:13px">Entre pelo menu principal</div>
+  <div style="color:#2b2620;font-size:16px;font-weight:600">Acesso restrito</div>
+  <div style="color:#948a7c;font-size:13px">Entre pelo menu principal</div>
   <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
 </div>
 
 <nav class="nav">
   <div class="nav-logo">🎯 Propósito</div>
   <span class="nav-modulo">🏠 Painel do Gerente</span>
-  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+  <select class="nav-jump" onchange="if(this.value)window.location.href=this.value"><option value="">🔀 Outros módulos...</option><option value="cdr.html">🎧 CDR / Inside Sales</option><option value="closer.html">🤝 Closer</option><option value="entrevistas.html">📋 Entrevistas</option><option value="playbook.html">✅ Playbook</option><option value="matriculador.html">📄 Guia do Matriculador</option><option value="config.html">⚙️ Configurações</option></select><button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
 
 <div class="main">
@@ -146,43 +161,43 @@
 
   <!-- IMPORTS -->
   <div class="import-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem">
-    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+    <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
       <div style="font-size:20px;margin-bottom:4px">👥</div>
-      <div style="font-size:12px;font-weight:500;color:#ddd">Funil Rubeus Completo</div>
-      <div style="font-size:10px;color:#666;margin-top:2px">Todos os leads e etapas</div>
-      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-reg"></div>
+      <div style="font-size:12px;font-weight:500;color:#3d362c">Funil Rubeus Completo</div>
+      <div style="font-size:10px;color:#948a7c;margin-top:2px">Todos os leads e etapas</div>
+      <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-reg"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'reg')">
     </label>
-    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-prop" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+    <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-prop" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
       <div style="font-size:20px;margin-bottom:4px">📄</div>
-      <div style="font-size:12px;font-weight:500;color:#ddd">Propostas</div>
-      <div style="font-size:10px;color:#666;margin-top:2px">Propostas orçamentárias</div>
-      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-prop"></div>
+      <div style="font-size:12px;font-weight:500;color:#3d362c">Propostas</div>
+      <div style="font-size:10px;color:#948a7c;margin-top:2px">Propostas orçamentárias</div>
+      <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-prop"></div>
       <input type="file" accept=".xls,.csv" style="display:none" onchange="lerProp(this)">
     </label>
-    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-atv" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+    <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-atv" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
       <div style="font-size:20px;margin-bottom:4px">📅</div>
-      <div style="font-size:12px;font-weight:500;color:#ddd">Atividades-CRM</div>
-      <div style="font-size:10px;color:#666;margin-top:2px">Entrevistas agendadas</div>
-      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-atv"></div>
+      <div style="font-size:12px;font-weight:500;color:#3d362c">Atividades-CRM</div>
+      <div style="font-size:10px;color:#948a7c;margin-top:2px">Entrevistas agendadas</div>
+      <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-atv"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'atv')">
     </label>
-    <label style="border:1.5px dashed #2a2d3a;border-radius:10px;padding:12px;background:#1a1d27;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-mat" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#22c55e':'#2a2d3a'">
+    <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-mat" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
       <div style="font-size:20px;margin-bottom:4px">🎓</div>
-      <div style="font-size:12px;font-weight:500;color:#ddd">Matrículas</div>
-      <div style="font-size:10px;color:#666;margin-top:2px">Matrículas efetivadas</div>
-      <div style="font-size:10px;color:#22c55e;font-weight:500;margin-top:3px;display:none" id="ok-mat"></div>
+      <div style="font-size:12px;font-weight:500;color:#3d362c">Matrículas</div>
+      <div style="font-size:10px;color:#948a7c;margin-top:2px">Matrículas efetivadas</div>
+      <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-mat"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'mat')">
     </label>
   </div>
 
   <!-- SELETOR DE SELETIVO -->
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;background:#1a1f35;border:1px solid #2a2d3a;border-radius:10px;padding:10px 14px">
-    <span style="font-size:13px;color:#888;flex-shrink:0">📊 Visualizando:</span>
-    <select id="sel-processo" onchange="renderTudo()" style="font-size:13px;font-weight:500;padding:7px 12px;border-radius:8px;border:1px solid #F5C842;background:#12141e;color:#fff;font-family:inherit;flex:1;max-width:360px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;background:#fff3d6;border:1px solid #e8e0d0;border-radius:10px;padding:10px 14px">
+    <span style="font-size:13px;color:#7d7364;flex-shrink:0">📊 Visualizando:</span>
+    <select id="sel-processo" onchange="renderTudo()" style="font-size:13px;font-weight:500;padding:7px 12px;border-radius:8px;border:1px solid #F5C842;background:#f5f1e8;color:#2b2620;font-family:inherit;flex:1;max-width:360px">
       <option value="">Todos os seletivos</option>
     </select>
-    <span id="sel-count" style="font-size:12px;color:#F5C842;font-weight:500"></span>
+    <span id="sel-count" style="font-size:12px;color:#b8860b;font-weight:500"></span>
   </div>
 
   <!-- KPIs -->
@@ -225,7 +240,7 @@
   <div class="panel" id="panel-funil">
     <div class="main-grid">
       <div class="card">
-        <div class="card-head"><span class="card-title">📊 Funil ao vivo</span><span id="funil-proc" style="font-size:10px;color:#555"></span></div>
+        <div class="card-head"><span class="card-title">📊 Funil ao vivo</span><span id="funil-proc" style="font-size:10px;color:#a89e8f"></span></div>
         <div class="card-body"><div id="funil-body"></div></div>
       </div>
       <div>
@@ -247,22 +262,22 @@
       <div class="card-head"><span class="card-title">🎯 Filtros</span></div>
       <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
         <div>
-          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Unidade</label>
-          <select id="conv-unidade" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+          <label style="font-size:10px;color:#948a7c;display:block;margin-bottom:3px">Unidade</label>
+          <select id="conv-unidade" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
             <option value="">Todas</option>
           </select>
         </div>
         <div>
-          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Data inicial (pré-matrícula)</label>
-          <input type="date" id="conv-data-ini" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+          <label style="font-size:10px;color:#948a7c;display:block;margin-bottom:3px">Data inicial (pré-matrícula)</label>
+          <input type="date" id="conv-data-ini" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
         </div>
         <div>
-          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Data final (pré-matrícula)</label>
-          <input type="date" id="conv-data-fim" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+          <label style="font-size:10px;color:#948a7c;display:block;margin-bottom:3px">Data final (pré-matrícula)</label>
+          <input type="date" id="conv-data-fim" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
         </div>
         <div>
-          <label style="font-size:10px;color:#666;display:block;margin-bottom:3px">Matriculador</label>
-          <select id="conv-matriculador" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit">
+          <label style="font-size:10px;color:#948a7c;display:block;margin-bottom:3px">Matriculador</label>
+          <select id="conv-matriculador" onchange="renderConversao()" style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
             <option value="">Todos</option>
           </select>
         </div>
@@ -282,62 +297,62 @@
         <div class="card-body"><div id="conv-unidade-body"></div></div>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">🚀 Conversão — Top 5</span><span style="font-size:10px;color:#555">validado com 50+ propostas cadastradas</span></div>
+        <div class="card-head"><span class="card-title">🚀 Conversão — Top 5</span><span style="font-size:10px;color:#a89e8f">validado com 50+ propostas cadastradas</span></div>
         <div class="card-body"><div id="conv-ranking"></div></div>
       </div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-head"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#555">por % de conversão</span></div>
+      <div class="card-head"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#a89e8f">por % de conversão</span></div>
       <div class="card-body" style="max-height:420px;overflow-y:auto;padding:0">
         <div id="conv-ranking-completo"></div>
       </div>
     </div>
 
     <div class="card" style="margin-top:12px;border:1px solid #F5C842">
-      <div class="card-head" style="background:#1a1f35"><span class="card-title" style="color:#F5C842">1️⃣ Rubeus × Propostas — atribuindo o ponto positivo</span></div>
+      <div class="card-head" style="background:#fff3d6"><span class="card-title" style="color:#b8860b">1️⃣ Rubeus × Propostas — atribuindo o ponto positivo</span></div>
       <div class="card-body" style="padding-bottom:8px">
-        <div style="font-size:11px;color:#888;margin-bottom:10px">Alunos com Etapa = Matrícula no Funil Rubeus, cruzados com quem cadastrou a proposta deles.</div>
+        <div style="font-size:11px;color:#7d7364;margin-bottom:10px">Alunos com Etapa = Matrícula no Funil Rubeus, cruzados com quem cadastrou a proposta deles.</div>
         <div id="conv-step1-resumo" style="display:flex;gap:16px;margin-bottom:10px"></div>
       </div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matriculados no Rubeus sem proposta cadastrada</span><span id="conv-sem-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head"><span class="card-title" style="color:#ef4444">⚠️ Matriculados no Rubeus sem proposta cadastrada</span><span id="conv-sem-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-sem-proposta"></div></div>
     </div>
 
-    <div class="card" style="margin-top:12px;border:1px solid #38bdf8">
-      <div class="card-head" style="background:#1a1f35"><span class="card-title" style="color:#38bdf8">2️⃣ TOTVS × Rubeus — checando consistência</span></div>
+    <div class="card" style="margin-top:12px;border:1px solid #0284c7">
+      <div class="card-head" style="background:#fff3d6"><span class="card-title" style="color:#0284c7">2️⃣ TOTVS × Rubeus — checando consistência</span></div>
       <div class="card-body">
-        <div style="font-size:11px;color:#888">Para cada matrícula real (TOTVS), verifica se o Rubeus já reflete isso corretamente.</div>
+        <div style="font-size:11px;color:#7d7364">Para cada matrícula real (TOTVS), verifica se o Rubeus já reflete isso corretamente.</div>
       </div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-head"><span class="card-title" style="color:#f87171">⚠️ Matriculados no Rubeus mas não encontrados no TOTVS</span><span id="conv-rubtot-badge" style="font-size:10px;background:#2a1515;color:#ef4444;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head"><span class="card-title" style="color:#ef4444">⚠️ Matriculados no Rubeus mas não encontrados no TOTVS</span><span id="conv-rubtot-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-rub-sem-totvs"></div></div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-head"><span class="card-title" style="color:#fbbf24">🔄 Matriculado no TOTVS mas em outra etapa no Rubeus — atualizar</span><span id="conv-divergente-badge" style="font-size:10px;background:#1a1500;color:#fbbf24;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head"><span class="card-title" style="color:#f59e0b">🔄 Matriculado no TOTVS mas em outra etapa no Rubeus — atualizar</span><span id="conv-divergente-badge" style="font-size:10px;background:#fff6e0;color:#f59e0b;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-etapa-divergente"></div></div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-head"><span class="card-title" style="color:#c084fc">🆕 Matriculado no TOTVS não encontrado no Rubeus — possível migração ou matrícula fora do funil</span><span id="conv-fora-badge" style="font-size:10px;background:#1a1535;color:#c084fc;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head"><span class="card-title" style="color:#9333ea">🆕 Matriculado no TOTVS não encontrado no Rubeus — possível migração ou matrícula fora do funil</span><span id="conv-fora-badge" style="font-size:10px;background:#f5edff;color:#9333ea;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-fora-funil"></div></div>
     </div>
 
-    <div class="card" style="margin-top:12px;border:1px solid #22c55e">
-      <div class="card-head" style="background:#1a1f35"><span class="card-title" style="color:#22c55e">3️⃣ Conversão real por matriculador</span></div>
+    <div class="card" style="margin-top:12px;border:1px solid #16a34a">
+      <div class="card-head" style="background:#fff3d6"><span class="card-title" style="color:#16a34a">3️⃣ Conversão real por matriculador</span></div>
       <div class="card-body">
-        <div style="font-size:11px;color:#888">Propostas cadastradas × Matrículas confirmadas no TOTVS = taxa de sucesso individual.</div>
+        <div style="font-size:11px;color:#7d7364">Propostas cadastradas × Matrículas confirmadas no TOTVS = taxa de sucesso individual.</div>
       </div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-head"><span class="card-title" style="color:#fbbf24">🔍 Correspondências aproximadas — revisar na base</span><span id="conv-aprox-badge" style="font-size:10px;background:#1a1500;color:#fbbf24;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head"><span class="card-title" style="color:#f59e0b">🔍 Correspondências aproximadas — revisar na base</span><span id="conv-aprox-badge" style="font-size:10px;background:#fff6e0;color:#f59e0b;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-aproximadas"></div></div>
     </div>
   </div>
@@ -406,7 +421,7 @@ const FASES_DEF=[
 ];
 
 const ETAPA_ORDER=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'];
-const ETAPA_COR={'Inscrito':'#3b82f6','Confirmado no Teste':'#f59e0b','Não Compareceu no Teste':'#ef4444','Compareceu no Teste':'#22c55e','Entrevista Agendada':'#a78bfa','Proposta':'#38bdf8','Negociação':'#fb923c','Matrícula':'#22c55e'};
+const ETAPA_COR={'Inscrito':'#1d4ed8','Confirmado no Teste':'#d97706','Não Compareceu no Teste':'#dc2626','Compareceu no Teste':'#16a34a','Entrevista Agendada':'#8b5cf6','Proposta':'#0284c7','Negociação':'#ea580c','Matrícula':'#16a34a'};
 
 let leads=[], propostas=[], atividades=[], matriculas=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
 
@@ -606,7 +621,7 @@ function marcarOk(tipo,n){
   const ok=document.getElementById('ok-'+tipo);
   if(ok){ok.style.display='block';ok.textContent=`✓ ${n} registros`;}
   const iz=document.getElementById('iz-'+tipo);
-  if(iz){iz.style.borderColor='#22c55e';iz.style.background='#0f2a1a';}
+  if(iz){iz.style.borderColor='#16a34a';iz.style.background='#eafaf0';}
 }
 
 async function lerCSV(inp,tipo){
@@ -673,7 +688,7 @@ async function lerProp(inp){
       }
       if(!linhasProp.length){
         marcarOk('prop','');
-        document.getElementById('iz-prop').style.borderColor='#ef4444';
+        document.getElementById('iz-prop').style.borderColor='#dc2626';
         alert('Não consegui reconhecer o formato deste arquivo de Propostas.\n\nVerifique se é o arquivo certo exportado do sistema de admissões (formato .xls ou .csv).');
         return;
       }
@@ -836,22 +851,22 @@ function renderPlaybook(){
   document.getElementById('play-body').innerHTML=pendentes.slice(0,6).map(ta=>{
     const cor=prazoCor(d,ta.dRel);
     return`<div class="play-row"><span class="play-fase pf-${ta.fase}">${ta.fase.toUpperCase()}</span><span class="play-nome">${ta.nome}</span><span class="play-prazo pp-${cor}">D${ta.dRel>=0?'+':''}${ta.dRel}=${fmtData(dataRel(d,ta.dRel))}</span></div>`;
-  }).join('')||'<div class="empty" style="color:#22c55e">✓ Todas concluídas</div>';
+  }).join('')||'<div class="empty" style="color:#16a34a">✓ Todas concluídas</div>';
 
   // Playbook completo (por fase)
-  document.getElementById('playbook-body').innerHTML=`<div style="font-size:13px;color:#888;margin-bottom:12px">${sa.n}º Teste — ${sa.data}</div>`+
+  document.getElementById('playbook-body').innerHTML=`<div style="font-size:13px;color:#7d7364;margin-bottom:12px">${sa.n}º Teste — ${sa.data}</div>`+
     FASES_DEF.map(f=>{
       const faseTarefas=todas.filter(ta=>ta.fase===f.id);
       const ft=faseTarefas.length,fd=faseTarefas.filter(ta=>t[ta.id]).length;
       return`<div class="card" style="margin-bottom:10px">
-        <div class="card-head"><span class="card-title"><span class="play-fase pf-${f.badge}" style="margin-right:6px">${f.badge.toUpperCase()}</span>${f.label}</span><span style="font-size:10px;color:#555">${fd}/${ft}</span></div>
+        <div class="card-head"><span class="card-title"><span class="play-fase pf-${f.badge}" style="margin-right:6px">${f.badge.toUpperCase()}</span>${f.label}</span><span style="font-size:10px;color:#a89e8f">${fd}/${ft}</span></div>
         <div>${faseTarefas.map(ta=>{
           const checked=!!t[ta.id];
           const cor=prazoCor(d,ta.dRel);
-          return`<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #2a2d3a;${checked?'opacity:.45':''}">
-            <div onclick="marcarTarefa('sel_${sa.n}','${ta.id}')" style="width:18px;height:18px;border-radius:4px;border:1px solid ${checked?'#22c55e':'#3a3d4a'};background:${checked?'#22c55e':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">${checked?'<span style="color:#0f1117;font-size:11px">✓</span>':''}</div>
-            <span style="font-size:12px;color:#ccc;flex:1;${checked?'text-decoration:line-through':''}">${ta.nome}</span>
-            <span style="font-size:10px;color:#888;flex-shrink:0">${ta.resp}</span>
+          return`<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #e8e0d0;${checked?'opacity:.45':''}">
+            <div onclick="marcarTarefa('sel_${sa.n}','${ta.id}')" style="width:18px;height:18px;border-radius:4px;border:1px solid ${checked?'#16a34a':'#c9bfa8'};background:${checked?'#16a34a':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">${checked?'<span style="color:#0f1117;font-size:11px">✓</span>':''}</div>
+            <span style="font-size:12px;color:#4a4238;flex:1;${checked?'text-decoration:line-through':''}">${ta.nome}</span>
+            <span style="font-size:10px;color:#7d7364;flex-shrink:0">${ta.resp}</span>
             <span class="play-prazo pp-${cor}">D${ta.dRel>=0?'+':''}${ta.dRel}=${fmtData(dataRel(d,ta.dRel))}</span>
           </div>`;
         }).join('')}</div>
@@ -870,7 +885,7 @@ function renderFunil(){
   document.getElementById('funil-body').innerHTML=ETAPA_ORDER.map(et=>{
     const n=contEtapa[et]||0;if(!n)return'';
     const pct=Math.round(n/total*100);
-    return`<div class="funil-row"><span class="funil-nome">${et}</span><div class="funil-bar-wrap"><div class="funil-bar" style="width:${Math.round(n/maxE*100)}%;background:${ETAPA_COR[et]||'#3b82f6'}"></div></div><span class="funil-num">${n}</span><span class="funil-pct">${pct}%</span></div>`;
+    return`<div class="funil-row"><span class="funil-nome">${et}</span><div class="funil-bar-wrap"><div class="funil-bar" style="width:${Math.round(n/maxE*100)}%;background:${ETAPA_COR[et]||'#1d4ed8'}"></div></div><span class="funil-num">${n}</span><span class="funil-pct">${pct}%</span></div>`;
   }).join('');
   const contU={};ativos.forEach(l=>{const u=(l['Unidade']||'').replace('UNIDADE ','').replace('PROPÓSITO ','');if(u&&u!='- - -')contU[u]=(contU[u]||0)+1;});
   document.getElementById('dist-unidade').innerHTML=Object.entries(contU).sort((a,b)=>b[1]-a[1]).map(([u,n])=>`<div class="dist-item"><span class="dist-label">${u}</span><span class="dist-val">${n}</span><span class="dist-pct">${Math.round(n/total*100)}%</span></div>`).join('');
@@ -895,7 +910,7 @@ function renderEntrevistas(){
     document.getElementById('entrevistas-full').innerHTML='<div class="empty">Importe o CSV de Atividades</div>';
     return;
   }
-  const cor=s=>s==='Atrasada'?'background:#2a1515;color:#ef4444':s==='Ganho'?'background:#0f2a1a;color:#22c55e':'background:#1a1f35;color:#F5C842';
+  const cor=s=>s==='Atrasada'?'background:#fdecec;color:#dc2626':s==='Ganho'?'background:#eafaf0;color:#16a34a':'background:#fff3d6;color:#b8860b';
   const rowHtml=a=>{
     const isOnline=a['Modalidade']==='online';
     const data=(a['Data de vencimento']||'').split(' ')[0]||'';
@@ -909,37 +924,37 @@ function renderEntrevistas(){
     });
     const resultado=a['Resultado']||'';
     let badgeResultado='';
-    if(temProposta) badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#0f2a1a;color:#4ade80">✅ Proposta cadastrada</span>`;
-    else if(resultado==='sucesso') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#0f2a1a;color:#4ade80">✅ Deu certo (manual)</span>`;
-    else if(resultado==='reagendou') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#1a1500;color:#fbbf24">🔁 Reagendou</span>`;
-    else if(resultado==='sem_retorno') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#1a1d27;color:#999;border:1px solid #2a2d3a">📵 Sem retorno</span>`;
-    else if(resultado==='desistiu') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#2a1515;color:#f87171">❌ Desistiu</span>`;
-    else if(resultado==='outro') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#1a1d27;color:#aaa;border:1px solid #2a2d3a">✏️ ${a['ResultadoObs']||'Outro'}</span>`;
-    else badgeResultado=`<span style="font-size:10px;color:#555">— sem resultado ainda</span>`;
+    if(temProposta) badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#eafaf0;color:#22c55e">✅ Proposta cadastrada</span>`;
+    else if(resultado==='sucesso') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#eafaf0;color:#22c55e">✅ Deu certo (manual)</span>`;
+    else if(resultado==='reagendou') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#fff6e0;color:#f59e0b">🔁 Reagendou</span>`;
+    else if(resultado==='sem_retorno') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#ffffff;color:#6b6255;border:1px solid #e8e0d0">📵 Sem retorno</span>`;
+    else if(resultado==='desistiu') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#fdecec;color:#ef4444">❌ Desistiu</span>`;
+    else if(resultado==='outro') badgeResultado=`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:#ffffff;color:#5c5346;border:1px solid #e8e0d0">✏️ ${a['ResultadoObs']||'Outro'}</span>`;
+    else badgeResultado=`<span style="font-size:10px;color:#a89e8f">— sem resultado ainda</span>`;
     return`
-    <div style="padding:9px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
+    <div style="padding:9px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;${cor(a['Status'])}">${a['Status']}</span>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:500;color:#ddd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a['Contato']}</div>
-          <div style="font-size:11px;color:#555;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
-            <span style="color:#aaa">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
+          <div style="font-size:13px;font-weight:500;color:#3d362c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a['Contato']}</div>
+          <div style="font-size:11px;color:#a89e8f;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
+            <span style="color:#5c5346">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
             <span>${a['Unidade']||''}</span>
-            <span style="color:#888">👤 ${a['Responsável']||'—'}</span>
-            ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#60a5fa">📞 ${a['Telefone']}</span>`:''}
+            <span style="color:#7d7364">👤 ${a['Responsável']||'—'}</span>
+            ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#2563eb">📞 ${a['Telefone']}</span>`:''}
           </div>
-          <div style="font-size:10px;color:#666;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
+          <div style="font-size:10px;color:#948a7c;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:12px;font-weight:600;color:#F5C842">${hora}</div>
-          <div style="font-size:10px;color:#555">${data}</div>
+          <div style="font-size:12px;font-weight:600;color:#b8860b">${hora}</div>
+          <div style="font-size:10px;color:#a89e8f">${data}</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
-        <button type="button" onclick="toggleModalidade('${a['_id']}',${!isOnline})" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid ${isOnline?'#F5C842':'#2a2d3a'};background:${isOnline?'#1a1f35':'#12141e'};color:${isOnline?'#F5C842':'#888'};cursor:pointer;font-family:inherit">${isOnline?'🖥️ Online':'🏢 Presencial'}</button>
+        <button type="button" onclick="toggleModalidade('${a['_id']}',${!isOnline})" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid ${isOnline?'#F5C842':'#e8e0d0'};background:${isOnline?'#fff3d6':'#f5f1e8'};color:${isOnline?'#F5C842':'#7d7364'};cursor:pointer;font-family:inherit">${isOnline?'🖥️ Online':'🏢 Presencial'}</button>
         ${isOnline?`
-          <input type="text" placeholder="Cole o link do Meet..." value="${a['Link']||''}" onchange="salvarLinkMeet('${a['_id']}',this.value)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#12141e;color:#60a5fa;flex:1;min-width:140px;font-family:inherit">
-          ${a['Link']?`<button type="button" onclick="copiarMsgEntrevista('${nomeC}','${data}','${hora}','${linkSafe}')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #22c55e;background:#0f2a1a;color:#4ade80;cursor:pointer;font-family:inherit">📋 Copiar mensagem</button>`:''}
+          <input type="text" placeholder="Cole o link do Meet..." value="${a['Link']||''}" onchange="salvarLinkMeet('${a['_id']}',this.value)" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2563eb;flex:1;min-width:140px;font-family:inherit">
+          ${a['Link']?`<button type="button" onclick="copiarMsgEntrevista('${nomeC}','${data}','${hora}','${linkSafe}')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #16a34a;background:#eafaf0;color:#22c55e;cursor:pointer;font-family:inherit">📋 Copiar mensagem</button>`:''}
         `:''}
       </div>
       <div style="margin-top:6px">${badgeResultado}</div>
@@ -947,7 +962,7 @@ function renderEntrevistas(){
   };
   document.getElementById('ent-body').innerHTML=todas.length?
     todas.slice(0,5).map(rowHtml).join('')+
-    (todas.length>5?`<div style="font-size:11px;color:#555;text-align:center;padding:8px">+ ${todas.length-5} entrevistas na aba Entrevistas</div>`:'')
+    (todas.length>5?`<div style="font-size:11px;color:#a89e8f;text-align:center;padding:8px">+ ${todas.length-5} entrevistas na aba Entrevistas</div>`:'')
     :'<div class="empty">Nenhuma entrevista encontrada</div>';
   document.getElementById('entrevistas-full').innerHTML=todas.length?todas.map(rowHtml).join(''):'<div class="empty">Nenhuma entrevista no período selecionado</div>';
 }
@@ -1112,34 +1127,34 @@ async function renderConversao(){
   const step1SemProposta=step1.filter(x=>!x.match);
 
   document.getElementById('conv-step1-resumo').innerHTML=`
-    <div><div style="font-size:11px;color:#666">Matriculados no Rubeus</div><div style="font-size:20px;font-weight:700;color:#fff">${leadsMatriculados.length}</div></div>
-    <div><div style="font-size:11px;color:#666">Com proposta encontrada</div><div style="font-size:20px;font-weight:700;color:#22c55e">${step1ComProposta.length}</div></div>
-    <div><div style="font-size:11px;color:#666">Sem proposta encontrada</div><div style="font-size:20px;font-weight:700;color:${step1SemProposta.length?'#ef4444':'#22c55e'}">${step1SemProposta.length}</div></div>`;
+    <div><div style="font-size:11px;color:#948a7c">Matriculados no Rubeus</div><div style="font-size:20px;font-weight:700;color:#2b2620">${leadsMatriculados.length}</div></div>
+    <div><div style="font-size:11px;color:#948a7c">Com proposta encontrada</div><div style="font-size:20px;font-weight:700;color:#16a34a">${step1ComProposta.length}</div></div>
+    <div><div style="font-size:11px;color:#948a7c">Sem proposta encontrada</div><div style="font-size:20px;font-weight:700;color:${step1SemProposta.length?'#dc2626':'#16a34a'}">${step1SemProposta.length}</div></div>`;
 
   document.getElementById('conv-sem-badge').textContent=step1SemProposta.length||'';
   document.getElementById('conv-sem-proposta').innerHTML=step1SemProposta.length?step1SemProposta.map(x=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
-      <span style="color:#f87171">🚨</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <span style="color:#ef4444">🚨</span>
       <div style="flex:1">
-        <div style="font-weight:600;color:#fff">${x.lead['Nome da pessoa']}</div>
-        <div style="font-size:11px;color:#666">${x.lead['Unidade']||''} · ${x.lead['Processo seletivo']||''}</div>
+        <div style="font-weight:600;color:#2b2620">${x.lead['Nome da pessoa']}</div>
+        <div style="font-size:11px;color:#948a7c">${x.lead['Unidade']||''} · ${x.lead['Processo seletivo']||''}</div>
       </div>
-      <span style="font-size:10px;color:#f87171">cadastrar proposta</span>
-    </div>`).join(''):'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do Rubeus têm proposta cadastrada</div>';
+      <span style="font-size:10px;color:#ef4444">cadastrar proposta</span>
+    </div>`).join(''):'<div class="empty" style="color:#16a34a">✓ Todos os matriculados do Rubeus têm proposta cadastrada</div>';
 
   // Rubeus matriculado mas não encontrado no TOTVS ainda (mostra nome + etapa)
   const nomesTotvsAtual=totvsMatriculados.map(m=>m['Nome']);
   const rubeusSemTotvs=leadsMatriculados.filter(l=>!nomesTotvsAtual.some(n=>similaridadeNomes(l['Nome da pessoa'],n)>=LIMIAR_MATCH));
   document.getElementById('conv-rubtot-badge').textContent=rubeusSemTotvs.length||'';
   document.getElementById('conv-rub-sem-totvs').innerHTML=rubeusSemTotvs.length?rubeusSemTotvs.map(l=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
-      <span style="color:#f87171">🚨</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <span style="color:#ef4444">🚨</span>
       <div style="flex:1">
-        <div style="font-weight:600;color:#fff">${l['Nome da pessoa']}</div>
-        <div style="font-size:11px;color:#666">${l['Unidade']||''} · ${l['Processo seletivo']||''}</div>
+        <div style="font-weight:600;color:#2b2620">${l['Nome da pessoa']}</div>
+        <div style="font-size:11px;color:#948a7c">${l['Unidade']||''} · ${l['Processo seletivo']||''}</div>
       </div>
-      <span style="font-size:11px;font-weight:600;color:#f87171">Etapa: "${l['Etapa']||'—'}"</span>
-    </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do Rubeus foram encontrados no TOTVS</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS</div>');
+      <span style="font-size:11px;font-weight:600;color:#ef4444">Etapa: "${l['Etapa']||'—'}"</span>
+    </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#16a34a">✓ Todos os matriculados do Rubeus foram encontrados no TOTVS</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS</div>');
 
   // ═══════════════════════════════════════════════
   // ETAPA 2 — TOTVS (Matriculado) × Rubeus
@@ -1155,25 +1170,25 @@ async function renderConversao(){
 
   document.getElementById('conv-divergente-badge').textContent=step2Divergente.length||'';
   document.getElementById('conv-etapa-divergente').innerHTML=step2Divergente.length?step2Divergente.map(x=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
-      <span style="color:#fbbf24">🔄</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <span style="color:#f59e0b">🔄</span>
       <div style="flex:1">
-        <div style="font-weight:600;color:#fff">${x.matricula['Nome']}</div>
-        <div style="font-size:11px;color:#666">${x.matricula['Filial']||''} · Matriculado em ${x.matricula['DataMatricula']||''}</div>
+        <div style="font-weight:600;color:#2b2620">${x.matricula['Nome']}</div>
+        <div style="font-size:11px;color:#948a7c">${x.matricula['Filial']||''} · Matriculado em ${x.matricula['DataMatricula']||''}</div>
       </div>
-      <span style="font-size:11px;font-weight:600;color:#fbbf24">Rubeus está em: "${x.lead['Etapa']||'—'}"</span>
-    </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#22c55e">✓ Rubeus está atualizado para todos os matriculados encontrados</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS</div>');
+      <span style="font-size:11px;font-weight:600;color:#f59e0b">Rubeus está em: "${x.lead['Etapa']||'—'}"</span>
+    </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#16a34a">✓ Rubeus está atualizado para todos os matriculados encontrados</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS</div>');
 
   document.getElementById('conv-fora-badge').textContent=step2ForaFunil.length||'';
   document.getElementById('conv-fora-funil').innerHTML=step2ForaFunil.length?step2ForaFunil.map(x=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
-      <span style="color:#c084fc">🆕</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <span style="color:#9333ea">🆕</span>
       <div style="flex:1">
-        <div style="font-weight:600;color:#fff">${x.matricula['Nome']}</div>
-        <div style="font-size:11px;color:#666">${x.matricula['Filial']||''} · Matriculado em ${x.matricula['DataMatricula']||''}</div>
+        <div style="font-weight:600;color:#2b2620">${x.matricula['Nome']}</div>
+        <div style="font-size:11px;color:#948a7c">${x.matricula['Filial']||''} · Matriculado em ${x.matricula['DataMatricula']||''}</div>
       </div>
-      <span style="font-size:10px;color:#c084fc">não está no funil</span>
-    </div>`).join(''):(leads.length?'<div class="empty" style="color:#22c55e">✓ Todos os matriculados do TOTVS foram encontrados no funil</div>':'<div class="empty">Importe o Funil Rubeus Completo</div>');
+      <span style="font-size:10px;color:#9333ea">não está no funil</span>
+    </div>`).join(''):(leads.length?'<div class="empty" style="color:#16a34a">✓ Todos os matriculados do TOTVS foram encontrados no funil</div>':'<div class="empty">Importe o Funil Rubeus Completo</div>');
 
   // ═══════════════════════════════════════════════
   // ETAPA 3 — Conversão real por matriculador
@@ -1200,14 +1215,14 @@ async function renderConversao(){
 
   document.getElementById('conv-aprox-badge').textContent=aproximadas.length||'';
   document.getElementById('conv-aproximadas').innerHTML=aproximadas.length?aproximadas.map(a=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:12px">
-      <span style="color:#fbbf24">🔍</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <span style="color:#f59e0b">🔍</span>
       <div style="flex:1">
-        <div style="font-size:11px;color:#666">Matrícula: <strong style="color:#ddd">${a.matricula['Nome']}</strong></div>
-        <div style="font-size:11px;color:#666">Proposta: <strong style="color:#ddd">${a.proposta['Aluno']}</strong></div>
+        <div style="font-size:11px;color:#948a7c">Matrícula: <strong style="color:#3d362c">${a.matricula['Nome']}</strong></div>
+        <div style="font-size:11px;color:#948a7c">Proposta: <strong style="color:#3d362c">${a.proposta['Aluno']}</strong></div>
       </div>
-      <span style="font-size:11px;font-weight:600;color:#fbbf24">${Math.round(a.score*100)}% similar</span>
-    </div>`).join(''):'<div class="empty" style="color:#22c55e">✓ Todas as correspondências são exatas</div>';
+      <span style="font-size:11px;font-weight:600;color:#f59e0b">${Math.round(a.score*100)}% similar</span>
+    </div>`).join(''):'<div class="empty" style="color:#16a34a">✓ Todas as correspondências são exatas</div>';
 
   // Barra geral de conversão (Propostas → Matrículas)
   let propostasBase=todasPropostasHistorico;
@@ -1219,21 +1234,21 @@ async function renderConversao(){
   document.getElementById('conv-barra').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <div>
-        <div style="font-size:12px;color:#666">Propostas cadastradas</div>
-        <div style="font-size:24px;font-weight:700;color:#F5C842">${totalPropostas}</div>
+        <div style="font-size:12px;color:#948a7c">Propostas cadastradas</div>
+        <div style="font-size:24px;font-weight:700;color:#b8860b">${totalPropostas}</div>
       </div>
-      <div style="font-size:20px;color:#555">→</div>
+      <div style="font-size:20px;color:#a89e8f">→</div>
       <div>
-        <div style="font-size:12px;color:#666">Matrículas confirmadas (TOTVS)</div>
-        <div style="font-size:24px;font-weight:700;color:#22c55e">${totalMatriculas}</div>
+        <div style="font-size:12px;color:#948a7c">Matrículas confirmadas (TOTVS)</div>
+        <div style="font-size:24px;font-weight:700;color:#16a34a">${totalMatriculas}</div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:12px;color:#666">Taxa de conversão</div>
-        <div style="font-size:28px;font-weight:700;color:${pct>=40?'#22c55e':pct>=20?'#f59e0b':'#ef4444'}">${pct}%</div>
+        <div style="font-size:12px;color:#948a7c">Taxa de conversão</div>
+        <div style="font-size:28px;font-weight:700;color:${pct>=40?'#16a34a':pct>=20?'#d97706':'#dc2626'}">${pct}%</div>
       </div>
     </div>
-    <div style="height:10px;background:#12141e;border-radius:6px;overflow:hidden">
-      <div style="height:10px;border-radius:6px;background:linear-gradient(90deg,#F5C842,#22c55e);width:${Math.min(pct,100)}%;transition:width .3s"></div>
+    <div style="height:10px;background:#f5f1e8;border-radius:6px;overflow:hidden">
+      <div style="height:10px;border-radius:6px;background:linear-gradient(90deg,#F5C842,#16a34a);width:${Math.min(pct,100)}%;transition:width .3s"></div>
     </div>`;
 
   // Por unidade
@@ -1258,15 +1273,15 @@ async function renderConversao(){
   } else {
     const medalhas=['🥇','🥈','🥉','4º','5º'];
     document.getElementById('conv-ranking').innerHTML=ranking.map((r,i)=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #2a2d3a">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0">
         <span style="font-size:16px;width:28px;text-align:center">${medalhas[i]}</span>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:600;color:#fff">${r.nome}</div>
-          <div style="font-size:10px;color:${r.validado?'#22c55e':'#f59e0b'}">${r.validado?`✅ Validado — ${r.propostas} propostas`:`⏳ Precisa de 50 propostas para validar (tem ${r.propostas})`}</div>
+          <div style="font-size:13px;font-weight:600;color:#2b2620">${r.nome}</div>
+          <div style="font-size:10px;color:${r.validado?'#16a34a':'#d97706'}">${r.validado?`✅ Validado — ${r.propostas} propostas`:`⏳ Precisa de 50 propostas para validar (tem ${r.propostas})`}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:20px;font-weight:700;color:#22c55e">${r.conversao.toFixed(1)}%</div>
-          <div style="font-size:10px;color:#666">${r.matriculas} matrícula${r.matriculas===1?'':'s'}</div>
+          <div style="font-size:20px;font-weight:700;color:#16a34a">${r.conversao.toFixed(1)}%</div>
+          <div style="font-size:10px;color:#948a7c">${r.matriculas} matrícula${r.matriculas===1?'':'s'}</div>
         </div>
       </div>`).join('');
   }
@@ -1281,14 +1296,14 @@ async function renderConversao(){
   }).sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas);
 
   document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #2a2d3a">
-      <span style="font-size:11px;color:#555;width:24px;text-align:center;flex-shrink:0">${i+1}º</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #e8e0d0">
+      <span style="font-size:11px;color:#a89e8f;width:24px;text-align:center;flex-shrink:0">${i+1}º</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:#ddd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
-        <div style="font-size:10px;color:#555">${p.propostas} propostas · ${p.matriculas} matrículas${p.elegivel?' · <span style="color:#22c55e">elegível pro top 5</span>':' · <span style="color:#666">abaixo de 50 propostas</span>'}</div>
+        <div style="font-size:13px;font-weight:500;color:#3d362c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
+        <div style="font-size:10px;color:#a89e8f">${p.propostas} propostas · ${p.matriculas} matrículas${p.elegivel?' · <span style="color:#16a34a">elegível pro top 5</span>':' · <span style="color:#948a7c">abaixo de 50 propostas</span>'}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:16px;font-weight:700;color:${p.conversao>=15?'#22c55e':p.conversao>=5?'#f59e0b':'#666'}">${p.conversao.toFixed(1)}%</div>
+        <div style="font-size:16px;font-weight:700;color:${p.conversao>=15?'#16a34a':p.conversao>=5?'#d97706':'#948a7c'}">${p.conversao.toFixed(1)}%</div>
       </div>
     </div>`).join(''):'<div class="empty">Sem dados de propostas cadastradas ainda</div>';
 }

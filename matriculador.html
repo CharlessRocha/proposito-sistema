@@ -5,114 +5,129 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guia do Matriculador — Propósito</title>
 <style>
+  .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
+  .nav-jump:hover{border-color:#b8860b}
+
+  /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
+  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
+  body{-webkit-font-smoothing:antialiased}
+  .card,.kpi,.lead-card,.neg-item,.ent-row,.sala,.sel-card,.fase,.alerta-card,.ld-grupo,.doc-card,.t-notas-panel{box-shadow:0 1px 2px rgba(43,38,32,.04), 0 1px 6px rgba(43,38,32,.03)}
+  .card:hover,.kpi:hover,.lead-card:hover,.doc-card:hover{box-shadow:0 2px 6px rgba(43,38,32,.06), 0 4px 14px rgba(43,38,32,.05)}
+  button,.tab,.f-btn,.acao-btn,.modulo-btn,.id-btn,.save-btn,.add-btn,.nav-back{transition:all .15s ease}
+  button:active{transform:scale(.97)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#c9bfa8}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
-  .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
-  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
-  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px}
-  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;color:#4a4238;min-height:100vh}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#ffffff;border-bottom:1px solid #e8e0d0;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#b8860b;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#7d7364;background:#f5f1e8;padding:3px 10px;border-radius:20px;border:1px solid #e8e0d0}
+  .nav-back{font-size:12px;color:#7d7364;background:none;border:1px solid #e8e0d0;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px}
+  .nav-back:hover{color:#b8860b;border-color:#b8860b}
   .main{max-width:700px;margin:0 auto;padding:1.25rem 1rem 4rem}
-  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#1a1d27;border-radius:8px;padding:4px;border:1px solid #2a2d3a}
-  .tab{flex:1;padding:8px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#888;cursor:pointer;text-align:center;font-family:inherit}
-  .tab.active{background:#252840;color:#fff;border:1px solid #2a2d3a}
+  .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:#ffffff;border-radius:8px;padding:4px;border:1px solid #e8e0d0}
+  .tab{flex:1;padding:8px 6px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#7d7364;cursor:pointer;text-align:center;font-family:inherit}
+  .tab.active{background:#fff3d6;color:#2b2620;border:1px solid #e8e0d0}
   .panel{display:none}.panel.active{display:block}
 
   /* GUIA */
   .alerta{border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
-  .alerta.verm{background:#2a1515;border:1px solid #ef4444;color:#fca5a5}
-  .alerta.dour{background:#1a1500;border:1px solid #F5C842;color:#fbbf24}
-  .alerta.verd{background:#0f2a1a;border:1px solid #22c55e;color:#86efac}
-  .alerta.azul{background:#1a1f35;border:1px solid #3b82f6;color:#93c5fd}
-  .alerta strong{color:#fff;display:block;margin-bottom:2px}
+  .alerta.verm{background:#fdecec;border:1px solid #dc2626;color:#f87171}
+  .alerta.dour{background:#fff6e0;border:1px solid #F5C842;color:#f59e0b}
+  .alerta.verd{background:#eafaf0;border:1px solid #16a34a;color:#4ade80}
+  .alerta.azul{background:#fff3d6;border:1px solid #1d4ed8;color:#60a5fa}
+  .alerta strong{color:#2b2620;display:block;margin-bottom:2px}
 
-  .card{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:12px}
-  .card-head{padding:11px 16px;background:#1f2235;border-bottom:1px solid #2a2d3a;display:flex;align-items:center;justify-content:space-between}
-  .card-title{font-size:13px;font-weight:600;color:#ddd;display:flex;align-items:center;gap:6px}
-  .card-badge{font-size:11px;font-weight:600;background:#1a1f35;color:#F5C842;padding:2px 8px;border-radius:20px;border:1px solid #2a2d3a}
+  .card{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:12px}
+  .card-head{padding:11px 16px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-size:13px;font-weight:600;color:#3d362c;display:flex;align-items:center;gap:6px}
+  .card-badge{font-size:11px;font-weight:600;background:#fff3d6;color:#b8860b;padding:2px 8px;border-radius:20px;border:1px solid #e8e0d0}
 
-  .step{display:flex;gap:12px;padding:11px 16px;border-top:1px solid #2a2d3a;align-items:flex-start}
-  .step-num{width:26px;height:26px;border-radius:50%;background:#1a1f35;border:1.5px solid #F5C842;color:#F5C842;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-  .step-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px}
-  .step-desc{font-size:12px;color:#888;line-height:1.5}
+  .step{display:flex;gap:12px;padding:11px 16px;border-top:1px solid #e8e0d0;align-items:flex-start}
+  .step-num{width:26px;height:26px;border-radius:50%;background:#fff3d6;border:1.5px solid #F5C842;color:#b8860b;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step-title{font-size:13px;font-weight:600;color:#2b2620;margin-bottom:3px}
+  .step-desc{font-size:12px;color:#7d7364;line-height:1.5}
   .step-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
   .stag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
-  .stag-inf{background:#2a1535;color:#c084fc}
-  .stag-fun{background:#1a1f35;color:#F5C842}
-  .stag-onl{background:#1a1535;color:#c084fc}
-  .stag-sem{background:#1a1500;color:#fbbf24}
+  .stag-inf{background:#2a1535;color:#9333ea}
+  .stag-fun{background:#fff3d6;color:#b8860b}
+  .stag-onl{background:#f5edff;color:#9333ea}
+  .stag-sem{background:#fff6e0;color:#f59e0b}
 
   /* COMERCIAL */
   .ano-header{padding:13px 16px;display:flex;align-items:center;justify-content:space-between}
-  .ano-header.verde{background:#0f2a1a;border-bottom:1px solid #22c55e}
-  .ano-header.azul{background:#1a1f35;border-bottom:1px solid #3b82f6}
-  .ano-titulo{font-size:15px;font-weight:700;color:#fff}
-  .ano-sub{font-size:11px;color:#888;margin-top:2px}
+  .ano-header.verde{background:#eafaf0;border-bottom:1px solid #16a34a}
+  .ano-header.azul{background:#fff3d6;border-bottom:1px solid #1d4ed8}
+  .ano-titulo{font-size:15px;font-weight:700;color:#2b2620}
+  .ano-sub{font-size:11px;color:#7d7364;margin-top:2px}
   .ano-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
-  .badge-2026{background:#22c55e;color:#0f1117}
-  .badge-2027{background:#3b82f6;color:#fff}
+  .badge-2026{background:#16a34a;color:#0f1117}
+  .badge-2027{background:#1d4ed8;color:#2b2620}
 
-  .item-row{display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-top:1px solid #2a2d3a;background:#1a1d27}
+  .item-row{display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-top:1px solid #e8e0d0;background:#ffffff}
   .item-emoji{font-size:16px;flex-shrink:0;margin-top:1px}
   .item-info{flex:1}
-  .item-titulo{font-size:13px;font-weight:600;color:#ddd}
-  .item-det{font-size:12px;color:#666;margin-top:2px;line-height:1.4}
+  .item-titulo{font-size:13px;font-weight:600;color:#3d362c}
+  .item-det{font-size:12px;color:#948a7c;margin-top:2px;line-height:1.4}
   .item-val{font-size:13px;font-weight:700;flex-shrink:0;align-self:center}
-  .val-verde{color:#22c55e}
-  .val-azul{color:#60a5fa}
-  .val-laranja{color:#fb923c}
+  .val-verde{color:#16a34a}
+  .val-azul{color:#2563eb}
+  .val-laranja{color:#ea580c}
 
-  .obs-box{background:#12141e;border-top:1px solid #2a2d3a;padding:10px 16px;font-size:12px;color:#666;line-height:1.5}
-  .obs-box strong{color:#aaa}
+  .obs-box{background:#f5f1e8;border-top:1px solid #e8e0d0;padding:10px 16px;font-size:12px;color:#948a7c;line-height:1.5}
+  .obs-box strong{color:#5c5346}
 
   /* DOCS */
   .docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
   @media(max-width:500px){.docs-grid{grid-template-columns:1fr}}
-  .doc-card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s;text-align:center}
-  .doc-card:hover{border-color:#F5C842}
-  .doc-card.active{border-color:#F5C842;background:#1a1f35}
+  .doc-card{background:#ffffff;border:1px solid #e8e0d0;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s;text-align:center}
+  .doc-card:hover{border-color:#b8860b}
+  .doc-card.active{border-color:#b8860b;background:#fff3d6}
   .doc-icon{font-size:28px;margin-bottom:8px}
-  .doc-nome{font-size:13px;font-weight:600;color:#ddd;margin-bottom:3px}
-  .doc-desc{font-size:11px;color:#555}
-  .doc-viewer{background:#12141e;border:1px solid #2a2d3a;border-radius:10px;overflow:hidden;margin-top:4px}
-  .doc-viewer-head{padding:10px 14px;background:#1f2235;border-bottom:1px solid #2a2d3a;display:flex;align-items:center;justify-content:space-between}
-  .doc-viewer-title{font-size:13px;font-weight:600;color:#ddd}
+  .doc-nome{font-size:13px;font-weight:600;color:#3d362c;margin-bottom:3px}
+  .doc-desc{font-size:11px;color:#a89e8f}
+  .doc-viewer{background:#f5f1e8;border:1px solid #e8e0d0;border-radius:10px;overflow:hidden;margin-top:4px}
+  .doc-viewer-head{padding:10px 14px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between}
+  .doc-viewer-title{font-size:13px;font-weight:600;color:#3d362c}
   .doc-viewer-body{padding:0}
-  .doc-placeholder{padding:40px;text-align:center;color:#555}
+  .doc-placeholder{padding:40px;text-align:center;color:#a89e8f}
   .doc-placeholder-icon{font-size:40px;margin-bottom:12px}
-  .doc-placeholder-title{font-size:14px;font-weight:600;color:#888;margin-bottom:6px}
-  .doc-placeholder-sub{font-size:12px;color:#555;line-height:1.5}
-  .upload-doc-btn{margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #F5C842;background:#1a1f35;color:#F5C842;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
+  .doc-placeholder-title{font-size:14px;font-weight:600;color:#7d7364;margin-bottom:6px}
+  .doc-placeholder-sub{font-size:12px;color:#a89e8f;line-height:1.5}
+  .upload-doc-btn{margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #F5C842;background:#fff3d6;color:#b8860b;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
   .upload-doc-btn:hover{background:#F5C842;color:#0f1117}
   iframe{width:100%;height:600px;border:none;display:block}
   img.doc-img{width:100%;display:block}
 
   .prop-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin:2px}
-  .pt-acad{background:#1a1f35;color:#F5C842;border:1px solid #2a2d3a}
-  .pt-com{background:#0f2a1a;color:#22c55e;border:1px solid #22c55e}
+  .pt-acad{background:#fff3d6;color:#b8860b;border:1px solid #e8e0d0}
+  .pt-com{background:#eafaf0;color:#16a34a;border:1px solid #16a34a}
 
-  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
 <div id="auth-check">
   <div style="font-size:32px">🔒</div>
-  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
+  <div style="color:#2b2620;font-size:16px;font-weight:600">Acesso restrito</div>
   <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
 </div>
 
 <nav class="nav">
   <div class="nav-logo">🎯 Propósito</div>
   <span class="nav-modulo">📄 Guia do Matriculador</span>
-  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+  <select class="nav-jump" onchange="if(this.value)window.location.href=this.value"><option value="">🔀 Outros módulos...</option><option value="gerente.html">🏠 Painel do Gerente</option><option value="cdr.html">🎧 CDR / Inside Sales</option><option value="closer.html">🤝 Closer</option><option value="entrevistas.html">📋 Entrevistas</option><option value="playbook.html">✅ Playbook</option><option value="config.html">⚙️ Configurações</option></select><button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
 
 <div class="main">
   <div style="margin-bottom:1.25rem">
-    <div style="font-size:12px;color:#666">Colégio Propósito · Seletivo 2027</div>
-    <div style="font-size:20px;font-weight:700;color:#fff;margin-top:2px">Guia do Matriculador</div>
-    <div style="font-size:12px;color:#666;margin-top:2px" id="data-hoje"></div>
+    <div style="font-size:12px;color:#948a7c">Colégio Propósito · Seletivo 2027</div>
+    <div style="font-size:20px;font-weight:700;color:#2b2620;margin-top:2px">Guia do Matriculador</div>
+    <div style="font-size:12px;color:#948a7c;margin-top:2px" id="data-hoje"></div>
   </div>
 
   <div class="tabs">
@@ -189,7 +204,7 @@
       </div>
       <div class="step">
         <div style="font-size:20px">📄</div>
-        <div><div class="step-title">Proposta comercial (por segmento)</div><div class="step-desc">Física. Preencha ao fechar. <strong style="color:#ef4444">Foto obrigatória no grupo.</strong></div></div>
+        <div><div class="step-title">Proposta comercial (por segmento)</div><div class="step-desc">Física. Preencha ao fechar. <strong style="color:#dc2626">Foto obrigatória no grupo.</strong></div></div>
       </div>
       <div class="step">
         <div style="font-size:20px">🏷️</div>
@@ -201,8 +216,8 @@
       </div>
     </div>
 
-    <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:14px;margin-bottom:12px">
-      <div style="font-size:12px;font-weight:600;color:#ddd;margin-bottom:8px">Identifique o tipo de proposta</div>
+    <div style="background:#ffffff;border:1px solid #e8e0d0;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:600;color:#3d362c;margin-bottom:8px">Identifique o tipo de proposta</div>
       <div>
         <span class="prop-tag pt-acad">🎓 Proposta Acadêmica — Final de fluxo</span>
         <span class="prop-tag pt-com">💼 Proposta Comercial — Fluxo de venda</span>
@@ -242,7 +257,7 @@
         <div class="item-info"><div class="item-titulo">Mensalidades (agosto a dezembro)</div><div class="item-det">Conforme tabela promocional vigente</div></div>
         <span class="item-val val-laranja">Tabela promo</span>
       </div>
-      <div class="obs-box">⚠️ <strong>Importante:</strong> A mensalidade de agosto deve ser paga em junho ou julho para validar o início do contrato. <strong style="color:#fff">O cliente paga agora a mensalidade de agosto.</strong></div>
+      <div class="obs-box">⚠️ <strong>Importante:</strong> A mensalidade de agosto deve ser paga em junho ou julho para validar o início do contrato. <strong style="color:#2b2620">O cliente paga agora a mensalidade de agosto.</strong></div>
     </div>
 
     <!-- 2027 -->
@@ -256,7 +271,7 @@
       </div>
       <div class="item-row">
         <span class="item-emoji">📚</span>
-        <div class="item-info"><div class="item-titulo">Material didático</div><div class="item-det">Válido para <strong style="color:#ddd">Propósito, Bernoulli e Bilíngue</strong> apenas. Outros materiais não entram.</div></div>
+        <div class="item-info"><div class="item-titulo">Material didático</div><div class="item-det">Válido para <strong style="color:#3d362c">Propósito, Bernoulli e Bilíngue</strong> apenas. Outros materiais não entram.</div></div>
         <span class="item-val val-azul">30% OFF</span>
       </div>
       <div class="item-row">
@@ -269,7 +284,7 @@
         <div class="item-info"><div class="item-titulo">Mensalidades</div><div class="item-det">De acordo com a tabela promocional vigente</div></div>
         <span class="item-val val-azul">Tabela promo</span>
       </div>
-      <div class="obs-box">ℹ️ Para 2027, <strong style="color:#aaa">todas as vagas estão disponíveis</strong> em todas as unidades e segmentos.</div>
+      <div class="obs-box">ℹ️ Para 2027, <strong style="color:#5c5346">todas as vagas estão disponíveis</strong> em todas as unidades e segmentos.</div>
     </div>
 
     <div class="alerta verm">
@@ -280,7 +295,7 @@
 
   <!-- DOCUMENTOS -->
   <div class="panel" id="panel-docs">
-    <div style="font-size:12px;color:#666;margin-bottom:12px">Clique em um documento para visualizar. Para atualizar um documento, o gerente sobe o novo arquivo no GitHub.</div>
+    <div style="font-size:12px;color:#948a7c;margin-bottom:12px">Clique em um documento para visualizar. Para atualizar um documento, o gerente sobe o novo arquivo no GitHub.</div>
 
     <div class="docs-grid" id="docs-grid">
       <div class="doc-card" onclick="verDoc('promo')">
@@ -308,20 +323,20 @@
     <div class="doc-viewer" id="doc-viewer" style="display:none">
       <div class="doc-viewer-head">
         <span class="doc-viewer-title" id="doc-viewer-title"></span>
-        <button onclick="fecharDoc()" style="font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid #2a2d3a;background:transparent;color:#888;cursor:pointer;font-family:inherit">✕ Fechar</button>
+        <button onclick="fecharDoc()" style="font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid #e8e0d0;background:transparent;color:#7d7364;cursor:pointer;font-family:inherit">✕ Fechar</button>
       </div>
       <div class="doc-viewer-body" id="doc-viewer-body"></div>
     </div>
 
-    <div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:14px;margin-top:12px">
-      <div style="font-size:12px;font-weight:600;color:#ddd;margin-bottom:8px">📤 Como atualizar documentos</div>
-      <div style="font-size:12px;color:#666;line-height:1.6">
-        1. Salve o arquivo com o nome correto (ex: <code style="color:#F5C842;background:#12141e;padding:1px 5px;border-radius:4px">tabela-promo.pdf</code>)<br>
+    <div style="background:#ffffff;border:1px solid #e8e0d0;border-radius:10px;padding:14px;margin-top:12px">
+      <div style="font-size:12px;font-weight:600;color:#3d362c;margin-bottom:8px">📤 Como atualizar documentos</div>
+      <div style="font-size:12px;color:#948a7c;line-height:1.6">
+        1. Salve o arquivo com o nome correto (ex: <code style="color:#b8860b;background:#f5f1e8;padding:1px 5px;border-radius:4px">tabela-promo.pdf</code>)<br>
         2. Acesse o repositório no GitHub<br>
-        3. Clique em <strong style="color:#aaa">Adicionar arquivo → Carregar arquivo</strong><br>
+        3. Clique em <strong style="color:#5c5346">Adicionar arquivo → Carregar arquivo</strong><br>
         4. Suba o arquivo e confirme — aparece aqui automaticamente
       </div>
-      <div style="font-size:11px;color:#555;margin-top:8px">Nomes esperados: <code style="color:#F5C842">tabela-promo.pdf</code> · <code style="color:#F5C842">tabela-precos.pdf</code> · <code style="color:#F5C842">vagas.pdf</code> · <code style="color:#F5C842">manual.pdf</code></div>
+      <div style="font-size:11px;color:#a89e8f;margin-top:8px">Nomes esperados: <code style="color:#b8860b">tabela-promo.pdf</code> · <code style="color:#b8860b">tabela-precos.pdf</code> · <code style="color:#b8860b">vagas.pdf</code> · <code style="color:#b8860b">manual.pdf</code></div>
     </div>
   </div>
 </div>
@@ -349,7 +364,7 @@ function verDoc(id){
       <div class="doc-placeholder-icon">📄</div>
       <div class="doc-placeholder-title">${doc.nome}</div>
       <div class="doc-placeholder-sub">
-        Suba o arquivo <strong style="color:#F5C842">${doc.arquivo}</strong> no GitHub<br>
+        Suba o arquivo <strong style="color:#b8860b">${doc.arquivo}</strong> no GitHub<br>
         para ele aparecer aqui automaticamente.
       </div>
       <button class="upload-doc-btn" onclick="tentarCarregar('${id}','${doc.arquivo}')">🔄 Tentar carregar</button>
@@ -372,7 +387,7 @@ function tentarCarregar(id, arquivo){
     body.innerHTML = '';
     body.appendChild(iframe);
   } else if(isImg){
-    body.innerHTML = `<img class="doc-img" src="${arquivo}" onerror="this.parentElement.innerHTML='<div class=doc-placeholder><div class=doc-placeholder-icon>📄</div><div class=doc-placeholder-title>${doc.nome}</div><div class=doc-placeholder-sub>Arquivo não encontrado.<br>Suba <strong style=color:#F5C842>${arquivo}</strong> no GitHub.</div></div>'" alt="${doc.nome}">`;
+    body.innerHTML = `<img class="doc-img" src="${arquivo}" onerror="this.parentElement.innerHTML='<div class=doc-placeholder><div class=doc-placeholder-icon>📄</div><div class=doc-placeholder-title>${doc.nome}</div><div class=doc-placeholder-sub>Arquivo não encontrado.<br>Suba <strong style=color:#b8860b>${arquivo}</strong> no GitHub.</div></div>'" alt="${doc.nome}">`;
   }
 }
 

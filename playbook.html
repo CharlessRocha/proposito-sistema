@@ -5,121 +5,136 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playbook — Propósito</title>
 <style>
+  .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
+  .nav-jump:hover{border-color:#b8860b}
+
+  /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
+  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
+  body{-webkit-font-smoothing:antialiased}
+  .card,.kpi,.lead-card,.neg-item,.ent-row,.sala,.sel-card,.fase,.alerta-card,.ld-grupo,.doc-card,.t-notas-panel{box-shadow:0 1px 2px rgba(43,38,32,.04), 0 1px 6px rgba(43,38,32,.03)}
+  .card:hover,.kpi:hover,.lead-card:hover,.doc-card:hover{box-shadow:0 2px 6px rgba(43,38,32,.06), 0 4px 14px rgba(43,38,32,.05)}
+  button,.tab,.f-btn,.acao-btn,.modulo-btn,.id-btn,.save-btn,.add-btn,.nav-back{transition:all .15s ease}
+  button:active{transform:scale(.97)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#c9bfa8}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1d27;border-bottom:1px solid #2a2d3a;position:sticky;top:0;z-index:50}
-  .nav-logo{color:#F5C842;font-size:14px;font-weight:700}
-  .nav-modulo{font-size:12px;color:#888;background:#12141e;padding:3px 10px;border-radius:20px;border:1px solid #2a2d3a}
-  .nav-back{font-size:12px;color:#888;background:none;border:1px solid #2a2d3a;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
-  .nav-back:hover{color:#F5C842;border-color:#F5C842}
+  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;color:#4a4238;min-height:100vh}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#ffffff;border-bottom:1px solid #e8e0d0;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#b8860b;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#7d7364;background:#f5f1e8;padding:3px 10px;border-radius:20px;border:1px solid #e8e0d0}
+  .nav-back{font-size:12px;color:#7d7364;background:none;border:1px solid #e8e0d0;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#b8860b;border-color:#b8860b}
   .main{max-width:760px;margin:0 auto;padding:1.25rem 1rem 4rem}
 
   .sel-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
-  .sel-bar select{font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
-  .sel-bar select:focus{border-color:#F5C842;outline:none}
+  .sel-bar select{font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid #e8e0d0;background:#ffffff;color:#2b2620;font-family:inherit}
+  .sel-bar select:focus{border-color:#b8860b;outline:none}
   .prog-wrap{text-align:right}
-  .prog-txt{font-size:12px;color:#888}
-  .prog-bar-wrap{height:4px;background:#12141e;border-radius:2px;overflow:hidden;margin-top:4px;width:120px;margin-left:auto}
+  .prog-txt{font-size:12px;color:#7d7364}
+  .prog-bar-wrap{height:4px;background:#f5f1e8;border-radius:2px;overflow:hidden;margin-top:4px;width:120px;margin-left:auto}
   .prog-bar{height:4px;border-radius:2px;background:#F5C842;transition:width .3s}
 
-  .fase{background:#1a1d27;border-radius:10px;border:1px solid #2a2d3a;overflow:hidden;margin-bottom:10px}
-  .fase-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:#1f2235;user-select:none}
-  .fase-header:hover{background:#252840}
+  .fase{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:10px}
+  .fase-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:#f7f3ea;user-select:none}
+  .fase-header:hover{background:#fff3d6}
   .fase-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
-  .fb-plan{background:#1a1535;color:#c084fc}
-  .fb-pre{background:#1a1f35;color:#F5C842}
-  .fb-dia{background:#2a1e0f;color:#f59e0b}
-  .fb-pos{background:#0f2a1a;color:#22c55e}
-  .fase-title{font-size:13px;font-weight:600;color:#ddd;flex:1}
-  .fase-prog{font-size:11px;color:#555}
-  .fase-chev{color:#555;font-size:12px;transition:transform .2s;flex-shrink:0}
+  .fb-plan{background:#f5edff;color:#9333ea}
+  .fb-pre{background:#fff3d6;color:#b8860b}
+  .fb-dia{background:#fff6e0;color:#d97706}
+  .fb-pos{background:#eafaf0;color:#16a34a}
+  .fase-title{font-size:13px;font-weight:600;color:#3d362c;flex:1}
+  .fase-prog{font-size:11px;color:#a89e8f}
+  .fase-chev{color:#a89e8f;font-size:12px;transition:transform .2s;flex-shrink:0}
   .fase-chev.open{transform:rotate(180deg)}
   .fase-body{display:none}
   .fase-body.open{display:block}
 
   /* TAREFA */
-  .tarefa{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-top:1px solid #2a2d3a;background:#1a1d27}
-  .tarefa:hover{background:#1f2235}
+  .tarefa{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-top:1px solid #e8e0d0;background:#ffffff}
+  .tarefa:hover{background:#f7f3ea}
   .tarefa.done{opacity:.45}
-  .check{width:18px;height:18px;border-radius:4px;border:1px solid #3a3d4a;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;background:#12141e;transition:all .15s}
-  .check.checked{background:#22c55e;border-color:#22c55e;color:#0f1117;font-size:11px}
+  .check{width:18px;height:18px;border-radius:4px;border:1px solid #c9bfa8;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;background:#f5f1e8;transition:all .15s}
+  .check.checked{background:#16a34a;border-color:#16a34a;color:#0f1117;font-size:11px}
   .t-info{flex:1;min-width:0}
-  .t-nome{font-size:13px;color:#ddd;line-height:1.4}
-  .tarefa.done .t-nome{text-decoration:line-through;color:#555}
+  .t-nome{font-size:13px;color:#3d362c;line-height:1.4}
+  .tarefa.done .t-nome{text-decoration:line-through;color:#a89e8f}
   .t-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center}
-  .t-resp{font-size:10px;color:#555;background:#12141e;border:1px solid #2a2d3a;border-radius:20px;padding:1px 7px}
+  .t-resp{font-size:10px;color:#a89e8f;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:20px;padding:1px 7px}
   .t-prazo{font-size:10px;padding:1px 7px;border-radius:20px}
-  .tp-urg{background:#2a1515;color:#f87171}
-  .tp-prox{background:#2a1e0f;color:#fbbf24}
-  .tp-ok{background:#0f2a1a;color:#4ade80}
-  .tp-n{background:#12141e;color:#555;border:1px solid #2a2d3a}
-  .t-alerta{font-size:10px;color:#f87171;background:#2a1515;border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block}
-  .t-obs{font-size:10px;color:#555;font-style:italic;margin-top:2px}
+  .tp-urg{background:#fdecec;color:#ef4444}
+  .tp-prox{background:#fff6e0;color:#f59e0b}
+  .tp-ok{background:#eafaf0;color:#22c55e}
+  .tp-n{background:#f5f1e8;color:#a89e8f;border:1px solid #e8e0d0}
+  .t-alerta{font-size:10px;color:#ef4444;background:#fdecec;border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block}
+  .t-obs{font-size:10px;color:#a89e8f;font-style:italic;margin-top:2px}
   .t-actions{display:flex;gap:4px;flex-shrink:0;margin-top:1px}
-  .drag-handle{color:#444;cursor:grab;font-size:14px;padding:0 2px;flex-shrink:0;margin-top:2px;user-select:none}
-  .drag-handle:hover{color:#F5C842}
+  .drag-handle{color:#beb4a2;cursor:grab;font-size:14px;padding:0 2px;flex-shrink:0;margin-top:2px;user-select:none}
+  .drag-handle:hover{color:#b8860b}
   .tarefa[draggable="true"]{transition:opacity .15s}
-  .t-notas-btn{font-size:10px;color:#666;background:#12141e;border:1px solid #2a2d3a;border-radius:20px;padding:1px 8px;cursor:pointer;font-family:inherit}
-  .t-notas-btn:hover{color:#F5C842;border-color:#F5C842}
-  .t-notas-panel{display:none;margin-top:8px;background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px}
+  .t-notas-btn{font-size:10px;color:#948a7c;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:20px;padding:1px 8px;cursor:pointer;font-family:inherit}
+  .t-notas-btn:hover{color:#b8860b;border-color:#b8860b}
+  .t-notas-panel{display:none;margin-top:8px;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px}
   .t-notas-panel.aberto{display:block}
   .t-notas-lista{max-height:160px;overflow-y:auto;margin-bottom:8px}
-  .t-nota-item{padding:6px 0;border-bottom:1px solid #2a2d3a;font-size:12px}
+  .t-nota-item{padding:6px 0;border-bottom:1px solid #e8e0d0;font-size:12px}
   .t-nota-item:last-child{border-bottom:none}
-  .t-nota-texto{color:#ddd;display:block}
-  .t-nota-meta{color:#555;font-size:10px;margin-top:2px;display:block}
-  .t-nota-vazio{color:#555;font-size:11px;font-style:italic;padding:6px 0}
+  .t-nota-texto{color:#3d362c;display:block}
+  .t-nota-meta{color:#a89e8f;font-size:10px;margin-top:2px;display:block}
+  .t-nota-vazio{color:#a89e8f;font-size:11px;font-style:italic;padding:6px 0}
   .t-nota-add{display:flex;gap:6px}
-  .t-nota-add input{font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #2a2d3a;background:#1a1d27;color:#fff;font-family:inherit}
+  .t-nota-add input{font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#ffffff;color:#2b2620;font-family:inherit}
   .t-nota-add input:first-child{flex:1}
   .t-nota-add button{font-size:12px;padding:6px 12px;border-radius:6px;border:none;background:#F5C842;color:#0f1117;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
-  .t-nota-add button:hover{background:#e8b820}
-  .t-btn{width:22px;height:22px;border-radius:5px;border:1px solid #2a2d3a;background:transparent;color:#555;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:inherit}
-  .t-btn:hover{background:#2a2d3a;color:#ddd}
-  .t-btn.del:hover{background:#2a1515;color:#f87171;border-color:#ef4444}
+  .t-nota-add button:hover{background:#d4a017}
+  .t-btn{width:22px;height:22px;border-radius:5px;border:1px solid #e8e0d0;background:transparent;color:#a89e8f;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+  .t-btn:hover{background:#e8e0d0;color:#3d362c}
+  .t-btn.del:hover{background:#fdecec;color:#ef4444;border-color:#dc2626}
 
   /* MARCOS */
-  .marcos{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid #2a2d3a;background:#12141e}
-  .marco{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:#1a1d27;color:#888;border:1px solid #2a2d3a}
-  .marco.hoje{background:#0f2a1a;color:#22c55e;border-color:#22c55e}
-  .marco.prox{background:#2a1e0f;color:#fbbf24;border-color:#f59e0b}
+  .marcos{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid #e8e0d0;background:#f5f1e8}
+  .marco{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:#ffffff;color:#7d7364;border:1px solid #e8e0d0}
+  .marco.hoje{background:#eafaf0;color:#16a34a;border-color:#16a34a}
+  .marco.prox{background:#fff6e0;color:#f59e0b;border-color:#d97706}
   .marco.pass{opacity:.4}
 
   /* ADD TAREFA */
-  .add-tarefa-btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-top:1px solid #2a2d3a;background:#12141e;font-size:12px;color:#555;cursor:pointer;width:100%;border:none;font-family:inherit;text-align:left}
-  .add-tarefa-btn:hover{color:#F5C842;background:#1a1d27}
+  .add-tarefa-btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-top:1px solid #e8e0d0;background:#f5f1e8;font-size:12px;color:#a89e8f;cursor:pointer;width:100%;border:none;font-family:inherit;text-align:left}
+  .add-tarefa-btn:hover{color:#b8860b;background:#ffffff}
 
   /* MODAL */
   .modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center;padding:1rem}
   .modal-bg.show{display:flex}
-  .modal{background:#1a1d27;border-radius:14px;padding:20px;max-width:460px;width:100%;border:1px solid #2a2d3a}
-  .modal-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:14px}
+  .modal{background:#ffffff;border-radius:14px;padding:20px;max-width:460px;width:100%;border:1px solid #e8e0d0}
+  .modal-title{font-size:15px;font-weight:700;color:#2b2620;margin-bottom:14px}
   .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   .fg-full{grid-column:1/-1}
-  .fg label{font-size:11px;color:#666;display:block;margin-bottom:3px;font-weight:500}
-  .fg input,.fg select,.fg textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #2a2d3a;background:#12141e;color:#fff;font-family:inherit}
-  .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#F5C842;outline:none}
+  .fg label{font-size:11px;color:#948a7c;display:block;margin-bottom:3px;font-weight:500}
+  .fg input,.fg select,.fg textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit}
+  .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#b8860b;outline:none}
   .fg textarea{resize:none;height:56px}
   .modal-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-  .btn-cancel{padding:8px 14px;border-radius:8px;border:1px solid #2a2d3a;background:transparent;color:#888;cursor:pointer;font-size:13px;font-family:inherit}
+  .btn-cancel{padding:8px 14px;border-radius:8px;border:1px solid #e8e0d0;background:transparent;color:#7d7364;cursor:pointer;font-size:13px;font-family:inherit}
   .btn-save{padding:8px 16px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
-  .btn-del-confirm{padding:8px 16px;border-radius:8px;border:none;background:#ef4444;color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
+  .btn-del-confirm{padding:8px 16px;border-radius:8px;border:none;background:#dc2626;color:#2b2620;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
 
-  .loading{text-align:center;padding:32px;color:#555;font-size:13px}
-  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1117;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  .loading{text-align:center;padding:32px;color:#a89e8f;font-size:13px}
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
 <div id="auth-check">
   <div style="font-size:32px">🔒</div>
-  <div style="color:#fff;font-size:16px;font-weight:600">Acesso restrito</div>
+  <div style="color:#2b2620;font-size:16px;font-weight:600">Acesso restrito</div>
   <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#F5C842;color:#0f1117;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
 </div>
 <nav class="nav">
   <div class="nav-logo">🎯 Propósito</div>
   <span class="nav-modulo">✅ Playbook</span>
-  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+  <select class="nav-jump" onchange="if(this.value)window.location.href=this.value"><option value="">🔀 Outros módulos...</option><option value="gerente.html">🏠 Painel do Gerente</option><option value="cdr.html">🎧 CDR / Inside Sales</option><option value="closer.html">🤝 Closer</option><option value="entrevistas.html">📋 Entrevistas</option><option value="matriculador.html">📄 Guia do Matriculador</option><option value="config.html">⚙️ Configurações</option></select><button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
 <div class="main">
   <div class="sel-bar">
@@ -136,8 +151,8 @@
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
     <div class="modal-title" id="modal-title">Nova tarefa</div>
-    <div style="font-size:11px;color:#888;background:#12141e;border:1px solid #2a2d3a;border-radius:6px;padding:8px 10px;margin-bottom:12px;line-height:1.5">
-      ℹ️ Esta alteração vale a partir do seletivo selecionado <strong style="color:#F5C842" id="modal-seletivo-ref"></strong> em diante. Seletivos anteriores não são afetados.
+    <div style="font-size:11px;color:#7d7364;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:6px;padding:8px 10px;margin-bottom:12px;line-height:1.5">
+      ℹ️ Esta alteração vale a partir do seletivo selecionado <strong style="color:#b8860b" id="modal-seletivo-ref"></strong> em diante. Seletivos anteriores não são afetados.
     </div>
     <div class="fg">
       <div class="fg-full"><label>Nome da tarefa</label><input type="text" id="f-nome" placeholder="Descreva a tarefa..."></div>

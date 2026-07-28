@@ -5,37 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Colégio Propósito — Sistema Comercial</title>
 <style>
+  /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
+  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
+  body{-webkit-font-smoothing:antialiased}
+  .card,.kpi,.lead-card,.neg-item,.ent-row,.sala,.sel-card,.fase,.alerta-card,.ld-grupo,.doc-card,.t-notas-panel{box-shadow:0 1px 2px rgba(43,38,32,.04), 0 1px 6px rgba(43,38,32,.03)}
+  .card:hover,.kpi:hover,.lead-card:hover,.doc-card:hover{box-shadow:0 2px 6px rgba(43,38,32,.06), 0 4px 14px rgba(43,38,32,.05)}
+  button,.tab,.f-btn,.acao-btn,.modulo-btn,.id-btn,.save-btn,.add-btn,.nav-back{transition:all .15s ease}
+  button:active{transform:scale(.97)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#c9bfa8}
+
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
   .container{width:100%;max-width:420px}
   .logo-wrap{text-align:center;margin-bottom:2rem}
-  .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#F5C842,#E8A020);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px}
-  .logo-nome{color:#fff;font-size:20px;font-weight:700;letter-spacing:-.3px}
-  .logo-sub{color:#888;font-size:13px;margin-top:3px}
-  .card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:16px;padding:28px}
-  .card-title{color:#fff;font-size:15px;font-weight:600;margin-bottom:4px}
-  .card-sub{color:#666;font-size:12px;margin-bottom:20px}
+  .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#F5C842,#c9962e);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px}
+  .logo-nome{color:#2b2620;font-size:20px;font-weight:700;letter-spacing:-.3px}
+  .logo-sub{color:#7d7364;font-size:13px;margin-top:3px}
+  .card{background:#ffffff;border:1px solid #e8e0d0;border-radius:16px;padding:28px}
+  .card-title{color:#2b2620;font-size:15px;font-weight:600;margin-bottom:4px}
+  .card-sub{color:#948a7c;font-size:12px;margin-bottom:20px}
   .modulos{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-  .modulo-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid #2a2d3a;background:#1f2235;cursor:pointer;transition:all .15s;text-align:left;width:100%}
-  .modulo-btn:hover{border-color:#F5C842;background:#252840}
+  .modulo-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid #e8e0d0;background:#f7f3ea;cursor:pointer;transition:all .15s;text-align:left;width:100%}
+  .modulo-btn:hover{border-color:#b8860b;background:#fff3d6}
   .modulo-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .modulo-nome{color:#fff;font-size:13px;font-weight:500}
-  .modulo-desc{color:#666;font-size:11px;margin-top:1px}
-  .divider{height:1px;background:#2a2d3a;margin:16px 0}
+  .modulo-nome{color:#2b2620;font-size:13px;font-weight:500}
+  .modulo-desc{color:#948a7c;font-size:11px;margin-top:1px}
+  .divider{height:1px;background:#e8e0d0;margin:16px 0}
   .senha-wrap{display:none}
   .senha-wrap.show{display:block}
-  .senha-label{color:#aaa;font-size:12px;margin-bottom:6px;display:block}
-  .senha-input{width:100%;background:#12141e;border:1px solid #2a2d3a;border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;font-family:inherit;letter-spacing:2px}
-  .senha-input:focus{outline:none;border-color:#F5C842}
+  .senha-label{color:#5c5346;font-size:12px;margin-bottom:6px;display:block}
+  .senha-input{width:100%;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px 12px;color:#2b2620;font-size:14px;font-family:inherit;letter-spacing:2px}
+  .senha-input:focus{outline:none;border-color:#b8860b}
   .senha-btn{width:100%;margin-top:8px;padding:11px;background:#F5C842;color:#0f1117;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
-  .senha-btn:hover{background:#e8b820}
-  .erro{color:#e84b4b;font-size:12px;margin-top:6px;display:none}
+  .senha-btn:hover{background:#d4a017}
+  .erro{color:#dc2626;font-size:12px;margin-top:6px;display:none}
   .erro.show{display:block}
-  .footer{text-align:center;color:#444;font-size:11px;margin-top:20px}
-  .back-btn{background:none;border:none;color:#666;font-size:12px;cursor:pointer;margin-top:8px;display:none;font-family:inherit}
+  .footer{text-align:center;color:#beb4a2;font-size:11px;margin-top:20px}
+  .back-btn{background:none;border:none;color:#948a7c;font-size:12px;cursor:pointer;margin-top:8px;display:none;font-family:inherit}
   .back-btn.show{display:block}
-  .selected-modulo{color:#F5C842;font-size:12px;margin-bottom:10px;display:none}
+  .selected-modulo{color:#b8860b;font-size:12px;margin-bottom:10px;display:none}
   .selected-modulo.show{display:flex;align-items:center;gap:6px}
 </style>
 </head>
@@ -53,19 +65,19 @@
 
     <div class="modulos" id="modulos">
       <button class="modulo-btn" onclick="selecionarModulo('gerente','gerente.html','🏠','Painel do Gerente','Visão completa · acesso restrito')">
-        <div class="modulo-icon" style="background:#1a2a1a">🏠</div>
+        <div class="modulo-icon" style="background:#eafaf0">🏠</div>
         <div><div class="modulo-nome">Painel do Gerente</div><div class="modulo-desc">Visão completa · acesso restrito</div></div>
       </button>
       <button class="modulo-btn" onclick="selecionarModulo('cdr','cdr.html','🎧','CDR / Inside Sales','Contatos, confirmações e ações em massa')">
-        <div class="modulo-icon" style="background:#1a1a2a">🎧</div>
+        <div class="modulo-icon" style="background:#f5edff">🎧</div>
         <div><div class="modulo-nome">CDR / Inside Sales</div><div class="modulo-desc">Contatos, confirmações e ações em massa</div></div>
       </button>
       <button class="modulo-btn" onclick="selecionarModulo('closer','closer.html','🤝','Closer','Negociação, simulador e propostas')">
-        <div class="modulo-icon" style="background:#2a1a1a">🤝</div>
+        <div class="modulo-icon" style="background:#fdecec">🤝</div>
         <div><div class="modulo-nome">Closer</div><div class="modulo-desc">Negociação, simulador e propostas</div></div>
       </button>
       <button class="modulo-btn" onclick="selecionarModulo('entrevistas','entrevistas.html','📋','Entrevistas','Gestão ao vivo das entrevistas')">
-        <div class="modulo-icon" style="background:#1a2a2a">📋</div>
+        <div class="modulo-icon" style="background:#e9f3ff">📋</div>
         <div><div class="modulo-nome">Entrevistas</div><div class="modulo-desc">Gestão ao vivo das entrevistas</div></div>
       </button>
       <button class="modulo-btn" onclick="selecionarModulo('playbook','playbook.html','✅','Playbook','Tarefas e checklist do seletivo')">
@@ -73,11 +85,11 @@
         <div><div class="modulo-nome">Playbook</div><div class="modulo-desc">Tarefas e checklist do seletivo</div></div>
       </button>
       <button class="modulo-btn" onclick="selecionarModulo('matriculador','matriculador.html','📄','Guia do Matriculador','Condições, vagas e documentos do dia')">
-        <div class="modulo-icon" style="background:#2a1a2a">📄</div>
+        <div class="modulo-icon" style="background:#f5edff">📄</div>
         <div><div class="modulo-nome">Guia do Matriculador</div><div class="modulo-desc">Condições, vagas e documentos do dia</div></div>
       </button>
       <button class="modulo-btn" onclick="selecionarModulo('config','config.html','⚙️','Configurações','Calendário, tabelas de preço e regras')">
-        <div class="modulo-icon" style="background:#1a2a1a">⚙️</div>
+        <div class="modulo-icon" style="background:#eafaf0">⚙️</div>
         <div><div class="modulo-nome">Configurações</div><div class="modulo-desc">Calendário, tabelas de preço e regras</div></div>
       </button>
     </div>
@@ -124,7 +136,7 @@ function selecionarModulo(id, url, icon, nome, desc){
   document.getElementById('senha-wrap').classList.add('show');
   document.getElementById('back-btn').classList.add('show');
   document.getElementById('selected-label').classList.add('show');
-  document.getElementById('selected-label').innerHTML = `${icon} <strong style="color:#fff">${nome}</strong>`;
+  document.getElementById('selected-label').innerHTML = `${icon} <strong style="color:#2b2620">${nome}</strong>`;
   document.getElementById('senha-input').value = '';
   document.getElementById('erro').classList.remove('show');
   document.getElementById('senha-input').focus();
@@ -133,7 +145,12 @@ function selecionarModulo(id, url, icon, nome, desc){
 function verificarSenha(){
   const senha = document.getElementById('senha-input').value;
   if(senha === SENHAS[moduloAtual]){
-    sessionStorage.setItem('acesso_'+moduloAtual, '1');
+    // O gerente tem acesso mestre — a senha dele libera todos os módulos de uma vez
+    if(moduloAtual === 'gerente'){
+      Object.keys(SENHAS).forEach(mod => sessionStorage.setItem('acesso_'+mod, '1'));
+    } else {
+      sessionStorage.setItem('acesso_'+moduloAtual, '1');
+    }
     window.location.href = urlAtual;
   } else {
     document.getElementById('erro').classList.add('show');
