@@ -1184,9 +1184,8 @@ async function renderConversao(){
       <span style="color:#ef4444">🚨</span>
       <div style="flex:1">
         <div style="font-weight:600;color:#2b2620">${l['Nome da pessoa']}</div>
-        <div style="font-size:11px;color:#948a7c">${l['Unidade']||''} · ${l['Processo seletivo']||''}</div>
+        <div style="font-size:11px;color:#948a7c">Processo seletivo: ${l['Processo seletivo']||'—'}</div>
       </div>
-      <span style="font-size:11px;font-weight:600;color:#ef4444">Etapa: "${l['Etapa']||'—'}"</span>
     </div>`).join(''):(matriculas.length?'<div class="empty" style="color:#16a34a">✓ Todos os matriculados do Rubeus foram encontrados no TOTVS</div>':'<div class="empty">Importe o arquivo de Matrículas TOTVS</div>');
 
   // ═══════════════════════════════════════════════
@@ -1218,7 +1217,7 @@ async function renderConversao(){
       <span style="color:#9333ea">🆕</span>
       <div style="flex:1">
         <div style="font-weight:600;color:#2b2620">${x.matricula['Nome']}</div>
-        <div style="font-size:11px;color:#948a7c">${x.matricula['Filial']||''} · Matriculado em ${x.matricula['DataMatricula']||''}</div>
+        <div style="font-size:11px;color:#948a7c">RA: ${x.matricula['RA']||'—'} · ${x.matricula['Filial']||''}</div>
       </div>
       <span style="font-size:10px;color:#9333ea">não está no funil</span>
     </div>`).join(''):(leads.length?'<div class="empty" style="color:#16a34a">✓ Todos os matriculados do TOTVS foram encontrados no funil</div>':'<div class="empty">Importe o Funil Rubeus Completo</div>');
@@ -1235,15 +1234,32 @@ async function renderConversao(){
     propostasPorPessoa[nome].add(p['COD. Inscrição']||p['Aluno']);
   });
 
-  const matriculasPorPessoa={};
+  // Matrículas por pessoa = UNIÃO de alunos únicos vindos do Rubeus (Etapa=Matrícula)
+  // + alunos únicos vindos do TOTVS (Matriculado) — a mesma pessoa não é contada duas vezes
+  const alunosMatriculadosPorPessoa={}; // matriculador -> Set de nomes de alunos (normalizados)
+  function creditarMatricula(matriculador, nomeAluno){
+    if(!matriculador||!nomeAluno) return;
+    if(!alunosMatriculadosPorPessoa[matriculador]) alunosMatriculadosPorPessoa[matriculador]=new Set();
+    alunosMatriculadosPorPessoa[matriculador].add(normalizarNome(nomeAluno));
+  }
+  // Fonte 1: Rubeus — leads com Etapa=Matrícula já cruzados na Etapa 1
+  step1ComProposta.forEach(x=>{
+    const nome=nomeCanonicoMatriculador(x.match.proposta['Cadastrado Por']);
+    creditarMatricula(nome, x.lead['Nome da pessoa']);
+  });
+  // Fonte 2: TOTVS — matriculados cruzados com propostas
   const aproximadas=[];
   matParaRanking.filter(m=>m['StatusMatricula']==='Matriculado').forEach(m=>{
     const r=encontrarPropostaComScore(m['Nome']);
     if(!r) return;
     if(!r.exata) aproximadas.push({matricula:m, proposta:r.proposta, score:r.score});
     const nome=nomeCanonicoMatriculador(r.proposta['Cadastrado Por']);
-    if(!nome) return;
-    matriculasPorPessoa[nome]=(matriculasPorPessoa[nome]||0)+1;
+    creditarMatricula(nome, m['Nome']);
+  });
+
+  const matriculasPorPessoa={};
+  Object.keys(alunosMatriculadosPorPessoa).forEach(nome=>{
+    matriculasPorPessoa[nome]=alunosMatriculadosPorPessoa[nome].size;
   });
 
   document.getElementById('conv-aprox-badge').textContent=aproximadas.length||'';
@@ -1291,14 +1307,14 @@ async function renderConversao(){
     <div class="dist-item"><span class="dist-label">${u}</span><span class="dist-val">${n}</span><span class="dist-pct">${totalMatriculas?Math.round(n/totalMatriculas*100):0}%</span></div>
   `).join('')||'<div class="empty">Sem dados</div>';
 
-  // Top 5 — sempre mostra, sinaliza validação de 50+
+  // Top 5 — ordenado por PERCENTUAL de conversão (não por quantidade bruta)
   const ranking=Object.keys(matriculasPorPessoa)
     .map(nome=>{
       const props=propostasPorPessoa[nome]?.size||0;
       const mats=matriculasPorPessoa[nome];
       return {nome, matriculas:mats, propostas:props, validado:props>=50, conversao:props>0?(mats/props*100):0};
     })
-    .sort((a,b)=>b.matriculas-a.matriculas)
+    .sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas)
     .slice(0,5);
 
   if(!ranking.length){
