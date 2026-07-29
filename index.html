@@ -3,152 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Colégio Propósito — Sistema Comercial</title>
+<title>Colégio Propósito</title>
 <style>
-  /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
-
-  /* Acessibilidade: foco visível para navegação por teclado */
-  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible{
-    outline:2px solid #b8860b; outline-offset:2px;
-  }
-  /* Áreas de toque maiores no mobile (mínimo 40px) */
-  @media(max-width:600px){
-    button, .f-btn, .acao-btn, .tab, .id-btn, .check{min-height:38px}
-  }
-
-  /* Micro-interações: cards "levantam" sutilmente ao passar o mouse */
-  .card, .kpi, .lead-card, .neg-item, .sala, .sel-card, .doc-card{
-    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease;
-  }
-  .card:hover, .kpi:hover, .lead-card:hover, .doc-card:hover{
-    transform:translateY(-2px);
-  }
-  /* Botões: resposta tátil ao clicar */
-  button:active, .f-btn:active, .acao-btn:active, .tab:active{transform:scale(.96)}
-
-  /* Checkbox de tarefa: "pop" ao marcar como concluída */
-  @keyframes popCheck{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
-  .check.checked{animation:popCheck .28s cubic-bezier(.34,1.56,.64,1)}
-
-  /* Formas orgânicas: mancha suave decorativa no cabeçalho */
-  .blob-decor{position:absolute;top:-60px;right:-40px;width:180px;height:180px;
-    background:radial-gradient(circle at 30% 30%, rgba(245,200,66,.16), rgba(245,200,66,0) 70%);
-    border-radius:50%;pointer-events:none;z-index:0}
-
-  /* Tipografia com mais personalidade nos títulos principais */
-  .page-title{letter-spacing:-.02em}
-
-  /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
-  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
-  body{-webkit-font-smoothing:antialiased}
-  .card,.kpi,.lead-card,.neg-item,.ent-row,.sala,.sel-card,.fase,.alerta-card,.ld-grupo,.doc-card,.t-notas-panel{box-shadow:0 1px 2px rgba(43,38,32,.04), 0 1px 6px rgba(43,38,32,.03)}
-  .card:hover,.kpi:hover,.lead-card:hover,.doc-card:hover{box-shadow:0 2px 6px rgba(43,38,32,.06), 0 4px 14px rgba(43,38,32,.05)}
-  button,.tab,.f-btn,.acao-btn,.modulo-btn,.id-btn,.save-btn,.add-btn,.nav-back{transition:all .15s ease}
-  button:active{transform:scale(.97)}
-  ::-webkit-scrollbar{width:8px;height:8px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:8px}
-  ::-webkit-scrollbar-thumb:hover{background:#c9bfa8}
-
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@400;500&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
-  .container{width:100%;max-width:420px}
-  .logo-wrap{text-align:center;margin-bottom:2rem;position:relative}
-  .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#F5C842,#c9962e);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px}
-  .logo-nome{color:#2b2620;font-size:20px;font-weight:700;letter-spacing:-.3px}
-  .logo-sub{color:#7d7364;font-size:13px;margin-top:3px}
-  .card{background:#ffffff;border:1px solid #e8e0d0;border-radius:16px;padding:28px}
-  .card-title{color:#2b2620;font-size:15px;font-weight:600;margin-bottom:4px}
-  .card-sub{color:#948a7c;font-size:12px;margin-bottom:20px}
-  .modulos{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-  .modulo-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid #e8e0d0;background:#f7f3ea;cursor:pointer;transition:all .15s;text-align:left;width:100%}
-  .modulo-btn:hover{border-color:#b8860b;background:#fff3d6}
-  .modulo-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .modulo-nome{color:#2b2620;font-size:13px;font-weight:500}
-  .modulo-desc{color:#948a7c;font-size:11px;margin-top:1px}
-  .divider{height:1px;background:#e8e0d0;margin:16px 0}
-  .senha-wrap{display:none}
-  .senha-wrap.show{display:block}
-  .senha-label{color:#5c5346;font-size:12px;margin-bottom:6px;display:block}
-  .senha-input{width:100%;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px 12px;color:#2b2620;font-size:14px;font-family:inherit;letter-spacing:2px}
-  .senha-input:focus{outline:none;border-color:#b8860b}
-  .senha-btn{width:100%;margin-top:8px;padding:11px;background:#F5C842;color:#0f1117;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
-  .senha-btn:hover{background:#d4a017}
-  .erro{color:#dc2626;font-size:12px;margin-top:6px;display:none}
-  .erro.show{display:block}
-  .footer{text-align:center;color:#a89a80;font-size:11px;margin-top:20px}
-  .back-btn{background:none;border:none;color:#948a7c;font-size:12px;cursor:pointer;margin-top:8px;display:none;font-family:inherit}
-  .back-btn.show{display:block}
-  .selected-modulo{color:#b8860b;font-size:12px;margin-bottom:10px;display:none}
-  .selected-modulo.show{display:flex;align-items:center;gap:6px}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:#faf8f4;
+    color:#2b2620;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .textura{position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(184,134,11,.05), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(184,134,11,.04), transparent 50%);
+  }
+
+  .linha-fina{position:fixed;left:0;right:0;height:1px;background:#e8e0d0}
+  .linha-topo{top:64px}
+  .linha-base{bottom:64px}
+  @media(max-width:700px){.linha-fina{display:none}}
+
+  .portal{
+    width:100%;
+    max-width:400px;
+    text-align:center;
+    position:relative;
+    z-index:1;
+    animation:surgir .7s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes surgir{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .marca{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    font-size:15px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:#948a7c;
+    margin-bottom:2.75rem;
+  }
+
+  .titulo{
+    font-family:'Fraunces',serif;
+    font-optical-sizing:auto;
+    font-weight:300;
+    font-size:clamp(2.4rem, 6vw, 3.2rem);
+    line-height:1.08;
+    letter-spacing:-.02em;
+    color:#2b2620;
+    margin-bottom:.9rem;
+  }
+  .titulo em{font-style:italic;font-weight:400;color:#b8860b}
+
+  .subtitulo{
+    font-size:14px;
+    color:#7d7364;
+    line-height:1.6;
+    max-width:320px;
+    margin:0 auto 3.25rem;
+    font-weight:400;
+  }
+
+  .campo-wrap{position:relative;margin-bottom:1.1rem}
+  .campo-senha{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    letter-spacing:.08em;
+    text-align:center;
+    padding:16px 20px;
+    border:none;
+    border-bottom:1px solid #d4c9b0;
+    background:transparent;
+    color:#2b2620;
+    transition:border-color .25s ease;
+  }
+  .campo-senha::placeholder{color:#c9bfa8;letter-spacing:.04em}
+  .campo-senha:focus{outline:none;border-color:#b8860b}
+
+  .btn-entrar{
+    margin-top:2rem;
+    padding:14px 0;
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    background:#2b2620;
+    color:#faf8f4;
+    border:none;
+    border-radius:2px;
+    cursor:pointer;
+    transition:background .2s ease, letter-spacing .2s ease;
+  }
+  .btn-entrar:hover{background:#b8860b;letter-spacing:.2em}
+  .btn-entrar:active{transform:scale(.98)}
+
+  .erro{
+    font-size:12px;
+    color:#dc2626;
+    margin-top:14px;
+    opacity:0;
+    height:0;
+    transition:opacity .25s ease;
+  }
+  .erro.show{opacity:1;height:auto}
+
+  .rodape{
+    margin-top:3.5rem;
+    font-size:11px;
+    color:#c9bfa8;
+    letter-spacing:.05em;
+  }
+
+  @media(max-width:480px){
+    .titulo{font-size:2.1rem}
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="logo-wrap">
-    <div class="blob-decor" style="top:-40px;right:calc(50% - 130px)"></div>
-    <div class="logo-icon">🎯</div>
-    <div class="logo-nome">Colégio Propósito</div>
-    <div class="logo-sub">Sistema Comercial — Processo Seletivo 2027</div>
+
+<div class="textura"></div>
+<div class="linha-fina linha-topo"></div>
+<div class="linha-fina linha-base"></div>
+
+<div class="portal">
+  <div class="marca">Colégio Propósito</div>
+
+  <h1 class="titulo">A <em>operação</em><br>começa aqui.</h1>
+  <p class="subtitulo">Digite sua senha de acesso. O sistema identifica automaticamente sua área de trabalho.</p>
+
+  <div class="campo-wrap">
+    <input type="password" class="campo-senha" id="senha-input" placeholder="senha de acesso" autocomplete="off" onkeydown="if(event.key==='Enter')entrar()">
   </div>
 
-  <div class="card">
-    <div class="card-title">Acessar módulo</div>
-    <div class="card-sub">Selecione seu módulo de trabalho</div>
+  <button class="btn-entrar" onclick="entrar()">Entrar</button>
 
-    <div class="modulos" id="modulos">
-      <button class="modulo-btn" onclick="selecionarModulo('gerente','gerente.html','🏠','Painel do Gerente','Visão completa · acesso restrito')">
-        <div class="modulo-icon" style="background:#eafaf0">🏠</div>
-        <div><div class="modulo-nome">Painel do Gerente</div><div class="modulo-desc">Visão completa · acesso restrito</div></div>
-      </button>
-      <button class="modulo-btn" onclick="selecionarModulo('cdr','cdr.html','🎧','CDR / Inside Sales','Contatos, confirmações e ações em massa')">
-        <div class="modulo-icon" style="background:#f5edff">🎧</div>
-        <div><div class="modulo-nome">CDR / Inside Sales</div><div class="modulo-desc">Contatos, confirmações e ações em massa</div></div>
-      </button>
-      <button class="modulo-btn" onclick="selecionarModulo('closer','closer.html','🤝','Closer','Negociação, simulador e propostas')">
-        <div class="modulo-icon" style="background:#fdecec">🤝</div>
-        <div><div class="modulo-nome">Closer</div><div class="modulo-desc">Negociação, simulador e propostas</div></div>
-      </button>
-      <button class="modulo-btn" onclick="selecionarModulo('entrevistas','entrevistas.html','📋','Entrevistas','Gestão ao vivo das entrevistas')">
-        <div class="modulo-icon" style="background:#e9f3ff">📋</div>
-        <div><div class="modulo-nome">Entrevistas</div><div class="modulo-desc">Gestão ao vivo das entrevistas</div></div>
-      </button>
-      <button class="modulo-btn" onclick="selecionarModulo('playbook','playbook.html','✅','Playbook','Tarefas e checklist do seletivo')">
-        <div class="modulo-icon" style="background:#2a2a1a">✅</div>
-        <div><div class="modulo-nome">Playbook</div><div class="modulo-desc">Tarefas e checklist do seletivo</div></div>
-      </button>
-      <button class="modulo-btn" onclick="selecionarModulo('matriculador','matriculador.html','📄','Guia do Matriculador','Condições, vagas e documentos do dia')">
-        <div class="modulo-icon" style="background:#f5edff">📄</div>
-        <div><div class="modulo-nome">Guia do Matriculador</div><div class="modulo-desc">Condições, vagas e documentos do dia</div></div>
-      </button>
-      <button class="modulo-btn" onclick="selecionarModulo('config','config.html','⚙️','Configurações','Calendário, tabelas de preço e regras')">
-        <div class="modulo-icon" style="background:#eafaf0">⚙️</div>
-        <div><div class="modulo-nome">Configurações</div><div class="modulo-desc">Calendário, tabelas de preço e regras</div></div>
-      </button>
-    </div>
+  <div class="erro" id="erro">Senha não reconhecida. Tente novamente.</div>
 
-    <div class="divider"></div>
-
-    <div class="selected-modulo" id="selected-label"></div>
-
-    <div class="senha-wrap" id="senha-wrap">
-      <label class="senha-label">Senha de acesso</label>
-      <input type="password" class="senha-input" id="senha-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')verificarSenha()">
-      <button class="senha-btn" onclick="verificarSenha()">Entrar</button>
-      <div class="erro" id="erro">Senha incorreta. Tente novamente.</div>
-    </div>
-
-    <button class="back-btn" id="back-btn" onclick="voltar()">← Escolher outro módulo</button>
-  </div>
-
-  <div class="footer">Colégio Propósito · Sistema interno · Uso exclusivo da equipe comercial</div>
+  <div class="rodape">Sistema Comercial · Processo Seletivo 2027</div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// SENHAS — altere aqui quando precisar atualizar
-// ═══════════════════════════════════════════════
 const SENHAS = {
   gerente:      'gerente2027',
   cdr:          'cdr2027',
@@ -158,49 +164,39 @@ const SENHAS = {
   matriculador: 'matric2027',
   config:       'config2027',
 };
-// ═══════════════════════════════════════════════
 
-let moduloAtual = null;
-let urlAtual = null;
+const URLS = {
+  gerente:      'gerente.html',
+  cdr:          'cdr.html',
+  closer:       'closer.html',
+  entrevistas:  'entrevistas.html',
+  playbook:     'playbook.html',
+  matriculador: 'matriculador.html',
+  config:       'config.html',
+};
 
-function selecionarModulo(id, url, icon, nome, desc){
-  moduloAtual = id;
-  urlAtual = url;
-  document.getElementById('modulos').style.display = 'none';
-  document.getElementById('senha-wrap').classList.add('show');
-  document.getElementById('back-btn').classList.add('show');
-  document.getElementById('selected-label').classList.add('show');
-  document.getElementById('selected-label').innerHTML = `${icon} <strong style="color:#2b2620">${nome}</strong>`;
-  document.getElementById('senha-input').value = '';
-  document.getElementById('erro').classList.remove('show');
-  document.getElementById('senha-input').focus();
-}
-
-function verificarSenha(){
+function entrar(){
   const senha = document.getElementById('senha-input').value;
-  if(senha === SENHAS[moduloAtual]){
-    // O gerente tem acesso mestre — a senha dele libera todos os módulos de uma vez
-    if(moduloAtual === 'gerente'){
+  const modulo = Object.keys(SENHAS).find(k => SENHAS[k] === senha);
+
+  if(modulo){
+    if(modulo === 'gerente'){
       Object.keys(SENHAS).forEach(mod => sessionStorage.setItem('acesso_'+mod, '1'));
     } else {
-      sessionStorage.setItem('acesso_'+moduloAtual, '1');
+      sessionStorage.setItem('acesso_'+modulo, '1');
     }
-    window.location.href = urlAtual;
+    window.location.href = URLS[modulo];
   } else {
-    document.getElementById('erro').classList.add('show');
-    document.getElementById('senha-input').value = '';
-    document.getElementById('senha-input').focus();
+    const erro = document.getElementById('erro');
+    erro.classList.add('show');
+    const campo = document.getElementById('senha-input');
+    campo.value = '';
+    campo.focus();
+    setTimeout(()=>erro.classList.remove('show'), 3200);
   }
 }
 
-function voltar(){
-  moduloAtual = null;
-  urlAtual = null;
-  document.getElementById('modulos').style.display = 'flex';
-  document.getElementById('senha-wrap').classList.remove('show');
-  document.getElementById('back-btn').classList.remove('show');
-  document.getElementById('selected-label').classList.remove('show');
-}
+document.getElementById('senha-input').focus();
 </script>
 </body>
 </html>
