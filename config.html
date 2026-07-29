@@ -5,6 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Configurações — Propósito</title>
 <style>
+  /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
+
+  /* Acessibilidade: foco visível para navegação por teclado */
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid #b8860b; outline-offset:2px;
+  }
+  /* Áreas de toque maiores no mobile (mínimo 40px) */
+  @media(max-width:600px){
+    button, .f-btn, .acao-btn, .tab, .id-btn, .check{min-height:38px}
+  }
+
+  /* Micro-interações: cards "levantam" sutilmente ao passar o mouse */
+  .card, .kpi, .lead-card, .neg-item, .sala, .sel-card, .doc-card{
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover, .kpi:hover, .lead-card:hover, .doc-card:hover{
+    transform:translateY(-2px);
+  }
+  /* Botões: resposta tátil ao clicar */
+  button:active, .f-btn:active, .acao-btn:active, .tab:active{transform:scale(.96)}
+
+  /* Checkbox de tarefa: "pop" ao marcar como concluída */
+  @keyframes popCheck{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .check.checked{animation:popCheck .28s cubic-bezier(.34,1.56,.64,1)}
+
+  /* Formas orgânicas: mancha suave decorativa no cabeçalho */
+  .blob-decor{position:absolute;top:-60px;right:-40px;width:180px;height:180px;
+    background:radial-gradient(circle at 30% 30%, rgba(245,200,66,.16), rgba(245,200,66,0) 70%);
+    border-radius:50%;pointer-events:none;z-index:0}
+
+  /* Tipografia com mais personalidade nos títulos principais */
+  .page-title{letter-spacing:-.02em}
+
   .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
   .nav-jump:hover{border-color:#b8860b}
 
@@ -33,7 +66,7 @@
   .tab{flex:1;min-width:80px;padding:7px 8px;border:none;background:transparent;border-radius:6px;font-size:12px;font-weight:500;color:#7d7364;cursor:pointer;text-align:center;font-family:inherit}
   .tab.active{background:#fff3d6;color:#2b2620;border:1px solid #e8e0d0}
   .panel{display:none}.panel.active{display:block}
-  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#a89e8f;margin-bottom:8px;margin-top:16px;display:flex;align-items:center;justify-content:space-between}
+  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#9c9280;margin-bottom:8px;margin-top:16px;display:flex;align-items:center;justify-content:space-between}
   .section-label:first-child{margin-top:0}
   .card{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:10px}
   .card-head{padding:10px 14px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between}
@@ -48,23 +81,23 @@
   .sel-num{font-size:10px;font-weight:700;color:#b8860b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
   .sel-input{width:100%;font-size:13px;font-weight:500;border:none;background:transparent;color:#2b2620;padding:0;margin-bottom:3px;font-family:inherit}
   .sel-input:focus{outline:none;border-bottom:1px solid #F5C842}
-  .sel-obs{width:100%;font-size:11px;border:none;background:transparent;color:#a89e8f;padding:0;font-family:inherit}
-  .sel-obs:focus{outline:none;border-bottom:1px solid #a89e8f}
-  .add-sel-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:8px;border:1.5px dashed #e8e0d0;background:transparent;color:#a89e8f;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .sel-obs{width:100%;font-size:11px;border:none;background:transparent;color:#9c9280;padding:0;font-family:inherit}
+  .sel-obs:focus{outline:none;border-bottom:1px solid #9c9280}
+  .add-sel-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:8px;border:1.5px dashed #e8e0d0;background:transparent;color:#9c9280;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
   .add-sel-btn:hover{border-color:#b8860b;color:#b8860b}
 
   /* TABELA PREÇOS */
   .tbl-wrap{overflow:hidden}
-  .tbl-col-header{display:grid;padding:7px 14px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;font-size:10px;font-weight:600;color:#a89e8f;text-transform:uppercase;letter-spacing:.5px;gap:6px}
+  .tbl-col-header{display:grid;padding:7px 14px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;font-size:10px;font-weight:600;color:#9c9280;text-transform:uppercase;letter-spacing:.5px;gap:6px}
   .data-row{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid #e8e0d0;gap:6px;background:#ffffff}
   .data-row:last-child{border-bottom:none}
   .data-row:hover{background:#f7f3ea}
   .data-row input,.data-row select{font-size:12px;padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;color:#3d362c;width:100%;font-family:inherit}
   .data-row input:hover,.data-row select:hover{border-color:#e8e0d0;background:#f5f1e8}
   .data-row input:focus,.data-row select:focus{border-color:#b8860b;outline:none;background:#f5f1e8}
-  .del-btn{width:22px;height:22px;border-radius:5px;border:1px solid #e8e0d0;background:transparent;color:#a89e8f;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .del-btn{width:22px;height:22px;border-radius:5px;border:1px solid #e8e0d0;background:transparent;color:#9c9280;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
   .del-btn:hover{background:#fdecec;color:#ef4444;border-color:#dc2626}
-  .add-row-btn{padding:7px 14px;border:none;background:transparent;color:#a89e8f;font-size:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit;border-top:1px solid #e8e0d0}
+  .add-row-btn{padding:7px 14px;border:none;background:transparent;color:#9c9280;font-size:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit;border-top:1px solid #e8e0d0}
   .add-row-btn:hover{color:#b8860b;background:#f7f3ea}
 
   /* FERIADOS / PONTOS */
@@ -75,7 +108,7 @@
   .item-simples input:hover{border-color:#e8e0d0;background:#f5f1e8}
   .item-simples input:focus{border-color:#b8860b;outline:none;background:#f5f1e8}
 
-  .loading{text-align:center;padding:24px;color:#a89e8f;font-size:13px}
+  .loading{text-align:center;padding:24px;color:#9c9280;font-size:13px}
   #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
@@ -172,22 +205,22 @@
       <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
         <div style="width:12px;height:12px;border-radius:50%;background:#dc2626;margin:0 auto 6px"></div>
         <div style="font-size:11px;color:#7d7364">Neutra</div>
-        <div style="font-size:10px;color:#a89e8f">Ainda sem avanço</div>
+        <div style="font-size:10px;color:#9c9280">Ainda sem avanço</div>
       </div>
       <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
         <div style="width:12px;height:12px;border-radius:50%;background:#d97706;margin:0 auto 6px"></div>
         <div style="font-size:11px;color:#7d7364">Em progresso</div>
-        <div style="font-size:10px;color:#a89e8f">Está andando</div>
+        <div style="font-size:10px;color:#9c9280">Está andando</div>
       </div>
       <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
         <div style="width:12px;height:12px;border-radius:50%;background:#16a34a;margin:0 auto 6px"></div>
         <div style="font-size:11px;color:#7d7364">Positiva</div>
-        <div style="font-size:10px;color:#a89e8f">Engajado</div>
+        <div style="font-size:10px;color:#9c9280">Engajado</div>
       </div>
       <div style="background:#f5f1e8;border:1px solid #e8e0d0;border-radius:8px;padding:10px;text-align:center">
         <div style="width:12px;height:12px;border-radius:50%;background:#F5C842;margin:0 auto 6px"></div>
         <div style="font-size:11px;color:#7d7364">Sucesso</div>
-        <div style="font-size:10px;color:#a89e8f">Convertido</div>
+        <div style="font-size:10px;color:#9c9280">Convertido</div>
       </div>
     </div>
   </div>
@@ -436,7 +469,7 @@ function renderMatric(){
       <input style="flex:1;margin-top:2px" value="${m.canonico||''}" placeholder="Nome canônico (ex: Letícia Lima Mesquita)" onchange="cfg.matriculadores[${i}].canonico=this.value">
       <input style="flex:2;margin-top:2px" value="${m.variantes||''}" placeholder="Variações encontradas nas propostas, separadas por vírgula" onchange="cfg.matriculadores[${i}].variantes=this.value">
       <button class="del-btn" onclick="cfg.matriculadores.splice(${i},1);renderMatric()">×</button>
-    </div>`).join('')||'<div class="empty" style="padding:16px;font-size:12px;color:#a89e8f">Nenhum grupo criado ainda</div>';
+    </div>`).join('')||'<div class="empty" style="padding:16px;font-size:12px;color:#9c9280">Nenhum grupo criado ainda</div>';
 }
 function addGrupoMatric(){cfg.matriculadores.push({canonico:'',variantes:''});renderMatric();}
 async function salvarMatric(){

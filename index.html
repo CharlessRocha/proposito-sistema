@@ -5,6 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Colégio Propósito — Sistema Comercial</title>
 <style>
+  /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
+
+  /* Acessibilidade: foco visível para navegação por teclado */
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid #b8860b; outline-offset:2px;
+  }
+  /* Áreas de toque maiores no mobile (mínimo 40px) */
+  @media(max-width:600px){
+    button, .f-btn, .acao-btn, .tab, .id-btn, .check{min-height:38px}
+  }
+
+  /* Micro-interações: cards "levantam" sutilmente ao passar o mouse */
+  .card, .kpi, .lead-card, .neg-item, .sala, .sel-card, .doc-card{
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover, .kpi:hover, .lead-card:hover, .doc-card:hover{
+    transform:translateY(-2px);
+  }
+  /* Botões: resposta tátil ao clicar */
+  button:active, .f-btn:active, .acao-btn:active, .tab:active{transform:scale(.96)}
+
+  /* Checkbox de tarefa: "pop" ao marcar como concluída */
+  @keyframes popCheck{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .check.checked{animation:popCheck .28s cubic-bezier(.34,1.56,.64,1)}
+
+  /* Formas orgânicas: mancha suave decorativa no cabeçalho */
+  .blob-decor{position:absolute;top:-60px;right:-40px;width:180px;height:180px;
+    background:radial-gradient(circle at 30% 30%, rgba(245,200,66,.16), rgba(245,200,66,0) 70%);
+    border-radius:50%;pointer-events:none;z-index:0}
+
+  /* Tipografia com mais personalidade nos títulos principais */
+  .page-title{letter-spacing:-.02em}
+
   /* ═══ Refinamento visual — sombras suaves e transições elegantes ═══ */
   *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
   body{-webkit-font-smoothing:antialiased}
@@ -21,7 +54,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
   .container{width:100%;max-width:420px}
-  .logo-wrap{text-align:center;margin-bottom:2rem}
+  .logo-wrap{text-align:center;margin-bottom:2rem;position:relative}
   .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#F5C842,#c9962e);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px}
   .logo-nome{color:#2b2620;font-size:20px;font-weight:700;letter-spacing:-.3px}
   .logo-sub{color:#7d7364;font-size:13px;margin-top:3px}
@@ -44,7 +77,7 @@
   .senha-btn:hover{background:#d4a017}
   .erro{color:#dc2626;font-size:12px;margin-top:6px;display:none}
   .erro.show{display:block}
-  .footer{text-align:center;color:#beb4a2;font-size:11px;margin-top:20px}
+  .footer{text-align:center;color:#a89a80;font-size:11px;margin-top:20px}
   .back-btn{background:none;border:none;color:#948a7c;font-size:12px;cursor:pointer;margin-top:8px;display:none;font-family:inherit}
   .back-btn.show{display:block}
   .selected-modulo{color:#b8860b;font-size:12px;margin-bottom:10px;display:none}
@@ -54,6 +87,7 @@
 <body>
 <div class="container">
   <div class="logo-wrap">
+    <div class="blob-decor" style="top:-40px;right:calc(50% - 130px)"></div>
     <div class="logo-icon">🎯</div>
     <div class="logo-nome">Colégio Propósito</div>
     <div class="logo-sub">Sistema Comercial — Processo Seletivo 2027</div>

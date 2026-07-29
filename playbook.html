@@ -5,6 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playbook — Propósito</title>
 <style>
+  /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
+
+  /* Acessibilidade: foco visível para navegação por teclado */
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid #b8860b; outline-offset:2px;
+  }
+  /* Áreas de toque maiores no mobile (mínimo 40px) */
+  @media(max-width:600px){
+    button, .f-btn, .acao-btn, .tab, .id-btn, .check{min-height:38px}
+  }
+
+  /* Micro-interações: cards "levantam" sutilmente ao passar o mouse */
+  .card, .kpi, .lead-card, .neg-item, .sala, .sel-card, .doc-card{
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover, .kpi:hover, .lead-card:hover, .doc-card:hover{
+    transform:translateY(-2px);
+  }
+  /* Botões: resposta tátil ao clicar */
+  button:active, .f-btn:active, .acao-btn:active, .tab:active{transform:scale(.96)}
+
+  /* Checkbox de tarefa: "pop" ao marcar como concluída */
+  @keyframes popCheck{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .check.checked{animation:popCheck .28s cubic-bezier(.34,1.56,.64,1)}
+
+  /* Formas orgânicas: mancha suave decorativa no cabeçalho */
+  .blob-decor{position:absolute;top:-60px;right:-40px;width:180px;height:180px;
+    background:radial-gradient(circle at 30% 30%, rgba(245,200,66,.16), rgba(245,200,66,0) 70%);
+    border-radius:50%;pointer-events:none;z-index:0}
+
+  /* Tipografia com mais personalidade nos títulos principais */
+  .page-title{letter-spacing:-.02em}
+
   .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
   .nav-jump:hover{border-color:#b8860b}
 
@@ -47,8 +80,8 @@
   .fb-dia{background:#fff6e0;color:#d97706}
   .fb-pos{background:#eafaf0;color:#16a34a}
   .fase-title{font-size:13px;font-weight:600;color:#3d362c;flex:1}
-  .fase-prog{font-size:11px;color:#a89e8f}
-  .fase-chev{color:#a89e8f;font-size:12px;transition:transform .2s;flex-shrink:0}
+  .fase-prog{font-size:11px;color:#9c9280}
+  .fase-chev{color:#9c9280;font-size:12px;transition:transform .2s;flex-shrink:0}
   .fase-chev.open{transform:rotate(180deg)}
   .fase-body{display:none}
   .fase-body.open{display:block}
@@ -61,18 +94,18 @@
   .check.checked{background:#16a34a;border-color:#16a34a;color:#0f1117;font-size:11px}
   .t-info{flex:1;min-width:0}
   .t-nome{font-size:13px;color:#3d362c;line-height:1.4}
-  .tarefa.done .t-nome{text-decoration:line-through;color:#a89e8f}
+  .tarefa.done .t-nome{text-decoration:line-through;color:#9c9280}
   .t-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center}
-  .t-resp{font-size:10px;color:#a89e8f;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:20px;padding:1px 7px}
+  .t-resp{font-size:10px;color:#9c9280;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:20px;padding:1px 7px}
   .t-prazo{font-size:10px;padding:1px 7px;border-radius:20px}
   .tp-urg{background:#fdecec;color:#ef4444}
   .tp-prox{background:#fff6e0;color:#f59e0b}
   .tp-ok{background:#eafaf0;color:#22c55e}
-  .tp-n{background:#f5f1e8;color:#a89e8f;border:1px solid #e8e0d0}
+  .tp-n{background:#f5f1e8;color:#9c9280;border:1px solid #e8e0d0}
   .t-alerta{font-size:10px;color:#ef4444;background:#fdecec;border-radius:4px;padding:2px 7px;margin-top:4px;display:inline-block}
-  .t-obs{font-size:10px;color:#a89e8f;font-style:italic;margin-top:2px}
+  .t-obs{font-size:10px;color:#9c9280;font-style:italic;margin-top:2px}
   .t-actions{display:flex;gap:4px;flex-shrink:0;margin-top:1px}
-  .drag-handle{color:#beb4a2;cursor:grab;font-size:14px;padding:0 2px;flex-shrink:0;margin-top:2px;user-select:none}
+  .drag-handle{color:#a89a80;cursor:grab;font-size:14px;padding:0 2px;flex-shrink:0;margin-top:2px;user-select:none}
   .drag-handle:hover{color:#b8860b}
   .tarefa[draggable="true"]{transition:opacity .15s}
   .t-notas-btn{font-size:10px;color:#948a7c;background:#f5f1e8;border:1px solid #e8e0d0;border-radius:20px;padding:1px 8px;cursor:pointer;font-family:inherit}
@@ -83,14 +116,14 @@
   .t-nota-item{padding:6px 0;border-bottom:1px solid #e8e0d0;font-size:12px}
   .t-nota-item:last-child{border-bottom:none}
   .t-nota-texto{color:#3d362c;display:block}
-  .t-nota-meta{color:#a89e8f;font-size:10px;margin-top:2px;display:block}
-  .t-nota-vazio{color:#a89e8f;font-size:11px;font-style:italic;padding:6px 0}
+  .t-nota-meta{color:#9c9280;font-size:10px;margin-top:2px;display:block}
+  .t-nota-vazio{color:#9c9280;font-size:11px;font-style:italic;padding:6px 0}
   .t-nota-add{display:flex;gap:6px}
   .t-nota-add input{font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#ffffff;color:#2b2620;font-family:inherit}
   .t-nota-add input:first-child{flex:1}
   .t-nota-add button{font-size:12px;padding:6px 12px;border-radius:6px;border:none;background:#F5C842;color:#0f1117;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
   .t-nota-add button:hover{background:#d4a017}
-  .t-btn{width:22px;height:22px;border-radius:5px;border:1px solid #e8e0d0;background:transparent;color:#a89e8f;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+  .t-btn{width:22px;height:22px;border-radius:5px;border:1px solid #e8e0d0;background:transparent;color:#9c9280;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:inherit}
   .t-btn:hover{background:#e8e0d0;color:#3d362c}
   .t-btn.del:hover{background:#fdecec;color:#ef4444;border-color:#dc2626}
 
@@ -102,7 +135,7 @@
   .marco.pass{opacity:.4}
 
   /* ADD TAREFA */
-  .add-tarefa-btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-top:1px solid #e8e0d0;background:#f5f1e8;font-size:12px;color:#a89e8f;cursor:pointer;width:100%;border:none;font-family:inherit;text-align:left}
+  .add-tarefa-btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-top:1px solid #e8e0d0;background:#f5f1e8;font-size:12px;color:#9c9280;cursor:pointer;width:100%;border:none;font-family:inherit;text-align:left}
   .add-tarefa-btn:hover{color:#b8860b;background:#ffffff}
 
   /* MODAL */
@@ -121,7 +154,7 @@
   .btn-save{padding:8px 16px;border-radius:8px;border:none;background:#F5C842;color:#0f1117;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
   .btn-del-confirm{padding:8px 16px;border-radius:8px;border:none;background:#dc2626;color:#2b2620;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
 
-  .loading{text-align:center;padding:32px;color:#a89e8f;font-size:13px}
+  .loading{text-align:center;padding:32px;color:#9c9280;font-size:13px}
   #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>

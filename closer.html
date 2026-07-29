@@ -5,6 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Closer — Propósito</title>
 <style>
+  /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
+
+  /* Acessibilidade: foco visível para navegação por teclado */
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid #b8860b; outline-offset:2px;
+  }
+  /* Áreas de toque maiores no mobile (mínimo 40px) */
+  @media(max-width:600px){
+    button, .f-btn, .acao-btn, .tab, .id-btn, .check{min-height:38px}
+  }
+
+  /* Micro-interações: cards "levantam" sutilmente ao passar o mouse */
+  .card, .kpi, .lead-card, .neg-item, .sala, .sel-card, .doc-card{
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover, .kpi:hover, .lead-card:hover, .doc-card:hover{
+    transform:translateY(-2px);
+  }
+  /* Botões: resposta tátil ao clicar */
+  button:active, .f-btn:active, .acao-btn:active, .tab:active{transform:scale(.96)}
+
+  /* Checkbox de tarefa: "pop" ao marcar como concluída */
+  @keyframes popCheck{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .check.checked{animation:popCheck .28s cubic-bezier(.34,1.56,.64,1)}
+
+  /* Formas orgânicas: mancha suave decorativa no cabeçalho */
+  .blob-decor{position:absolute;top:-60px;right:-40px;width:180px;height:180px;
+    background:radial-gradient(circle at 30% 30%, rgba(245,200,66,.16), rgba(245,200,66,0) 70%);
+    border-radius:50%;pointer-events:none;z-index:0}
+
+  /* Tipografia com mais personalidade nos títulos principais */
+  .page-title{letter-spacing:-.02em}
+
   .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
   .nav-jump:hover{border-color:#b8860b}
 
@@ -74,7 +107,7 @@
   .lc-avatar.perdido{background:#fdecec;color:#ef4444}
   .lc-info{flex:1;min-width:0}
   .lc-nome{font-size:13px;font-weight:600;color:#2b2620;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .lc-sub{font-size:11px;color:#a89e8f;margin-top:1px}
+  .lc-sub{font-size:11px;color:#9c9280;margin-top:1px}
   .lc-badges{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
   .badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
   .b-inscrito{background:#e9f3ff;color:#2563eb}
@@ -97,7 +130,7 @@
   /* AÇÃO PANEL */
   .acao-panel{display:none;border-top:1px solid #e8e0d0;margin-top:10px;padding-top:10px}
   .acao-panel.aberto{display:block}
-  .acao-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#a89e8f;margin-bottom:6px}
+  .acao-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#9c9280;margin-bottom:6px}
   .acoes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
   .acao-btn{padding:9px 4px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#7d7364;font-size:11px;font-weight:500;cursor:pointer;text-align:center;font-family:inherit;transition:all .15s}
   .acao-btn:hover,.acao-btn.sel{border-color:#b8860b;background:#fff3d6;color:#b8860b}
@@ -121,9 +154,9 @@
   .resultado{background:#f5f1e8;border-radius:8px;margin:0 14px 14px;padding:14px;border:1px solid #e8e0d0;display:none}
   .resultado.show{display:block}
   .res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-  .res-label{font-size:10px;color:#a89e8f;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+  .res-label{font-size:10px;color:#9c9280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
   .res-val{font-size:18px;font-weight:700}
-  .res-val.cheio{color:#a89e8f;text-decoration:line-through;font-size:13px}
+  .res-val.cheio{color:#9c9280;text-decoration:line-through;font-size:13px}
   .res-val.negoc{color:#b8860b;font-size:22px}
   .res-val.econ{color:#16a34a}
   .slider-wrap{margin-bottom:10px}
@@ -139,12 +172,12 @@
   /* TABELA */
   .t-wrap{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden}
   table{width:100%;border-collapse:collapse;font-size:12px}
-  th{text-align:left;padding:8px 12px;font-size:10px;font-weight:600;color:#a89e8f;text-transform:uppercase;letter-spacing:.5px;background:#f7f3ea;border-bottom:1px solid #e8e0d0}
+  th{text-align:left;padding:8px 12px;font-size:10px;font-weight:600;color:#9c9280;text-transform:uppercase;letter-spacing:.5px;background:#f7f3ea;border-bottom:1px solid #e8e0d0}
   td{padding:9px 12px;border-bottom:1px solid #e8e0d0;color:#3d362c}
   tr:hover td{background:#f7f3ea}
   tr:last-child td{border-bottom:none}
-  .sep td{background:#f5f1e8;font-size:10px;font-weight:700;color:#a89e8f;text-transform:uppercase;letter-spacing:.5px;padding:5px 12px}
-  .val-cheio{color:#a89e8f;font-size:11px}
+  .sep td{background:#f5f1e8;font-size:10px;font-weight:700;color:#9c9280;text-transform:uppercase;letter-spacing:.5px;padding:5px 12px}
+  .val-cheio{color:#9c9280;font-size:11px}
   .val-promo{color:#b8860b;font-weight:600}
   .val-lim{color:#dc2626;font-weight:600}
   .desc-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
@@ -161,13 +194,13 @@
   .st-fc{background:#eafaf0;color:#22c55e}
   .st-pd{background:#fdecec;color:#ef4444}
   .st-ap{background:#f5edff;color:#9333ea}
-  .neg-info{font-size:11px;color:#a89e8f;display:flex;gap:10px;flex-wrap:wrap}
+  .neg-info{font-size:11px;color:#9c9280;display:flex;gap:10px;flex-wrap:wrap}
   .nb{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#7d7364;cursor:pointer;font-family:inherit}
   .nb.s{border-color:#16a34a;background:#eafaf0;color:#22c55e}
   .nb.d{border-color:#dc2626;background:#fdecec;color:#ef4444}
 
-  .loading{padding:24px;text-align:center;font-size:13px;color:#a89e8f}
-  .empty{padding:24px;text-align:center;font-size:13px;color:#a89e8f}
+  .loading{padding:24px;text-align:center;font-size:13px;color:#9c9280}
+  .empty{padding:24px;text-align:center;font-size:13px;color:#9c9280}
   #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
@@ -261,7 +294,7 @@
           <button type="button" class="prop-final-btn" onclick="registrarNeg()">📋 Registrar negociação</button>
           <button type="button" class="aprov-btn" id="aprov-btn" onclick="alert('Envie mensagem ao Gerente Comercial com os detalhes antes de apresentar ao cliente.')">⚠️ Pedir aprovação ao gerente</button>
         </div>
-        <div id="sim-vazio" style="padding:20px;text-align:center;font-size:13px;color:#a89e8f">Selecione turno e segmento para simular</div>
+        <div id="sim-vazio" style="padding:20px;text-align:center;font-size:13px;color:#9c9280">Selecione turno e segmento para simular</div>
       </div>
     </div>
 
@@ -421,7 +454,7 @@ function renderClientes(){
           ${prop?`<span class="badge b-prop-sim">Proposta</span>`:''}
         </div>
       </div>
-      ${ua?`<div style="font-size:10px;color:#a89e8f;margin-top:5px">↩ ${ua.acao} — ${ua.hora} — ${ua.cdr}</div>`:''}
+      ${ua?`<div style="font-size:10px;color:#9c9280;margin-top:5px">↩ ${ua.acao} — ${ua.hora} — ${ua.cdr}</div>`:''}
       <div class="acao-panel ${isExp?'aberto':''}">
         ${prop?`<div class="prop-box">
           <div>
@@ -439,7 +472,7 @@ function renderClientes(){
         <button type="button" class="salvar-btn" onclick="salvarAcao('${lid.replace(/'/g,"&apos;")}')">✓ Registrar</button>
         ${hist.length?`<div style="margin-top:10px">
           <div class="acao-label" style="margin-bottom:4px">Histórico</div>
-          ${hist.slice(-3).reverse().map(h=>`<div class="hist-item"><span style="flex:1"><strong style="color:#3d362c">${h.acao}</strong>${h.obs?' — '+h.obs:''}</span><span style="color:#a89e8f;white-space:nowrap;flex-shrink:0">${h.hora} · ${h.cdr}</span></div>`).join('')}
+          ${hist.slice(-3).reverse().map(h=>`<div class="hist-item"><span style="flex:1"><strong style="color:#3d362c">${h.acao}</strong>${h.obs?' — '+h.obs:''}</span><span style="color:#9c9280;white-space:nowrap;flex-shrink:0">${h.hora} · ${h.cdr}</span></div>`).join('')}
         </div>`:''}
       </div>
     </div>`;
@@ -495,8 +528,8 @@ function atualizarResultado(desc){
     `<div class="limite-nok">⚠️ Abaixo do limite (${fmt(lim)}/mês) — precisa de aprovação</div>`:
     `<div class="limite-ok">✓ Dentro do limite — mín. ${fmt(lim)}/mês · desc. máx. ${t.descMax}%</div>`;
   document.getElementById('res-final').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-    <div style="background:#f5f1e8;border-radius:8px;padding:8px 10px"><div style="color:#a89e8f;font-size:10px;margin-bottom:2px">DESCONTO</div><div style="font-size:16px;font-weight:700;color:#dc2626">${desc}%</div></div>
-    <div style="background:#f5f1e8;border-radius:8px;padding:8px 10px"><div style="color:#a89e8f;font-size:10px;margin-bottom:2px">MATRÍCULA</div><div style="font-size:16px;font-weight:700;color:#b8860b">${fmt(vf)}</div></div>
+    <div style="background:#f5f1e8;border-radius:8px;padding:8px 10px"><div style="color:#9c9280;font-size:10px;margin-bottom:2px">DESCONTO</div><div style="font-size:16px;font-weight:700;color:#dc2626">${desc}%</div></div>
+    <div style="background:#f5f1e8;border-radius:8px;padding:8px 10px"><div style="color:#9c9280;font-size:10px;margin-bottom:2px">MATRÍCULA</div><div style="font-size:16px;font-weight:700;color:#b8860b">${fmt(vf)}</div></div>
   </div>`;
   document.getElementById('aprov-btn').style.display=abaixo?'block':'none';
 }

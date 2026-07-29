@@ -5,6 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Entrevistas — Propósito</title>
 <style>
+  /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
+
+  /* Acessibilidade: foco visível para navegação por teclado */
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid #b8860b; outline-offset:2px;
+  }
+  /* Áreas de toque maiores no mobile (mínimo 40px) */
+  @media(max-width:600px){
+    button, .f-btn, .acao-btn, .tab, .id-btn, .check{min-height:38px}
+  }
+
+  /* Micro-interações: cards "levantam" sutilmente ao passar o mouse */
+  .card, .kpi, .lead-card, .neg-item, .sala, .sel-card, .doc-card{
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover, .kpi:hover, .lead-card:hover, .doc-card:hover{
+    transform:translateY(-2px);
+  }
+  /* Botões: resposta tátil ao clicar */
+  button:active, .f-btn:active, .acao-btn:active, .tab:active{transform:scale(.96)}
+
+  /* Checkbox de tarefa: "pop" ao marcar como concluída */
+  @keyframes popCheck{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .check.checked{animation:popCheck .28s cubic-bezier(.34,1.56,.64,1)}
+
+  /* Formas orgânicas: mancha suave decorativa no cabeçalho */
+  .blob-decor{position:absolute;top:-60px;right:-40px;width:180px;height:180px;
+    background:radial-gradient(circle at 30% 30%, rgba(245,200,66,.16), rgba(245,200,66,0) 70%);
+    border-radius:50%;pointer-events:none;z-index:0}
+
+  /* Tipografia com mais personalidade nos títulos principais */
+  .page-title{letter-spacing:-.02em}
+
   .nav-jump{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#5c5346;font-family:inherit;cursor:pointer;max-width:150px}
   .nav-jump:hover{border-color:#b8860b}
 
@@ -43,7 +76,7 @@
   .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem}
   @media(max-width:560px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
   .kpi{background:#ffffff;border-radius:8px;padding:10px 12px;border:1px solid #e8e0d0}
-  .kpi-label{font-size:10px;color:#a89e8f;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px}
+  .kpi-label{font-size:10px;color:#9c9280;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px}
   .kpi-val{font-size:19px;font-weight:700;color:#2b2620}
   .kpi-sub{font-size:10px;color:#948a7c;margin-top:1px}
   .kpi.success .kpi-val{color:#16a34a}
@@ -62,10 +95,10 @@
   .sp-planejada{background:#fff3d6;color:#b8860b}
   .sp-ganho{background:#eafaf0;color:#16a34a}
   .r-nome{font-size:13px;font-weight:500;color:#2b2620;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .r-sub{font-size:11px;color:#a89e8f;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+  .r-sub{font-size:11px;color:#9c9280;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
   .r-data{text-align:right;flex-shrink:0}
   .r-hora{font-size:13px;font-weight:600;color:#b8860b}
-  .r-dia{font-size:10px;color:#a89e8f}
+  .r-dia{font-size:10px;color:#9c9280}
   .ent-controls{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
   .modal-btn{font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#7d7364;cursor:pointer;font-family:inherit}
   .modal-btn:hover{background:#f7f3ea}
@@ -84,7 +117,7 @@
   .copy-list-btn{font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid #e8e0d0;background:#ffffff;color:#7d7364;cursor:pointer;font-family:inherit}
   .copy-list-btn:hover{border-color:#b8860b;color:#b8860b}
 
-  .empty{padding:24px;text-align:center;font-size:13px;color:#a89e8f}
+  .empty{padding:24px;text-align:center;font-size:13px;color:#9c9280}
   #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 </style>
 </head>
@@ -287,7 +320,7 @@ function rowHtml(a){
       <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#fbbf2488;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
     </div>`;
   } else if(resultado==='sem_retorno'){
-    resultadoHtml=`<div style="background:#ffffff;border:1px solid #a89e8f;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#6b6255;display:flex;align-items:center;justify-content:space-between;gap:6px">
+    resultadoHtml=`<div style="background:#ffffff;border:1px solid #9c9280;border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;color:#6b6255;display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>📵 <strong>Não foi e sem retorno</strong>${a['ResultadoObs']?' — '+a['ResultadoObs']:''}</span>
       <button type="button" onclick="limparResultado('${a['_id']}')" style="font-size:10px;color:#99999988;background:none;border:none;cursor:pointer;font-family:inherit">desfazer</button>
     </div>`;
@@ -303,11 +336,11 @@ function rowHtml(a){
     </div>`;
   } else {
     resultadoHtml=`<div style="margin-top:8px">
-      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#a89e8f;margin-bottom:5px">Resultado da entrevista</div>
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#9c9280;margin-bottom:5px">Resultado da entrevista</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
         <button type="button" onclick="marcarResultado('${a['_id']}','sucesso')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #16a34a;background:#eafaf0;color:#22c55e;cursor:pointer;font-family:inherit">✅ Deu certo</button>
         <button type="button" onclick="marcarResultado('${a['_id']}','reagendou')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #d97706;background:#fff6e0;color:#f59e0b;cursor:pointer;font-family:inherit">🔁 Reagendou</button>
-        <button type="button" onclick="marcarResultado('${a['_id']}','sem_retorno')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #a89e8f;background:#ffffff;color:#6b6255;cursor:pointer;font-family:inherit">📵 Sem retorno</button>
+        <button type="button" onclick="marcarResultado('${a['_id']}','sem_retorno')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #9c9280;background:#ffffff;color:#6b6255;cursor:pointer;font-family:inherit">📵 Sem retorno</button>
         <button type="button" onclick="marcarResultado('${a['_id']}','desistiu')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #dc2626;background:#fdecec;color:#ef4444;cursor:pointer;font-family:inherit">❌ Desistiu</button>
         <button type="button" onclick="marcarOutro('${a['_id']}')" style="font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid #e8e0d0;background:#f5f1e8;color:#7d7364;cursor:pointer;font-family:inherit">✏️ Outro</button>
       </div>
@@ -323,7 +356,7 @@ function rowHtml(a){
           <span style="color:#5c5346">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
           <span>${a['Unidade']||''}</span>
           <span style="color:#7d7364">👤 ${a['Responsável']||'—'}</span>
-          ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#2563eb">📞 ${a['Telefone']}</span>`:'<span style="color:#a89e8f">📞 sem telefone</span>'}
+          ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#2563eb">📞 ${a['Telefone']}</span>`:'<span style="color:#9c9280">📞 sem telefone</span>'}
         </div>
         <div style="font-size:10px;color:#948a7c;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
       </div>
