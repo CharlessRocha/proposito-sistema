@@ -5,6 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Entrevistas — Propósito</title>
 <style>
+  /* ═══ Sidebar de navegação — visível em telas maiores ═══ */
+  @media(min-width:900px){
+    body{padding-left:236px}
+    .sidebar{
+      position:fixed;top:0;left:0;bottom:0;width:236px;
+      background:#eef2f7;border-right:1px solid #dde4ee;
+      display:flex;flex-direction:column;padding:28px 16px;z-index:100;
+      overflow-y:auto;
+    }
+    .sidebar-logo{
+      font-family:'Georgia',serif;font-style:italic;font-size:17px;
+      color:#2b2620;letter-spacing:-.01em;padding:0 10px 6px;margin-bottom:4px;
+    }
+    .sidebar-sub{font-size:10px;color:#8a94a6;letter-spacing:.08em;text-transform:uppercase;padding:0 10px 22px;border-bottom:1px solid #dde4ee;margin-bottom:16px}
+    .sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+    .sidebar-link{
+      display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:8px;
+      font-size:13px;font-weight:500;color:#5b6578;text-decoration:none;
+      transition:all .15s ease;border:1px solid transparent;
+    }
+    .sidebar-link:hover{background:#e4eaf3;color:#2b2620}
+    .sidebar-link.ativo{background:#ffffff;color:#1d4ed8;border-color:#dbe6fb;box-shadow:0 1px 3px rgba(29,78,216,.08)}
+    .sidebar-link .ic{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+    @media(min-width:900px){ .main{padding-left:2.5rem;padding-right:2.5rem} }
+  .sidebar-foot{font-size:10px;color:#a3acbd;padding:14px 10px 0;border-top:1px solid #dde4ee;margin-top:10px;line-height:1.5}
+
+    /* Esconde a navegação antiga do topo em telas grandes (sidebar já cobre) */
+    .nav-jump{display:none}
+    .nav{padding-left:0}
+  }
+  @media(max-width:899px){
+    .sidebar{display:none}
+  }
+
   /* ═══ Tendências 2026 — micro-interações, acessibilidade, formas orgânicas ═══ */
 
   /* Acessibilidade: foco visível para navegação por teclado */
@@ -61,7 +95,7 @@
   .nav-modulo{font-size:12px;color:#7d7364;background:#f5f1e8;padding:3px 10px;border-radius:20px;border:1px solid #e8e0d0}
   .nav-back{font-size:12px;color:#7d7364;background:none;border:1px solid #e8e0d0;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
   .nav-back:hover{color:#b8860b;border-color:#b8860b}
-  .main{max-width:900px;margin:0 auto;padding:1.25rem 1rem 4rem}
+  .main{max-width:1200px;margin:0 auto;padding:1.25rem 1rem 4rem}
   .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
   .page-title{font-size:20px;font-weight:700;color:#2b2620}
   .page-sub{font-size:12px;color:#948a7c;margin-top:2px}
@@ -122,6 +156,15 @@
 </style>
 </head>
 <body>
+<nav class="sidebar">
+  <div class="sidebar-logo">Propósito</div>
+  <div class="sidebar-sub">Sistema Comercial</div>
+  <div class="sidebar-nav">
+    <a href="gerente.html" class="sidebar-link"><span class="ic">🏠</span>Painel do Gerente</a><a href="cdr.html" class="sidebar-link"><span class="ic">🎧</span>CDR / Inside Sales</a><a href="closer.html" class="sidebar-link"><span class="ic">🤝</span>Closer</a><a href="entrevistas.html" class="sidebar-link ativo"><span class="ic">📋</span>Entrevistas</a><a href="playbook.html" class="sidebar-link"><span class="ic">✅</span>Playbook</a><a href="matriculador.html" class="sidebar-link"><span class="ic">📄</span>Matriculador</a><a href="config.html" class="sidebar-link"><span class="ic">⚙️</span>Configurações</a>
+  </div>
+  <div class="sidebar-foot">Processo Seletivo<br>2027</div>
+</nav>
+
 <div id="auth-check">
   <div style="font-size:32px">🔒</div>
   <div style="color:#2b2620;font-size:16px;font-weight:600">Acesso restrito</div>
