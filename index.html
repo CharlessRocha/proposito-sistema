@@ -147,14 +147,16 @@
     <input type="password" class="campo-senha" id="senha-input" placeholder="senha de acesso" autocomplete="off" onkeydown="if(event.key==='Enter')entrar()">
   </div>
 
-  <button class="btn-entrar" onclick="entrar()">Entrar</button>
+  <button class="btn-entrar" onclick="entrar()" id="btn-entrar">Entrar</button>
 
   <div class="erro" id="erro">Senha não reconhecida. Tente novamente.</div>
 
   <div class="rodape">Sistema Comercial · Processo Seletivo 2027</div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
+// Senhas padrão — usadas como respaldo caso o banco ainda não tenha valores customizados
 const SENHAS = {
   gerente:      'gerente2027',
   cdr:          'cdr2027',
@@ -164,6 +166,22 @@ const SENHAS = {
   matriculador: 'matric2027',
   config:       'config2027',
 };
+
+// Busca senhas atualizadas (definidas pelo gerente no painel) assim que a página carrega
+const btnEntrar = document.getElementById('btn-entrar');
+btnEntrar.disabled = true;
+btnEntrar.style.opacity = '.5';
+btnEntrar.textContent = 'Carregando...';
+
+(async function carregarSenhasAtuais(){
+  try{
+    const custom = await supa.getConfig('senhas_sistema');
+    if(custom) Object.assign(SENHAS, custom);
+  }catch(e){ /* mantém as senhas padrão em caso de falha de rede */ }
+  btnEntrar.disabled = false;
+  btnEntrar.style.opacity = '1';
+  btnEntrar.textContent = 'Entrar';
+})();
 
 const URLS = {
   gerente:      'gerente.html',
@@ -176,6 +194,7 @@ const URLS = {
 };
 
 function entrar(){
+  if(document.getElementById('btn-entrar').disabled) return;
   const senha = document.getElementById('senha-input').value;
   const modulo = Object.keys(SENHAS).find(k => SENHAS[k] === senha);
 

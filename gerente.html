@@ -292,6 +292,7 @@
     <button class="tab" onclick="mudarTab('conversao')">Conversão</button>
     <button class="tab" onclick="mudarTab('playbook')">Playbook</button>
     <button class="tab" onclick="mudarTab('entrevistas')">Entrevistas</button>
+    <button class="tab" onclick="mudarTab('senhas')">🔐 Senhas</button>
   </div>
 
   <!-- PAINEL -->
@@ -441,6 +442,26 @@
   <!-- ENTREVISTAS -->
   <div class="panel" id="panel-entrevistas">
     <div id="entrevistas-full"></div>
+  </div>
+
+  <!-- SENHAS -->
+  <div class="panel" id="panel-senhas">
+    <div class="card" style="max-width:640px">
+      <div class="card-head">
+        <span class="card-title">🔐 Senhas de acesso por módulo</span>
+        <span id="senhas-status" style="font-size:11px;color:#16a34a;display:none">✓ Salvo!</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="padding:14px 18px;font-size:12px;color:#7d7364;border-bottom:1px solid #e8e0d0;line-height:1.6">
+          Alterações aqui valem para toda a equipe imediatamente. A senha do Gerente é a senha mestra — ela libera acesso a todos os módulos de uma vez.
+        </div>
+        <div id="senhas-lista"></div>
+        <div style="padding:16px 18px;display:flex;gap:8px;align-items:center">
+          <button type="button" onclick="salvarSenhas()" style="padding:10px 20px;border-radius:8px;border:none;background:#2b2620;color:#faf8f4;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">Salvar alterações</button>
+          <span style="font-size:11px;color:#a89e8f">As senhas antigas deixam de funcionar assim que você salvar.</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1069,10 +1090,47 @@ async function marcarTarefa(selId,taId){
 }
 
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['painel','funil','conversao','playbook','entrevistas'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['painel','funil','conversao','playbook','entrevistas','senhas'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   if(id==='conversao') renderConversao();
+  if(id==='senhas') renderSenhas();
+}
+
+// ═══════════════════════════════════════════════
+// GERENCIAMENTO DE SENHAS — armazenadas no Supabase, editáveis pelo gerente
+// ═══════════════════════════════════════════════
+const SENHAS_LABEL = {
+  gerente:'Painel do Gerente', cdr:'CDR / Inside Sales', closer:'Closer',
+  entrevistas:'Entrevistas', playbook:'Playbook', matriculador:'Matriculador', config:'Configurações'
+};
+const SENHAS_PADRAO = {
+  gerente:'gerente2027', cdr:'cdr2027', closer:'closer2027', entrevistas:'entre2027',
+  playbook:'play2027', matriculador:'matric2027', config:'config2027'
+};
+let senhasAtuais = {};
+
+async function renderSenhas(){
+  const cfg = await supa.getConfig('senhas_sistema');
+  senhasAtuais = {...SENHAS_PADRAO, ...(cfg||{})};
+  document.getElementById('senhas-lista').innerHTML = Object.keys(SENHAS_LABEL).map(chave=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid #e8e0d0">
+      <div style="flex:1;font-size:13px;font-weight:500;color:#2b2620">${SENHAS_LABEL[chave]}${chave==='gerente'?' <span style="font-size:10px;color:#b8860b;font-weight:600">MESTRA</span>':''}</div>
+      <input type="text" id="senha-campo-${chave}" value="${senhasAtuais[chave]||''}" style="font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit;width:180px">
+    </div>`).join('');
+}
+
+async function salvarSenhas(){
+  const novas = {};
+  Object.keys(SENHAS_LABEL).forEach(chave=>{
+    const campo = document.getElementById('senha-campo-'+chave);
+    novas[chave] = campo.value.trim() || SENHAS_PADRAO[chave];
+  });
+  await supa.salvarConfig('senhas_sistema', novas);
+  senhasAtuais = novas;
+  const status = document.getElementById('senhas-status');
+  status.style.display = 'inline';
+  setTimeout(()=>status.style.display='none', 2500);
 }
 
 // ═══════════════════════════════════════════════
