@@ -157,6 +157,7 @@
 <script src="supabase.js"></script>
 <script>
 // Senhas padrão — usadas como respaldo caso o banco ainda não tenha valores customizados
+// "Configurações" não tem senha própria — só é liberado pela senha mestra do Gerente
 const SENHAS = {
   gerente:      'gerente2027',
   cdr:          'cdr2027',
@@ -164,7 +165,6 @@ const SENHAS = {
   entrevistas:  'entre2027',
   playbook:     'play2027',
   matriculador: 'matric2027',
-  config:       'config2027',
 };
 
 // Busca senhas atualizadas (definidas pelo gerente no painel) assim que a página carrega
@@ -200,7 +200,9 @@ function entrar(){
 
   if(modulo){
     if(modulo === 'gerente'){
+      // Libera todos os módulos, incluindo Configurações (que não tem senha própria)
       Object.keys(SENHAS).forEach(mod => sessionStorage.setItem('acesso_'+mod, '1'));
+      sessionStorage.setItem('acesso_config', '1');
     } else {
       sessionStorage.setItem('acesso_'+modulo, '1');
     }
