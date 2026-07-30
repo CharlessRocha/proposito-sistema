@@ -160,12 +160,28 @@ const supa = {
   async update(table, data, filter) { return await this.req('PATCH', table, data, '?'+filter); },
   async del(table, filter) { return await this.req('DELETE', table, null, '?'+filter); },
 
+  // Insere em lotes pequenos, tentando de novo automaticamente se algum lote falhar
+  // (conexões instáveis derrubam requisições grandes com mais frequência — lotes menores + retentativa resolvem isso)
+  async inserirComRetentativa(table, rows, tamanhoLote=40, tentativasMax=3){
+    for(let i=0; i<rows.length; i+=tamanhoLote){
+      const lote = rows.slice(i, i+tamanhoLote);
+      let sucesso=false;
+      for(let tentativa=1; tentativa<=tentativasMax; tentativa++){
+        const resultado = await this.insert(table, lote);
+        if(resultado!==null){ sucesso=true; break; }
+        if(tentativa<tentativasMax) await new Promise(r=>setTimeout(r, 500*tentativa)); // espera um pouco antes de tentar de novo
+      }
+      if(!sucesso) return false; // avisa quem chamou que esse lote não foi salvo mesmo após tentar de novo
+    }
+    return true;
+  },
+
   // ── LEADS ──
   async salvarLeads(leadsCSV) {
     await this.del('leads', 'id=gte.0');
-    if (!leadsCSV.length) return;
+    if (!leadsCSV.length) return true;
     const rows = leadsCSV.map(csv2supa.lead);
-    for(let i=0; i<rows.length; i+=100) await this.insert('leads', rows.slice(i,i+100));
+    return await this.inserirComRetentativa('leads', rows);
   },
   async getLeads() {
     const rows = await this.get('leads', '?order=nome&limit=1000');
@@ -175,9 +191,9 @@ const supa = {
   // ── ATIVIDADES ──
   async salvarAtividades(atvCSV) {
     await this.del('atividades', 'id=gte.0');
-    if (!atvCSV.length) return;
+    if (!atvCSV.length) return true;
     const rows = atvCSV.map(csv2supa.atividade);
-    for(let i=0; i<rows.length; i+=100) await this.insert('atividades', rows.slice(i,i+100));
+    return await this.inserirComRetentativa('atividades', rows);
   },
   // Mapeia código do processo para nome amigável configurado
   mapearProcesso(processo, mapa) {
@@ -199,9 +215,9 @@ const supa = {
   // ── PROPOSTAS (usuário sempre exporta a lista acumulada completa) ──
   async salvarPropostas(propCSV) {
     await this.del('propostas', 'id=gte.0');
-    if (!propCSV.length) return;
+    if (!propCSV.length) return true;
     const rows = propCSV.map(csv2supa.proposta);
-    for(let i=0; i<rows.length; i+=100) await this.insert('propostas', rows.slice(i,i+100));
+    return await this.inserirComRetentativa('propostas', rows);
   },
   async getPropostas() {
     const rows = await this.get('propostas', '?status=eq.ATIVO&limit=5000');
@@ -215,13 +231,13 @@ const supa = {
 
   // ── MATRÍCULAS ──
   async salvarMatriculas(matCSV) {
-    if (!matCSV.length) return;
+    if (!matCSV.length) return true;
     const rows = matCSV.map(csv2supa.matricula);
     const ras = [...new Set(rows.map(r=>r.ra).filter(Boolean))];
     for (const ra of ras) {
       await this.del('matriculas', `ra=eq.${encodeURIComponent(ra)}`);
     }
-    for(let i=0; i<rows.length; i+=100) await this.insert('matriculas', rows.slice(i,i+100));
+    return await this.inserirComRetentativa('matriculas', rows);
   },
   async getMatriculas() {
     const rows = await this.get('matriculas', '?limit=5000');

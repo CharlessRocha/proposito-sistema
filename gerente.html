@@ -735,10 +735,10 @@ async function lerCSV(inp,tipo){
     if(tipo==='reg'){
       leads=rows.filter(r=>r['Nome da pessoa']&&r['Nome da pessoa']!='- - -');
       marcarOk('reg',leads.length+' (salvando...)');
-      await supa.salvarLeads(leads);
+      const okLeads = await supa.salvarLeads(leads);
       // Confirma de verdade com o banco — não assume sucesso só porque a chamada não travou
       const confereLeads = await supa.getLeads();
-      if(confereLeads.length < leads.length){
+      if(!okLeads || confereLeads.length < leads.length){
         marcarOk('reg','');
         document.getElementById('iz-reg').style.borderColor='#dc2626';
         alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
@@ -748,9 +748,9 @@ async function lerCSV(inp,tipo){
     } else if(tipo==='atv') {
       atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
       marcarOk('atv',atividades.length+' (salvando...)');
-      await supa.salvarAtividades(atividades);
+      const okAtv = await supa.salvarAtividades(atividades);
       const confereAtv = await supa.getAtividades();
-      if(confereAtv.length < atividades.length){
+      if(!okAtv || confereAtv.length < atividades.length){
         marcarOk('atv','');
         document.getElementById('iz-atv').style.borderColor='#dc2626';
         alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
@@ -764,9 +764,9 @@ async function lerCSV(inp,tipo){
       matriculas=todasMat.filter(raValido);
       const excluidasMigracao=todasMat.length-matriculas.length;
       marcarOk('mat',matriculas.length+' (salvando...)');
-      await supa.salvarMatriculas(matriculas);
+      const okMat = await supa.salvarMatriculas(matriculas);
       const confereMat = await supa.getMatriculas();
-      if(confereMat.length < matriculas.length){
+      if(!okMat || confereMat.length < matriculas.length){
         marcarOk('mat','');
         document.getElementById('iz-mat').style.borderColor='#dc2626';
         alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
@@ -816,9 +816,9 @@ async function lerProp(inp){
       propostas=linhasProp.filter(p=>p['Status']==='ATIVO');
       if(!propostas.length) propostas=linhasProp; // se não tiver coluna Status, usa tudo mesmo
       marcarOk('prop',propostas.length+' (salvando...)');
-      await supa.salvarPropostas(propostas);
+      const okProp = await supa.salvarPropostas(propostas);
       const confereProp = await supa.getPropostas();
-      if(confereProp.length < propostas.length){
+      if(!okProp || confereProp.length < propostas.length){
         marcarOk('prop','');
         document.getElementById('iz-prop').style.borderColor='#dc2626';
         alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
