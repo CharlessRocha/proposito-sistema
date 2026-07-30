@@ -154,7 +154,18 @@ const supa = {
     } catch(e) { console.error('Supabase fetch erro:', e); return null; }
   },
 
-  async get(table, params='') { return await this.req('GET', table, null, params) || []; },
+  async get(table, params='') {
+    const rows = await this.req('GET', table, null, params) || [];
+    // Avisa se algum dia os dados se aproximarem do limite de 100.000 — sinal de que precisa aumentar
+    if(rows.length >= 95000){
+      console.warn(`⚠️ ATENÇÃO: a tabela "${table}" retornou ${rows.length} registros, próximo do limite de 100.000. Dados podem estar sendo cortados — avise o suporte para aumentar o limite.`);
+      if(typeof window!=='undefined' && !window._avisoLimiteMostrado){
+        window._avisoLimiteMostrado = true;
+        alert(`⚠️ Atenção: a tabela "${table}" está com ${rows.length} registros, perto do limite máximo do sistema. Alguns dados podem não estar aparecendo. Avise o suporte técnico para aumentar essa capacidade.`);
+      }
+    }
+    return rows;
+  },
   async insert(table, data) { return await this.req('POST', table, data); },
   async upsert(table, data) { return await this.req('POST', table, Array.isArray(data)?data:[data]); },
   async update(table, data, filter) { return await this.req('PATCH', table, data, '?'+filter); },
@@ -184,7 +195,7 @@ const supa = {
     return await this.inserirComRetentativa('leads', rows);
   },
   async getLeads() {
-    const rows = await this.get('leads', '?order=nome&limit=1000');
+    const rows = await this.get('leads', '?order=nome&limit=100000');
     return rows.map(adapt.lead);
   },
 
@@ -205,7 +216,7 @@ const supa = {
   },
 
   async getAtividades() {
-    const rows = await this.get('atividades', '?order=data_vencimento&limit=1000');
+    const rows = await this.get('atividades', '?order=data_vencimento&limit=100000');
     return rows.map(adapt.atividade);
   },
   async atualizarAtividade(id, dados) {
@@ -220,12 +231,12 @@ const supa = {
     return await this.inserirComRetentativa('propostas', rows);
   },
   async getPropostas() {
-    const rows = await this.get('propostas', '?status=eq.ATIVO&limit=5000');
+    const rows = await this.get('propostas', '?status=eq.ATIVO&limit=100000');
     return rows.map(adapt.proposta);
   },
   // Todas as propostas já cadastradas por uma pessoa (para checar elegibilidade de 50+)
   async getTodasPropostas() {
-    const rows = await this.get('propostas', '?limit=5000');
+    const rows = await this.get('propostas', '?limit=100000');
     return rows.map(adapt.proposta);
   },
 
@@ -240,7 +251,7 @@ const supa = {
     return await this.inserirComRetentativa('matriculas', rows);
   },
   async getMatriculas() {
-    const rows = await this.get('matriculas', '?limit=5000');
+    const rows = await this.get('matriculas', '?limit=100000');
     return rows.map(adapt.matricula);
   },
 
@@ -248,7 +259,7 @@ const supa = {
   async salvarTarefa(selId, tarefaId, concluida) {
     return await this.req('POST', 'playbook_tarefas', [{sel_id:selId, tarefa_id:tarefaId, concluida, atualizado_em:new Date().toISOString()}], '?on_conflict=sel_id,tarefa_id');
   },
-  async getTarefas() { return await this.get('playbook_tarefas', '?limit=2000'); },
+  async getTarefas() { return await this.get('playbook_tarefas', '?limit=100000'); },
 
   // ── CDR AÇÕES ──
   async salvarAcaoCDR(leadNome, acao, obs, cdr) {
@@ -258,7 +269,7 @@ const supa = {
       data:new Date().toLocaleDateString('pt-BR')
     });
   },
-  async getAcoesCDR() { return await this.get('cdr_acoes', '?order=criado_em.desc&limit=5000'); },
+  async getAcoesCDR() { return await this.get('cdr_acoes', '?order=criado_em.desc&limit=100000'); },
   async salvarMassa(tipo, cdr, total) {
     return await this.insert('cdr_massa', {
       tipo, cdr, total,
@@ -269,12 +280,12 @@ const supa = {
 
   // ── ENTREVISTAS ──
   async salvarEntrevista(ent) { return await this.req('POST', 'entrevistas', [ent], '?on_conflict=id'); },
-  async getEntrevistas() { return await this.get('entrevistas', '?order=data.desc,hora.desc&limit=500'); },
+  async getEntrevistas() { return await this.get('entrevistas', '?order=data.desc,hora.desc&limit=100000'); },
   async updateEntrevista(id, data) { return await this.update('entrevistas', data, `id=eq.${id}`); },
 
   // ── NEGOCIAÇÕES ──
   async salvarNegociacao(neg) { return await this.req('POST', 'negociacoes', [neg], '?on_conflict=id'); },
-  async getNegociacoes() { return await this.get('negociacoes', '?order=criado_em.desc&limit=200'); },
+  async getNegociacoes() { return await this.get('negociacoes', '?order=criado_em.desc&limit=100000'); },
   async updateNegociacao(id, data) { return await this.update('negociacoes', data, `id=eq.${id}`); },
 
   // ── NOTAS DE ACOMPANHAMENTO — persistem entre seletivos, ligadas à tarefa (não ao ciclo) ──
@@ -282,7 +293,7 @@ const supa = {
     return await this.insert('tarefa_notas', {tarefa_id:tarefaId, nota, autor, criado_em:new Date().toISOString()});
   },
   async getTodasNotas() {
-    return await this.get('tarefa_notas', '?order=criado_em.desc&limit=3000');
+    return await this.get('tarefa_notas', '?order=criado_em.desc&limit=100000');
   },
 
   // ── CONFIG / CALENDÁRIO ──
