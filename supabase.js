@@ -136,12 +136,18 @@ const csv2supa = {
 const supa = {
   async req(method, table, body=null, params='') {
     try {
-      const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}`, {
+      // Impede que o navegador (ou proxy no meio do caminho) guarde a resposta em cache —
+      // sem isso, dados atualizados por outra pessoa em outro PC podem não aparecer aqui.
+      const cacheBuster = method==='GET' ? (params.includes('?') ? '&_t=' : '?_t=') + Date.now() : '';
+      const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}${cacheBuster}`, {
         method,
+        cache: 'no-store',
         headers: {
           'apikey': SUPA_KEY,
           'Authorization': `Bearer ${SUPA_KEY}`,
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
           'Prefer': method==='POST' ? 'resolution=merge-duplicates,return=minimal' : 'return=minimal'
         },
         body: body ? JSON.stringify(body) : null
