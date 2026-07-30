@@ -662,6 +662,13 @@ async function salvarSenhas(){
     novas[chave] = campo.value.trim() || SENHAS_PADRAO[chave];
   });
   await supa.salvarConfig('senhas_sistema', novas);
+  // Confere de verdade se salvou, lendo de volta do banco
+  const conferencia = await supa.getConfig('senhas_sistema');
+  const bateu = conferencia && Object.keys(novas).every(k => conferencia[k] === novas[k]);
+  if(!bateu){
+    alert('⚠️ Atenção: as senhas podem não ter sido salvas corretamente (falha de rede). Tente salvar novamente antes de avisar a equipe sobre a mudança.');
+    return;
+  }
   mostrarSalvo('senhas');
 }
 

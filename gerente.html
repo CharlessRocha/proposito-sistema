@@ -736,11 +736,26 @@ async function lerCSV(inp,tipo){
       leads=rows.filter(r=>r['Nome da pessoa']&&r['Nome da pessoa']!='- - -');
       marcarOk('reg',leads.length+' (salvando...)');
       await supa.salvarLeads(leads);
+      // Confirma de verdade com o banco — não assume sucesso só porque a chamada não travou
+      const confereLeads = await supa.getLeads();
+      if(confereLeads.length < leads.length){
+        marcarOk('reg','');
+        document.getElementById('iz-reg').style.borderColor='#dc2626';
+        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
+        return;
+      }
       marcarOk('reg',leads.length);
     } else if(tipo==='atv') {
       atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
       marcarOk('atv',atividades.length+' (salvando...)');
       await supa.salvarAtividades(atividades);
+      const confereAtv = await supa.getAtividades();
+      if(confereAtv.length < atividades.length){
+        marcarOk('atv','');
+        document.getElementById('iz-atv').style.borderColor='#dc2626';
+        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
+        return;
+      }
       marcarOk('atv',atividades.length);
     } else if(tipo==='mat') {
       // Filtra matrículas de migração: RA precisa começar com 26 ou 27 (coorte atual)
@@ -750,6 +765,13 @@ async function lerCSV(inp,tipo){
       const excluidasMigracao=todasMat.length-matriculas.length;
       marcarOk('mat',matriculas.length+' (salvando...)');
       await supa.salvarMatriculas(matriculas);
+      const confereMat = await supa.getMatriculas();
+      if(confereMat.length < matriculas.length){
+        marcarOk('mat','');
+        document.getElementById('iz-mat').style.borderColor='#dc2626';
+        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
+        return;
+      }
       marcarOk('mat',matriculas.length+(excluidasMigracao?` (${excluidasMigracao} migração excluída)`:''));
     }
     renderTudo();
@@ -795,6 +817,13 @@ async function lerProp(inp){
       if(!propostas.length) propostas=linhasProp; // se não tiver coluna Status, usa tudo mesmo
       marcarOk('prop',propostas.length+' (salvando...)');
       await supa.salvarPropostas(propostas);
+      const confereProp = await supa.getPropostas();
+      if(confereProp.length < propostas.length){
+        marcarOk('prop','');
+        document.getElementById('iz-prop').style.borderColor='#dc2626';
+        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
+        return;
+      }
       marcarOk('prop',propostas.length);
       renderTudo();
     }catch(err){
