@@ -136,9 +136,9 @@ const csv2supa = {
 const supa = {
   async req(method, table, body=null, params='') {
     try {
-      // Impede cache do navegador de forma segura (sem cabeçalhos que quebram o CORS do Supabase)
-      const cacheBuster = method==='GET' ? (params.includes('?') ? '&_t=' : '?_t=') + Date.now() : '';
-      const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}${cacheBuster}`, {
+      // cache:'no-store' já basta para evitar cache do navegador — não usar parâmetro
+      // extra na URL, pois o PostgREST interpreta qualquer query param como filtro de coluna
+      const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}`, {
         method,
         cache: 'no-store',
         headers: {
