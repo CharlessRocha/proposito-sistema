@@ -451,7 +451,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1785420523"></script>
+<script src="supabase.js?v=1785421961"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -739,11 +739,12 @@ async function lerCSV(inp,tipo){
       // Confirma de verdade com o banco — não assume sucesso só porque a chamada não travou
       const confereLeads = await supa.getLeads();
       if(!okLeads || confereLeads.length < leads.length){
-        marcarOk('reg','');
+        const diferenca = leads.length - confereLeads.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO LEADS: esperado=${leads.length} | encontrado no banco=${confereLeads.length} | diferença=${diferenca} | okLeads=${okLeads}`);
         document.getElementById('iz-reg').style.borderColor='#dc2626';
-        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
-        return;
+        alert(`⚠️ Divergência na importação de leads:\n\nArquivo enviado: ${leads.length} registros\nSalvos no banco: ${confereLeads.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados na tela. Tire um print desta mensagem e envie ao suporte com esses números.`);
       }
+      leads = confereLeads; // usa o que realmente está no banco, não o que tentamos enviar
       marcarOk('reg',leads.length);
     } else if(tipo==='atv') {
       atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
@@ -751,11 +752,12 @@ async function lerCSV(inp,tipo){
       const okAtv = await supa.salvarAtividades(atividades);
       const confereAtv = await supa.getAtividades();
       if(!okAtv || confereAtv.length < atividades.length){
-        marcarOk('atv','');
+        const diferenca = atividades.length - confereAtv.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO ATIVIDADES: esperado=${atividades.length} | encontrado=${confereAtv.length} | diferença=${diferenca} | okAtv=${okAtv}`);
         document.getElementById('iz-atv').style.borderColor='#dc2626';
-        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
-        return;
+        alert(`⚠️ Divergência na importação de atividades:\n\nArquivo enviado: ${atividades.length} registros\nSalvos no banco: ${confereAtv.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados na tela. Tire um print e envie ao suporte com esses números.`);
       }
+      atividades = confereAtv;
       marcarOk('atv',atividades.length);
     } else if(tipo==='mat') {
       // Filtra matrículas de migração: RA precisa começar com 26 ou 27 (coorte atual)
@@ -767,11 +769,12 @@ async function lerCSV(inp,tipo){
       const okMat = await supa.salvarMatriculas(matriculas);
       const confereMat = await supa.getMatriculas();
       if(!okMat || confereMat.length < matriculas.length){
-        marcarOk('mat','');
+        const diferenca = matriculas.length - confereMat.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO MATRÍCULAS: esperado=${matriculas.length} | encontrado=${confereMat.length} | diferença=${diferenca} | okMat=${okMat}`);
         document.getElementById('iz-mat').style.borderColor='#dc2626';
-        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
-        return;
+        alert(`⚠️ Divergência na importação de matrículas:\n\nArquivo enviado: ${matriculas.length} registros\nSalvos no banco: ${confereMat.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados na tela. Tire um print e envie ao suporte com esses números.`);
       }
+      matriculas = confereMat;
       marcarOk('mat',matriculas.length+(excluidasMigracao?` (${excluidasMigracao} migração excluída)`:''));
     }
     renderTudo();
@@ -819,11 +822,12 @@ async function lerProp(inp){
       const okProp = await supa.salvarPropostas(propostas);
       const confereProp = await supa.getPropostas();
       if(!okProp || confereProp.length < propostas.length){
-        marcarOk('prop','');
+        const diferenca = propostas.length - confereProp.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO PROPOSTAS: esperado=${propostas.length} | encontrado=${confereProp.length} | diferença=${diferenca} | okProp=${okProp}`);
         document.getElementById('iz-prop').style.borderColor='#dc2626';
-        alert('⚠️ Atenção: a gravação no banco de dados pode ter falhado (rede instável ou permissão). Tente importar novamente. Se persistir, avise o suporte.');
-        return;
+        alert(`⚠️ Divergência na importação de propostas:\n\nArquivo enviado: ${propostas.length} registros\nSalvos no banco: ${confereProp.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados na tela. Tire um print e envie ao suporte com esses números.`);
       }
+      propostas = confereProp;
       marcarOk('prop',propostas.length);
       renderTudo();
     }catch(err){
