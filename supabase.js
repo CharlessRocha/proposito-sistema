@@ -154,17 +154,41 @@ const supa = {
     } catch(e) { console.error('Supabase fetch erro:', e); return null; }
   },
 
-  async get(table, params='') {
-    const rows = await this.req('GET', table, null, params) || [];
-    // Avisa se algum dia os dados se aproximarem do limite de 100.000 — sinal de que precisa aumentar
-    if(rows.length >= 95000){
-      console.warn(`⚠️ ATENÇÃO: a tabela "${table}" retornou ${rows.length} registros, próximo do limite de 100.000. Dados podem estar sendo cortados — avise o suporte para aumentar o limite.`);
+  async get(table, params='', paginar=true) {
+    // Busca uma única página — usado quando já sabemos que o resultado é 1 registro só (ex: getConfig)
+    if(!paginar){
+      return await this.req('GET', table, null, params) || [];
+    }
+
+    // O Supabase tem um limite de segurança no PRÓPRIO SERVIDOR (geralmente 1000 registros por busca),
+    // que corta a resposta independente do "limit=" que a gente pede na URL.
+    // Por isso, buscamos em páginas de 1000 e juntamos tudo, até não sobrar mais nada.
+    let paramsLimpos = params.replace(/([?&])limit=\d+&?/,'$1').replace(/[?&]$/,'');
+    const temOutrosParams = paramsLimpos.length>1;
+    const base = temOutrosParams ? paramsLimpos : '';
+    const separador = base.includes('?') ? '&' : (base ? '&' : '?');
+
+    let todos = [];
+    let offset = 0;
+    const tamanhoPagina = 1000;
+    while(true){
+      const url = `${base}${separador}limit=${tamanhoPagina}&offset=${offset}`;
+      const pagina = await this.req('GET', table, null, url) || [];
+      todos = todos.concat(pagina);
+      if(pagina.length < tamanhoPagina) break; // última página — acabou
+      offset += tamanhoPagina;
+      if(offset > 200000) break; // proteção contra loop infinito em caso de erro inesperado
+    }
+
+    // Avisa se algum dia os dados se aproximarem do limite de segurança de 100.000
+    if(todos.length >= 95000){
+      console.warn(`⚠️ ATENÇÃO: a tabela "${table}" retornou ${todos.length} registros, próximo do limite de 100.000. Avise o suporte.`);
       if(typeof window!=='undefined' && !window._avisoLimiteMostrado){
         window._avisoLimiteMostrado = true;
-        alert(`⚠️ Atenção: a tabela "${table}" está com ${rows.length} registros, perto do limite máximo do sistema. Alguns dados podem não estar aparecendo. Avise o suporte técnico para aumentar essa capacidade.`);
+        alert(`⚠️ Atenção: a tabela "${table}" está com ${todos.length} registros, perto do limite máximo do sistema. Avise o suporte técnico para aumentar essa capacidade.`);
       }
     }
-    return rows;
+    return todos;
   },
   async insert(table, data) { return await this.req('POST', table, data); },
   async upsert(table, data) { return await this.req('POST', table, Array.isArray(data)?data:[data]); },
@@ -301,7 +325,7 @@ const supa = {
     return await this.req('POST', 'config', [{chave, valor:JSON.stringify(valor), atualizado_em:new Date().toISOString()}], '?on_conflict=chave');
   },
   async getConfig(chave) {
-    const rows = await this.get('config', `?chave=eq.${chave}&limit=1`);
+    const rows = await this.get('config', `?chave=eq.${chave}&limit=1`, false);
     if(!rows||!rows.length) return null;
     try { return JSON.parse(rows[0].valor); } catch(e) { return rows[0].valor; }
   }
