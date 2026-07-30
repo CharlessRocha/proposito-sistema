@@ -182,6 +182,7 @@
     <button class="tab" onclick="mudarTab('mapa')">🏷️ Nomes dos seletivos</button>
     <button class="tab" onclick="mudarTab('funil')">🎯 Etapas do funil</button>
     <button class="tab" onclick="mudarTab('matric')">🙋 Matriculadores</button>
+    <button class="tab" onclick="mudarTab('remat')">🔁 Rematrícula</button>
     <button class="tab" onclick="mudarTab('promo')">💵 Tabela promo</button>
     <button class="tab" onclick="mudarTab('mens')">💰 Mensalidades</button>
     <button class="tab" onclick="mudarTab('mat')">📚 Material</button>
@@ -289,6 +290,40 @@
     </div>
   </div>
 
+  <!-- REMATRÍCULA -->
+  <div class="panel" id="panel-remat">
+    <div style="font-size:12px;color:#948a7c;margin-bottom:12px;line-height:1.6">
+      Alunos que já estavam matriculados antes desta data (segundo a Base Geral) e aparecem como "Matrícula" nova no funil Rubeus provavelmente são <strong style="color:#b8860b">rematrícula</strong>, não matrícula nova. Quem fez a pré-matrícula depois dessa data é considerado aluno legítimo do ciclo atual.
+    </div>
+    <div class="section-label">
+      <span>Data de corte para identificar rematrícula</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-remat">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarRemat()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="padding:16px 18px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:13px;color:#2b2620">Considerar pré-matrícula anterior ao mês</span>
+        <select id="remat-mes" style="font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
+          <option value="1">1 — Janeiro</option>
+          <option value="2">2 — Fevereiro</option>
+          <option value="3">3 — Março</option>
+          <option value="4">4 — Abril</option>
+          <option value="5">5 — Maio</option>
+          <option value="6">6 — Junho</option>
+          <option value="7">7 — Julho</option>
+          <option value="8">8 — Agosto</option>
+          <option value="9">9 — Setembro</option>
+          <option value="10">10 — Outubro</option>
+          <option value="11">11 — Novembro</option>
+          <option value="12">12 — Dezembro</option>
+        </select>
+        <span style="font-size:12px;color:#948a7c">do ano atual como "matrícula antiga" (possível rematrícula)</span>
+      </div>
+    </div>
+  </div>
+
   <!-- TABELA PROMO -->
   <div class="panel" id="panel-promo">
     <div class="section-label">
@@ -391,7 +426,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1785422334"></script>
+<script src="supabase.js?v=1785434599"></script>
 <script>
 if(sessionStorage.getItem('acesso_config')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -419,6 +454,7 @@ let cfg = {
   matriculadores: [
     // {canonico:'Letícia Lima Mesquita', variantes:'LETICYA MARIA LIMA MESQUITA, Letícia Lima'}
   ],
+  rematricula: { mes: 6 },
   seletivos:[
     {n:1,data:'28/jun/2026',obs:''},{n:2,data:'12/jul/2026',obs:''},{n:3,data:'02/ago/2026',obs:''},
     {n:4,data:'23/ago/2026',obs:'Melhor janela'},{n:5,data:'13/set/2026',obs:''},{n:6,data:'27/set/2026',obs:''},
@@ -487,7 +523,7 @@ async function init(){
   renderTudo();
 }
 
-function renderTudo(){renderCal();renderMapa();renderFunilEtapas();renderMatric();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
+function renderTudo(){renderCal();renderMapa();renderFunilEtapas();renderMatric();renderRemat();renderTabela('promo');renderTabela('mens');renderTabela('mat');renderFeriados();}
 
 function renderMapa(){
   if(!cfg.mapa_processos)cfg.mapa_processos=[];
@@ -538,6 +574,16 @@ async function salvarMatric(){
   await supa.salvarConfig('cfg_principal',cfg);
   await supa.salvarConfig('matriculadores',cfg.matriculadores);
   mostrarSalvo('matric');
+}
+
+function renderRemat(){
+  document.getElementById('remat-mes').value = cfg.rematricula?.mes || 6;
+}
+async function salvarRemat(){
+  cfg.rematricula = { mes: parseInt(document.getElementById('remat-mes').value) };
+  await supa.salvarConfig('cfg_principal',cfg);
+  await supa.salvarConfig('rematricula',cfg.rematricula);
+  mostrarSalvo('remat');
 }
 
 function renderCal(){
@@ -626,7 +672,7 @@ function mostrarSalvo(tipo){
 }
 
 function mudarTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','funil','matric','promo','mens','mat','feriados','senhas'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['cal','mapa','funil','matric','remat','promo','mens','mat','feriados','senhas'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   if(id==='senhas') renderSenhas();

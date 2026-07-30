@@ -68,6 +68,16 @@ const adapt = {
     'TipoMatricula': m.tipo_matricula||'',
     'PeriodoLetivo': m.periodo_letivo||'',
     '_id': m.id
+  }),
+  baseGeral: m => ({
+    'RA': m.ra||'',
+    'Nome': m.nome||'',
+    'Filial': (m.filial||'').replace(/^\d+-\d+\//,'').trim(),
+    'DataPreMatricula': m.dt_prematricula||'',
+    'StatusMatricula': m.status_matricula||'',
+    'TipoMatricula': m.tipo_matricula||'',
+    'PeriodoLetivo': m.periodo_letivo||'',
+    '_id': m.id
   })
 };
 
@@ -126,6 +136,24 @@ const csv2supa = {
     turno: m['TURNO']||'',
     curso: m['CURSO']||'',
     habilitacao: m['HABILITACAO']||'',
+    status_matricula: m['STATUSMATRICULA']||'',
+    tipo_matricula: m['TIPOMATRICULA']||'',
+    periodo_letivo: m['PERIODOLETIVO']||''
+  }),
+  baseGeral: m => ({
+    ra: m['RA']||'',
+    nome: m['NOME']||'',
+    filial: m['FILIAL']||'',
+    dt_prematricula: m['DT_PREMATRICULA']||'',
+    status_matricula: m['STATUSMATRICULA']||'',
+    tipo_matricula: m['TIPOMATRICULA']||'',
+    periodo_letivo: m['PERIODOLETIVO']||''
+  }),
+  baseGeral: m => ({
+    ra: m['RA']||'',
+    nome: m['NOME']||'',
+    filial: m['FILIAL']||'',
+    dt_prematricula: m['DT_PREMATRICULA']||'',
     status_matricula: m['STATUSMATRICULA']||'',
     tipo_matricula: m['TIPOMATRICULA']||'',
     periodo_letivo: m['PERIODOLETIVO']||''
@@ -277,6 +305,18 @@ const supa = {
   async getMatriculas() {
     const rows = await this.get('matriculas', '?limit=100000');
     return rows.map(adapt.matricula);
+  },
+
+  // ── BASE GERAL (todos os alunos já matriculados — usada para identificar rematrículas) ──
+  async salvarBaseGeral(baseCSV) {
+    await this.del('base_geral', 'id=gte.0');
+    if (!baseCSV.length) return true;
+    const rows = baseCSV.map(csv2supa.baseGeral);
+    return await this.inserirComRetentativa('base_geral', rows);
+  },
+  async getBaseGeral() {
+    const rows = await this.get('base_geral', '?limit=100000');
+    return rows.map(adapt.baseGeral);
   },
 
   // ── PLAYBOOK ──

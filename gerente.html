@@ -243,7 +243,7 @@
   </div>
 
   <!-- IMPORTS -->
-  <div class="import-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem">
+  <div class="import-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem">
     <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
       <div style="font-size:20px;margin-bottom:4px">👥</div>
       <div style="font-size:12px;font-weight:500;color:#3d362c">Funil Rubeus Completo</div>
@@ -271,6 +271,13 @@
       <div style="font-size:10px;color:#948a7c;margin-top:2px">Matrículas efetivadas</div>
       <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-mat"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'mat')">
+    </label>
+    <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-basegeral" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+      <div style="font-size:20px;margin-bottom:4px">🗂️</div>
+      <div style="font-size:12px;font-weight:500;color:#3d362c">Base Geral</div>
+      <div style="font-size:10px;color:#948a7c;margin-top:2px">Todos os alunos já matriculados</div>
+      <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-basegeral"></div>
+      <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'basegeral')">
     </label>
   </div>
 
@@ -405,6 +412,14 @@
       <div class="card-body"><div id="conv-sem-proposta"></div></div>
     </div>
 
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#9333ea">🔁 Possíveis rematrículas identificadas como matrícula nova</span><span id="conv-remat-badge" style="font-size:10px;background:#f5edff;color:#9333ea;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body">
+        <div style="font-size:11px;color:#7d7364;margin-bottom:10px">Alunos que já eram matriculados antes (pré-matrícula anterior a <span id="conv-remat-data-corte" style="font-weight:600"></span>) e que agora aparecem como "Matrícula" nova no funil. Provavelmente são rematrícula — corrija a etapa no Rubeus.</div>
+        <div id="conv-rematriculas"></div>
+      </div>
+    </div>
+
     <div class="card" style="margin-top:12px;border:1px solid #0284c7">
       <div class="card-head" style="background:#fff3d6"><span class="card-title" style="color:#0284c7">2️⃣ TOTVS × Rubeus — checando consistência</span></div>
       <div class="card-body">
@@ -451,7 +466,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1785422334"></script>
+<script src="supabase.js?v=1785434599"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -506,7 +521,8 @@ const FASES_DEF=[
 const ETAPA_ORDER=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'];
 const ETAPA_COR={'Inscrito':'#1d4ed8','Confirmado no Teste':'#d97706','Não Compareceu no Teste':'#dc2626','Compareceu no Teste':'#16a34a','Entrevista Agendada':'#8b5cf6','Proposta':'#0284c7','Negociação':'#ea580c','Matrícula':'#16a34a'};
 
-let leads=[], propostas=[], atividades=[], matriculas=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
+let leads=[], propostas=[], atividades=[], matriculas=[], baseGeral=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
+let mesCorteRematricula=6; // configurável na Central — mês de corte para considerar pré-matrícula "antiga"
 
 // Lista completa de tarefas padrão (mesma base usada no módulo Playbook)
 const TAREFAS_BASE_COMPLETA = [
@@ -689,6 +705,8 @@ async function carregarDadosDoBanco(){
   if(atividades.length) marcarOk('atv',atividades.length);
   matriculas = await supa.getMatriculas();
   if(matriculas.length) marcarOk('mat',matriculas.length);
+  baseGeral = await supa.getBaseGeral();
+  if(baseGeral.length) marcarOk('basegeral',baseGeral.length);
   // Seletivos e mapa de nomes do Supabase
   const cfgSel = await supa.getConfig('seletivos');
   if(cfgSel) seletivos = cfgSel;
@@ -697,6 +715,8 @@ async function carregarDadosDoBanco(){
   etapasFunil = await supa.getConfig('etapas_funil') || [];
   tarefasCustom = await supa.getConfig('tarefas_custom') || [];
   mapaMatriculadores = await supa.getConfig('matriculadores') || [];
+  const cfgRematricula = await supa.getConfig('rematricula');
+  mesCorteRematricula = cfgRematricula?.mes || 6; // padrão: junho
   // Zera o cache local da Conversão para forçar releitura de propostas/config na próxima visita à aba
   todasPropostasHistorico = [];
 }
@@ -776,6 +796,19 @@ async function lerCSV(inp,tipo){
       }
       matriculas = confereMat;
       marcarOk('mat',matriculas.length+(excluidasMigracao?` (${excluidasMigracao} migração excluída)`:''));
+    } else if(tipo==='basegeral') {
+      baseGeral=rows.filter(r=>r['NOME']&&r['NOME']!='- - -');
+      marcarOk('basegeral',baseGeral.length+' (salvando...)');
+      const okBase = await supa.salvarBaseGeral(baseGeral);
+      const confereBase = await supa.getBaseGeral();
+      if(!okBase || confereBase.length < baseGeral.length){
+        const diferenca = baseGeral.length - confereBase.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO BASE GERAL: esperado=${baseGeral.length} | encontrado=${confereBase.length} | diferença=${diferenca} | okBase=${okBase}`);
+        document.getElementById('iz-basegeral').style.borderColor='#dc2626';
+        alert(`⚠️ Divergência na importação da Base Geral:\n\nArquivo enviado: ${baseGeral.length} registros\nSalvos no banco: ${confereBase.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados na tela. Tire um print e envie ao suporte com esses números.`);
+      }
+      baseGeral = confereBase;
+      marcarOk('basegeral',baseGeral.length);
     }
     renderTudo();
   };
@@ -1273,6 +1306,33 @@ async function renderConversao(){
       </div>
       <span style="font-size:10px;color:#ef4444">cadastrar proposta</span>
     </div>`).join(''):'<div class="empty" style="color:#16a34a">✓ Todos os matriculados do Rubeus têm proposta cadastrada</div>';
+
+  // ── Possíveis rematrículas — aluno já matriculado antes (Base Geral) mas aparece como Matrícula nova no Rubeus ──
+  const anoAtualCorte = HOJE.getFullYear();
+  const dataCorte = new Date(anoAtualCorte, mesCorteRematricula-1, 1); // dia 1 do mês configurado
+  document.getElementById('conv-remat-data-corte').textContent = dataCorte.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
+  const baseGeralAntiga = baseGeral.filter(b=>{
+    const d = parseDataBR(b['DataPreMatricula']);
+    return d && d < dataCorte;
+  });
+  const nomesBaseAntiga = baseGeralAntiga.map(b=>b['Nome']);
+  const possiveisRematriculas = leadsMatriculados.filter(l=>
+    nomesBaseAntiga.some(n=>similaridadeNomes(l['Nome da pessoa'],n)>=LIMIAR_MATCH)
+  );
+
+  document.getElementById('conv-remat-badge').textContent = possiveisRematriculas.length||'';
+  document.getElementById('conv-rematriculas').innerHTML = !baseGeral.length
+    ? '<div class="empty">Importe o arquivo de Base Geral para fazer essa checagem</div>'
+    : possiveisRematriculas.length ? possiveisRematriculas.map(l=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+        <span style="color:#9333ea">🔁</span>
+        <div style="flex:1">
+          <div style="font-weight:600;color:#2b2620">${l['Nome da pessoa']}</div>
+          <div style="font-size:11px;color:#948a7c">Processo seletivo: ${l['Processo seletivo']||'—'}</div>
+        </div>
+        <span style="font-size:10px;color:#9333ea">provável rematrícula</span>
+      </div>`).join('') : '<div class="empty" style="color:#16a34a">✓ Nenhum caso de rematrícula identificado entre os matriculados</div>';
 
   // Rubeus matriculado mas não encontrado no TOTVS ainda (mostra nome + etapa)
   const nomesTotvsAtual=totvsMatriculados.map(m=>m['Nome']);
