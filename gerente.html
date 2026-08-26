@@ -243,7 +243,7 @@
   </div>
 
   <!-- IMPORTS -->
-  <div class="import-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem">
+  <div class="import-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:1.25rem">
     <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
       <div style="font-size:20px;margin-bottom:4px">👥</div>
       <div style="font-size:12px;font-weight:500;color:#3d362c">Funil Rubeus Completo</div>
@@ -278,6 +278,13 @@
       <div style="font-size:10px;color:#948a7c;margin-top:2px">Todos os alunos já matriculados</div>
       <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-basegeral"></div>
       <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'basegeral')">
+    </label>
+    <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-pasta" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+      <div style="font-size:20px;margin-bottom:4px">🔗</div>
+      <div style="font-size:12px;font-weight:500;color:#3d362c">Lista de Conferência</div>
+      <div style="font-size:10px;color:#948a7c;margin-top:2px">Buscada automaticamente da planilha</div>
+      <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-pasta"></div>
+      <input type="file" accept=".txt,.csv" style="display:none" onchange="lerPastaPropostas(this)">
     </label>
   </div>
 
@@ -453,6 +460,16 @@
       <div class="card-head"><span class="card-title" style="color:#f59e0b">🔍 Correspondências aproximadas — revisar na base</span><span id="conv-aprox-badge" style="font-size:10px;background:#fff6e0;color:#f59e0b;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="conv-aproximadas"></div></div>
     </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><span class="card-title" style="color:#dc2626">🔗 Lista de conferência × propostas cadastradas</span><span id="conv-pasta-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body">
+        <div style="font-size:11px;color:#7d7364;margin-bottom:10px;line-height:1.6">
+          Busca automaticamente a planilha de conferência (configurada em Configurações → Fontes de Dados) e cruza com as propostas já cadastradas no sistema.
+        </div>
+        <div id="conv-pasta-resultado"></div>
+      </div>
+    </div>
   </div>
 
   <!-- PLAYBOOK -->
@@ -466,7 +483,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1785434599"></script>
+<script src="supabase.js?v=1787749365"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -521,7 +538,7 @@ const FASES_DEF=[
 const ETAPA_ORDER=['Inscrito','Confirmado no Teste','Não Compareceu no Teste','Compareceu no Teste','Entrevista Agendada','Proposta','Negociação','Matrícula'];
 const ETAPA_COR={'Inscrito':'#1d4ed8','Confirmado no Teste':'#d97706','Não Compareceu no Teste':'#dc2626','Compareceu no Teste':'#16a34a','Entrevista Agendada':'#8b5cf6','Proposta':'#0284c7','Negociação':'#ea580c','Matrícula':'#16a34a'};
 
-let leads=[], propostas=[], atividades=[], matriculas=[], baseGeral=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
+let leads=[], propostas=[], atividades=[], matriculas=[], baseGeral=[], pastaPropostas=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
 let mesCorteRematricula=6; // configurável na Central — mês de corte para considerar pré-matrícula "antiga"
 
 // Lista completa de tarefas padrão (mesma base usada no módulo Playbook)
@@ -707,6 +724,9 @@ async function carregarDadosDoBanco(){
   if(matriculas.length) marcarOk('mat',matriculas.length);
   baseGeral = await supa.getBaseGeral();
   if(baseGeral.length) marcarOk('basegeral',baseGeral.length);
+  pastaPropostas = await supa.getPastaPropostas();
+  if(pastaPropostas.length) marcarOk('pasta',pastaPropostas.length);
+  await buscarPlanilhaConferencia(); // se houver planilha configurada, ela substitui a lista manual
   // Seletivos e mapa de nomes do Supabase
   const cfgSel = await supa.getConfig('seletivos');
   if(cfgSel) seletivos = cfgSel;
@@ -1224,6 +1244,112 @@ function getPropostaPorNome(nome){
   return r?r.proposta:null;
 }
 
+// ── Importa a lista de arquivos da pasta de propostas físicas ──
+// ── Busca a lista de conferência direto de uma Planilha do Google publicada como CSV ──
+// (a pessoa que confere o grupo de WhatsApp mantém essa planilha viva; o sistema busca sozinho)
+async function buscarPlanilhaConferencia(){
+  const url = await supa.getConfig('planilha_conferencia_url');
+  if(!url){
+    document.getElementById('ok-pasta')?.style && (document.getElementById('ok-pasta').style.display='none');
+    return;
+  }
+  try{
+    const resposta = await fetch(url, {cache:'no-store'});
+    if(!resposta.ok) throw new Error('Não foi possível acessar a planilha (verifique se está publicada corretamente)');
+    const texto = await resposta.text();
+    const linhas = parseCSVCompleto(texto, ','); // planilhas do Google exportam em CSV separado por vírgula
+    if(!linhas.length) return;
+
+    const header = linhas[0].map(h=>h.trim().toLowerCase());
+    const idxAluno = header.findIndex(h=>h.includes('aluno'));
+    const idxMatric = header.findIndex(h=>h.includes('matricul'));
+    const idxData = header.findIndex(h=>h.includes('data'));
+
+    const itens = linhas.slice(1).map(cols=>{
+      const nomeAluno = (idxAluno>=0 ? cols[idxAluno] : cols[0])?.trim()||'';
+      const nomeMatriculador = (idxMatric>=0 ? cols[idxMatric] : cols[1])?.trim()||'';
+      const data = (idxData>=0 ? cols[idxData] : cols[2])?.trim()||'';
+      return {original: `${nomeAluno} - ${nomeMatriculador}`, nomeAluno, nomeMatriculador, caminho: data};
+    }).filter(i=>i.nomeAluno);
+
+    pastaPropostas = itens;
+    const okEl = document.getElementById('ok-pasta');
+    if(okEl){ okEl.style.display='block'; okEl.textContent = `🔗 ${itens.length} (planilha)`; }
+    document.getElementById('iz-pasta')?.classList.add('loaded');
+  }catch(err){
+    console.error('Erro ao buscar planilha de conferência:', err);
+    const okEl = document.getElementById('ok-pasta');
+    if(okEl){ okEl.style.display='block'; okEl.textContent = '⚠️ Falha ao buscar planilha'; okEl.style.color='#dc2626'; }
+  }
+}
+
+async function lerPastaPropostas(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=async e=>{
+    const texto = decodeSmart(e.target.result);
+    const linhas = texto.split('\n').map(l=>l.trim()).filter(Boolean);
+
+    const itens = linhas.map(linhaOriginal=>{
+      // Se vier com caminho (ex: Julho/Centro I/Maria Silva - Ana Costa.pdf), separa o caminho do nome do arquivo
+      const segmentos = linhaOriginal.split('/').map(s=>s.trim()).filter(Boolean);
+      const nomeArquivo = segmentos[segmentos.length-1] || linhaOriginal;
+      const caminho = segmentos.slice(0,-1).join(' / ');
+      const semExtensao = nomeArquivo.replace(/\.(pdf|jpg|jpeg|png|webp|heic)$/i, '');
+      const partes = semExtensao.split(' - ');
+      return {
+        original: linhaOriginal,
+        nomeAluno: (partes[0]||'').trim(),
+        nomeMatriculador: (partes[1]||'').trim(),
+        caminho
+      };
+    }).filter(i=>i.nomeAluno);
+
+    marcarOk('pasta', itens.length+' (salvando...)');
+    const ok = await supa.salvarPastaPropostas(itens);
+    const confere = await supa.getPastaPropostas();
+    if(!ok || confere.length < itens.length){
+      const diferenca = itens.length - confere.length;
+      console.error(`DIAGNÓSTICO IMPORTAÇÃO PASTA PROPOSTAS: esperado=${itens.length} | encontrado=${confere.length} | diferença=${diferenca} | ok=${ok}`);
+      document.getElementById('iz-pasta').style.borderColor='#dc2626';
+      alert(`⚠️ Divergência na importação da lista da pasta:\n\nArquivo enviado: ${itens.length} registros\nSalvos no banco: ${confere.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados. Tire um print e envie ao suporte.`);
+    }
+    pastaPropostas = confere;
+    marcarOk('pasta', pastaPropostas.length);
+    renderTudo();
+    if(document.getElementById('panel-conversao').classList.contains('active')) renderConversao();
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function renderPastaPropostas(){
+  const semProposta = pastaPropostas.filter(a => a.nomeAluno && !getPropostaPorNome(a.nomeAluno));
+  const comProposta = pastaPropostas.filter(a => a.nomeAluno && getPropostaPorNome(a.nomeAluno));
+
+  document.getElementById('conv-pasta-badge').textContent = semProposta.length||'';
+
+  if(!pastaPropostas.length){
+    document.getElementById('conv-pasta-resultado').innerHTML = '<div class="empty">Configure a planilha de conferência em Configurações → Fontes de Dados.</div>';
+    return;
+  }
+
+  let html = `<div style="font-size:12px;color:#7d7364;margin-bottom:10px">
+    ${pastaPropostas.length} arquivo(s) na pasta · <strong style="color:#16a34a">${comProposta.length} já cadastrado(s)</strong> · <strong style="color:#dc2626">${semProposta.length} sem proposta digital</strong>
+  </div>`;
+
+  html += semProposta.length ? semProposta.map(a=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <span style="color:#dc2626">📁</span>
+      <div style="flex:1">
+        <div style="font-weight:600;color:#2b2620">${a.nomeAluno}</div>
+        <div style="font-size:11px;color:#948a7c">Matriculador: ${a.nomeMatriculador||'—'}${a.caminho?' · '+a.caminho:''}</div>
+      </div>
+      <span style="font-size:10px;color:#dc2626">cadastrar proposta</span>
+    </div>`).join('') : '<div class="empty" style="color:#16a34a">✓ Todos os arquivos da pasta já têm proposta cadastrada</div>';
+
+  document.getElementById('conv-pasta-resultado').innerHTML = html;
+}
+
 function popularFiltrosConversao(){
   const unidades=[...new Set(matriculas.map(m=>m['Filial']).filter(Boolean))].sort();
   const selU=document.getElementById('conv-unidade');
@@ -1270,6 +1396,7 @@ function getMatriculasFiltradas(ignorarMatriculador){
 async function renderConversao(){
   if(!todasPropostasHistorico.length) todasPropostasHistorico = await supa.getTodasPropostas();
   popularFiltrosConversao();
+  renderPastaPropostas();
 
   const unidadeSel=document.getElementById('conv-unidade')?.value||'';
   let totvsMatriculados=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
