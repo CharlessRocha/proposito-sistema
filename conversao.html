@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversão — Propósito</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  *{transition:background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease, box-shadow .18s ease}
+  body{font-family:'Inter',system-ui,sans-serif;background:#faf8f4;color:#2b2620;min-height:100vh}
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{outline:2px solid #b8860b;outline-offset:2px}
+
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#ffffff;border-bottom:1px solid #e8e0d0;position:sticky;top:0;z-index:50}
+  .nav-logo{color:#b8860b;font-size:14px;font-weight:700}
+  .nav-modulo{font-size:12px;color:#7d7364;background:#f5f1e8;padding:3px 10px;border-radius:20px;border:1px solid #e8e0d0}
+  .nav-back{font-size:12px;color:#7d7364;background:none;border:1px solid #e8e0d0;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit}
+  .nav-back:hover{color:#b8860b;border-color:#b8860b}
+  .main{max-width:1000px;margin:0 auto;padding:1.5rem 1rem 4rem}
+
+  .id-screen{display:flex;flex-direction:column;align-items:center;padding:60px 16px;gap:16px;text-align:center}
+  .id-titulo{font-size:20px;font-weight:700;color:#2b2620}
+  .id-sub{font-size:13px;color:#7d7364;max-width:340px}
+  .id-custom{display:flex;gap:8px;width:100%;max-width:380px;margin-top:8px}
+  .id-custom input{flex:1;font-size:14px;padding:12px 14px;border-radius:8px;border:1px solid #e8e0d0;background:#ffffff;color:#2b2620;font-family:inherit}
+  .id-custom input:focus{outline:none;border-color:#b8860b}
+  .id-custom button{padding:12px 22px;border-radius:8px;border:none;background:#2b2620;color:#faf8f4;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .id-custom button:hover{background:#b8860b}
+
+  .page-title{font-size:22px;font-weight:700;color:#2b2620;margin-bottom:4px}
+  .page-sub{font-size:13px;color:#7d7364;margin-bottom:18px}
+
+  .aviso{border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.6}
+  .aviso.azul{background:#e9f3ff;border:1px solid #bfdcfa;color:#1d4ed8}
+  .aviso.dourado{background:#fff6e0;border:1px solid #f0dca0;color:#8a6d1a}
+
+  .card{background:#ffffff;border-radius:12px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  .card-head{padding:12px 16px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .card-title{font-size:13px;font-weight:600;color:#2b2620}
+  .card-body{padding:0}
+
+  .destaque-box{background:#fff8e6;border:1.5px solid #F5C842;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+  .destaque-nome{font-size:15px;font-weight:700;color:#2b2620}
+  .destaque-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .destaque-item{text-align:center}
+  .destaque-val{font-size:22px;font-weight:700;color:#b8860b}
+  .destaque-lbl{font-size:10px;color:#7d7364;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+
+  .tbl-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:10px 16px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;font-size:10px;font-weight:600;color:#7d7364;text-transform:uppercase;letter-spacing:.4px}
+  .tbl-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:12px 16px;border-bottom:1px solid #e8e0d0;align-items:center;cursor:pointer;font-size:13px}
+  .tbl-row:last-child{border-bottom:none}
+  .tbl-row:hover{background:#f7f3ea}
+  .tbl-row.eu{background:#fff8e6}
+  .tbl-nome{font-weight:600;color:#2b2620;display:flex;align-items:center;gap:6px}
+  .tbl-medalha{font-size:14px}
+  .tbl-val{font-weight:600;color:#2b2620}
+  .tbl-pct{font-weight:700}
+  .tbl-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:6px}
+  .badge-validado{background:#eafaf0;color:#16a34a}
+  .badge-pendente{background:#fff6e0;color:#d97706}
+
+  .detalhe-painel{display:none;background:#faf8f4;border-top:1px solid #e8e0d0;padding:12px 16px}
+  .detalhe-painel.aberto{display:block}
+  .detalhe-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px}
+  .detalhe-item:last-child{border-bottom:none}
+  .detalhe-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;flex-shrink:0}
+  .status-matriculado{background:#eafaf0;color:#16a34a}
+  .status-pendente{background:#f5f1e8;color:#948a7c}
+  .detalhe-nome{flex:1;font-weight:500;color:#2b2620}
+  .detalhe-tel{font-size:11px;color:#2563eb;flex-shrink:0}
+
+  .empty{padding:24px;text-align:center;font-size:13px;color:#a89e8f}
+
+  .report-form textarea{width:100%;font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit;resize:vertical;min-height:80px;margin-bottom:8px}
+  .report-form input{width:100%;font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit;margin-bottom:8px}
+  .report-form button{padding:10px 20px;border-radius:8px;border:none;background:#2b2620;color:#faf8f4;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit}
+  .report-form button:hover{background:#b8860b}
+  .report-ok{font-size:12px;color:#16a34a;margin-top:8px;display:none}
+
+  .trocar-btn{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #e8e0d0;background:transparent;color:#7d7364;cursor:pointer;font-family:inherit}
+  .trocar-btn:hover{color:#b8860b;border-color:#b8860b}
+  .loading{text-align:center;padding:32px;color:#a89e8f;font-size:13px}
+
+  #auth-check{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#faf8f4;z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+</style>
+</head>
+<body>
+<div id="auth-check">
+  <div style="font-size:32px">🔒</div>
+  <div style="color:#2b2620;font-size:16px;font-weight:600">Acesso restrito</div>
+  <a href="index.html" style="margin-top:8px;padding:10px 20px;background:#2b2620;color:#faf8f4;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">Ir para o menu</a>
+</div>
+
+<nav class="nav">
+  <div class="nav-logo">🎯 Propósito</div>
+  <span class="nav-modulo">🚀 Conversão</span>
+  <button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+</nav>
+
+<div class="main">
+  <div id="id-wrap">
+    <div class="id-screen">
+      <div style="font-size:36px">🎯</div>
+      <div class="id-titulo">Qual é o seu nome?</div>
+      <div class="id-sub">Digite seu nome como matriculador para ver sua conversão e a de toda a equipe.</div>
+      <div class="id-custom">
+        <input type="text" id="nome-input" placeholder="Seu nome completo..." onkeydown="if(event.key==='Enter')entrar()">
+        <button type="button" onclick="entrar()">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="op-wrap" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div>
+        <div class="page-title">Conversão da equipe</div>
+        <div class="page-sub">Acompanhe suas entrevistas, matrículas e sua taxa de conversão</div>
+      </div>
+      <button class="trocar-btn" type="button" onclick="trocar()">↺ Trocar nome</button>
+    </div>
+
+    <div class="aviso azul">
+      ℹ️ <div><strong>Sobre a comissão:</strong> o pagamento considera apenas matrículas efetivamente baixadas no sistema acadêmico (TOTVS). Este relatório mostra somente matrículas já confirmadas no sistema — pode haver casos em processo que ainda não aparecem aqui.</div>
+    </div>
+    <div class="aviso dourado">
+      🗓️ <div><strong>Atualização semanal:</strong> os números de propostas são atualizados semanalmente. Se você acredita ter cadastrado mais ou menos propostas do que o mostrado aqui, é normal — aguarde a próxima atualização ou use o formulário de report abaixo.</div>
+    </div>
+
+    <div id="destaque-eu"></div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">📋 Ranking de conversão — equipe completa</span>
+        <span style="font-size:10px;color:#a89e8f">Top 5 exige 50+ entrevistas</span>
+      </div>
+      <div class="card-body">
+        <div class="tbl-header"><span>Matriculador</span><span>Entrevistas</span><span>Matrículas</span><span>Conversão</span></div>
+        <div id="ranking-lista"><div class="loading">⏳ Carregando dados...</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-title">📨 Reportar algo que pode estar errado</span></div>
+      <div class="card-body" style="padding:16px">
+        <div class="report-form">
+          <input type="text" id="report-aluno" placeholder="Nome do aluno relacionado (opcional)">
+          <textarea id="report-msg" placeholder="Descreva o que você acha que está errado... Ex: 'Matriculei o aluno João Silva mas não aparece na minha lista'"></textarea>
+          <button type="button" onclick="enviarReport()">Enviar para o Gerente</button>
+          <div class="report-ok" id="report-ok">✓ Enviado! O gerente vai avaliar e você pode acompanhar a resposta aqui.</div>
+        </div>
+        <div id="meus-reports" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js?v=1787845475"></script>
+<script>
+if(sessionStorage.getItem('acesso_conversao')!=='1'){document.getElementById('auth-check').style.display='flex';}
+
+let usuario='', leads=[], propostas=[], matriculas=[], atividades=[], mapaMatriculadores=[];
+
+function normalizarNome(s){
+  return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=[];
+  for(let i=0;i<=m;i++){dp.push([i]);}
+  for(let j=1;j<=n;j++){dp[0][j]=j;}
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+function similaridadeNomes(a,b){
+  const na=normalizarNome(a), nb=normalizarNome(b);
+  if(!na||!nb) return 0;
+  if(na===nb) return 1;
+  const dist=levenshtein(na,nb);
+  const maxLen=Math.max(na.length,nb.length);
+  return 1-(dist/maxLen);
+}
+const LIMIAR_MATCH=0.84;
+function encontrarPropostaComScore(nome){
+  if(!nome) return null;
+  let melhor=null, melhorScore=0;
+  propostas.forEach(p=>{
+    const score=similaridadeNomes(nome, p['Aluno']);
+    if(score>melhorScore){melhorScore=score;melhor=p;}
+  });
+  if(!melhor||melhorScore<LIMIAR_MATCH) return null;
+  return {proposta:melhor, score:melhorScore, exata: melhorScore>=0.999};
+}
+function getPropostaPorNome(nome){
+  const r=encontrarPropostaComScore(nome);
+  return r?r.proposta:null;
+}
+function nomeCanonicoMatriculador(nome){
+  if(!nome) return nome;
+  const nomeL=nome.toLowerCase().trim();
+  for(const grupo of mapaMatriculadores){
+    if(!grupo.canonico||!grupo.variantes) continue;
+    const variantes=grupo.variantes.split(',').map(v=>v.toLowerCase().trim());
+    if(variantes.includes(nomeL)||grupo.canonico.toLowerCase().trim()===nomeL){
+      return grupo.canonico;
+    }
+  }
+  return nome;
+}
+function getTelefonePorNome(nome){
+  if(!nome) return null;
+  let melhor=null, melhorScore=0;
+  atividades.forEach(a=>{
+    const score=similaridadeNomes(nome, a['Contato']);
+    if(score>melhorScore){melhorScore=score;melhor=a;}
+  });
+  if(!melhor||melhorScore<LIMIAR_MATCH) return null;
+  const tel = melhor['Telefone'];
+  return (tel && tel!=='- - -') ? tel : null;
+}
+
+function entrar(){
+  const nome = document.getElementById('nome-input').value.trim();
+  if(!nome){alert('Digite seu nome para continuar');return;}
+  usuario = nome;
+  document.getElementById('id-wrap').style.display='none';
+  document.getElementById('op-wrap').style.display='block';
+  carregarDados();
+}
+function trocar(){
+  usuario='';
+  document.getElementById('op-wrap').style.display='none';
+  document.getElementById('id-wrap').style.display='block';
+  document.getElementById('nome-input').value='';
+}
+
+async function carregarDados(){
+  leads = await supa.getLeads();
+  propostas = await supa.getTodasPropostas();
+  matriculas = await supa.getMatriculas();
+  atividades = await supa.getAtividades();
+  mapaMatriculadores = await supa.getConfig('matriculadores') || [];
+  renderTudo();
+}
+
+let ranking = [];
+
+function calcularRanking(){
+  const propostasPorPessoa = {};
+  propostas.forEach(p=>{
+    const nome = nomeCanonicoMatriculador(p['Cadastrado Por']);
+    if(!nome) return;
+    if(!propostasPorPessoa[nome]) propostasPorPessoa[nome] = new Set();
+    propostasPorPessoa[nome].add(p['COD. Inscrição']||p['Aluno']);
+  });
+
+  const matriculadosTotvs = matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
+  const alunosMatriculadosPorPessoa = {};
+  matriculadosTotvs.forEach(m=>{
+    const r = encontrarPropostaComScore(m['Nome']);
+    if(!r) return;
+    const nome = nomeCanonicoMatriculador(r.proposta['Cadastrado Por']);
+    if(!nome) return;
+    if(!alunosMatriculadosPorPessoa[nome]) alunosMatriculadosPorPessoa[nome] = new Set();
+    alunosMatriculadosPorPessoa[nome].add(normalizarNome(m['Nome']));
+  });
+  // Também credita quem está com Etapa=Matrícula no Rubeus, mesma lógica do painel do gerente
+  leads.filter(l=>l['Etapa']==='Matrícula').forEach(l=>{
+    const r = encontrarPropostaComScore(l['Nome da pessoa']);
+    if(!r) return;
+    const nome = nomeCanonicoMatriculador(r.proposta['Cadastrado Por']);
+    if(!nome) return;
+    if(!alunosMatriculadosPorPessoa[nome]) alunosMatriculadosPorPessoa[nome] = new Set();
+    alunosMatriculadosPorPessoa[nome].add(normalizarNome(l['Nome da pessoa']));
+  });
+
+  const todosNomes = new Set([...Object.keys(propostasPorPessoa), ...Object.keys(alunosMatriculadosPorPessoa)]);
+  return [...todosNomes].map(nome=>{
+    const entrevistas = propostasPorPessoa[nome]?.size||0;
+    const matriculasQtd = alunosMatriculadosPorPessoa[nome]?.size||0;
+    const conversao = entrevistas>0 ? (matriculasQtd/entrevistas*100) : 0;
+    return {nome, entrevistas, matriculas: matriculasQtd, conversao, validado: entrevistas>=50};
+  }).sort((a,b)=> b.conversao-a.conversao || b.matriculas-a.matriculas);
+}
+
+function listaAlunosDoMatriculador(nomeMatriculador){
+  // Todas as propostas cadastradas por essa pessoa (entrevistados)
+  const minhasPropostas = propostas.filter(p=>nomeCanonicoMatriculador(p['Cadastrado Por'])===nomeMatriculador);
+  return minhasPropostas.map(p=>{
+    const matriculado = matriculas.some(m=>m['StatusMatricula']==='Matriculado' && similaridadeNomes(m['Nome'],p['Aluno'])>=LIMIAR_MATCH)
+      || leads.some(l=>l['Etapa']==='Matrícula' && similaridadeNomes(l['Nome da pessoa'],p['Aluno'])>=LIMIAR_MATCH);
+    const telefone = getTelefonePorNome(p['Aluno']);
+    return {nome: p['Aluno'], matriculado, telefone};
+  }).sort((a,b)=> (a.matriculado===b.matriculado)?0:(a.matriculado?1:-1));
+}
+
+function renderTudo(){
+  ranking = calcularRanking();
+  renderDestaque();
+  renderRanking();
+  renderMeusReports();
+}
+
+function renderDestaque(){
+  const nomeCanon = nomeCanonicoMatriculador(usuario);
+  const meu = ranking.find(r=>similaridadeNomes(r.nome, nomeCanon)>=LIMIAR_MATCH);
+  const el = document.getElementById('destaque-eu');
+  if(!meu){
+    el.innerHTML = `<div class="destaque-box"><div class="destaque-nome">Olá, ${usuario}!</div><div style="font-size:12px;color:#7d7364;margin-top:6px">Ainda não encontramos propostas cadastradas com esse nome exato. Se você já cadastrou propostas, confira se o nome bate com o usado no sistema de admissões.</div></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="destaque-box">
+      <div class="destaque-nome">👋 Olá, ${meu.nome}!</div>
+      <div class="destaque-grid">
+        <div class="destaque-item"><div class="destaque-val">${meu.entrevistas}</div><div class="destaque-lbl">Entrevistas</div></div>
+        <div class="destaque-item"><div class="destaque-val">${meu.matriculas}</div><div class="destaque-lbl">Matrículas</div></div>
+        <div class="destaque-item"><div class="destaque-val">${meu.conversao.toFixed(1)}%</div><div class="destaque-lbl">Conversão</div></div>
+      </div>
+    </div>`;
+}
+
+let expandido = null;
+
+function renderRanking(){
+  const medalhas = {0:'🥇',1:'🥈',2:'🥉'};
+  const nomeCanon = nomeCanonicoMatriculador(usuario);
+
+  if(!ranking.length){
+    document.getElementById('ranking-lista').innerHTML = '<div class="empty">Nenhum dado de conversão disponível ainda.</div>';
+    return;
+  }
+
+  document.getElementById('ranking-lista').innerHTML = ranking.map((r,i)=>{
+    const isEu = similaridadeNomes(r.nome, nomeCanon) >= LIMIAR_MATCH;
+    const isTop5 = i<5 && r.validado;
+    const aberto = expandido === r.nome;
+    return `
+    <div>
+      <div class="tbl-row ${isEu?'eu':''}" onclick="toggleExpandir('${r.nome.replace(/'/g,"\\'")}')">
+        <span class="tbl-nome">${medalhas[i]?`<span class="tbl-medalha">${medalhas[i]}</span>`:''}${r.nome}${isTop5?`<span class="tbl-badge badge-validado">TOP 5</span>`:(r.entrevistas>0&&r.entrevistas<50?`<span class="tbl-badge badge-pendente">${r.entrevistas}/50</span>`:'')}</span>
+        <span class="tbl-val">${r.entrevistas}</span>
+        <span class="tbl-val">${r.matriculas}</span>
+        <span class="tbl-pct" style="color:${r.conversao>=15?'#16a34a':r.conversao>=5?'#d97706':'#a89e8f'}">${r.conversao.toFixed(1)}%</span>
+      </div>
+      <div class="detalhe-painel ${aberto?'aberto':''}" id="detalhe-${r.nome.replace(/\W/g,'_')}">
+        ${aberto ? renderDetalheAlunos(r.nome) : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDetalheAlunos(nomeMatriculador){
+  const alunos = listaAlunosDoMatriculador(nomeMatriculador);
+  if(!alunos.length) return '<div class="empty">Nenhum aluno encontrado</div>';
+  return alunos.map(a=>`
+    <div class="detalhe-item">
+      <span class="detalhe-status ${a.matriculado?'status-matriculado':'status-pendente'}">${a.matriculado?'✓ Matriculado':'Aguardando'}</span>
+      <span class="detalhe-nome">${a.nome}</span>
+      ${a.telefone?`<a href="https://wa.me/55${a.telefone.replace(/\D/g,'')}" target="_blank" class="detalhe-tel">📞 ${a.telefone}</a>`:'<span style="font-size:11px;color:#a89e8f">sem telefone</span>'}
+    </div>`).join('');
+}
+
+function toggleExpandir(nome){
+  expandido = expandido===nome ? null : nome;
+  renderRanking();
+}
+
+async function enviarReport(){
+  const aluno = document.getElementById('report-aluno').value.trim();
+  const msg = document.getElementById('report-msg').value.trim();
+  if(!msg){alert('Escreva a mensagem antes de enviar.');return;}
+  await supa.enviarReport(usuario, aluno||null, msg);
+  document.getElementById('report-aluno').value='';
+  document.getElementById('report-msg').value='';
+  const ok = document.getElementById('report-ok');
+  ok.style.display='block';
+  setTimeout(()=>ok.style.display='none', 4000);
+  renderMeusReports();
+}
+
+async function renderMeusReports(){
+  const todos = await supa.getReports();
+  const meus = todos.filter(r=>similaridadeNomes(r.matriculador, usuario)>=LIMIAR_MATCH);
+  if(!meus.length){ document.getElementById('meus-reports').innerHTML=''; return; }
+  document.getElementById('meus-reports').innerHTML = `
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:#948a7c;margin-bottom:8px">Seus reports anteriores</div>
+    ${meus.map(r=>`
+      <div style="padding:10px 0;border-top:1px solid #e8e0d0;font-size:12px">
+        <div style="color:#2b2620">${r.mensagem}</div>
+        ${r.aluno_relacionado?`<div style="font-size:11px;color:#7d7364;margin-top:2px">Aluno: ${r.aluno_relacionado}</div>`:''}
+        <div style="margin-top:6px">
+          <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;${r.status==='avaliado'?'background:#eafaf0;color:#16a34a':'background:#fff6e0;color:#d97706'}">${r.status==='avaliado'?'✓ Avaliado':'⏳ Aguardando avaliação'}</span>
+        </div>
+        ${r.resposta_gerente?`<div style="background:#f5f1e8;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px;color:#2b2620"><strong>Resposta do gerente:</strong> ${r.resposta_gerente}</div>`:''}
+      </div>`).join('')}
+  `;
+}
+</script>
+</body>
+</html>

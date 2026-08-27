@@ -212,7 +212,7 @@
   <div class="sidebar-logo">Propósito</div>
   <div class="sidebar-sub">Sistema Comercial</div>
   <div class="sidebar-nav">
-    <a href="gerente.html" class="sidebar-link ativo"><span class="ic">🏠</span>Painel do Gerente</a><a href="cdr.html" class="sidebar-link"><span class="ic">🎧</span>CDR / Inside Sales</a><a href="closer.html" class="sidebar-link"><span class="ic">🤝</span>Closer</a><a href="entrevistas.html" class="sidebar-link"><span class="ic">📋</span>Entrevistas</a><a href="playbook.html" class="sidebar-link"><span class="ic">✅</span>Playbook</a><a href="matriculador.html" class="sidebar-link"><span class="ic">📄</span>Matriculador</a><a href="config.html" class="sidebar-link"><span class="ic">⚙️</span>Configurações</a>
+    <a href="gerente.html" class="sidebar-link ativo"><span class="ic">🏠</span>Painel do Gerente</a><a href="cdr.html" class="sidebar-link"><span class="ic">🎧</span>CDR / Inside Sales</a><a href="closer.html" class="sidebar-link"><span class="ic">🤝</span>Closer</a><a href="entrevistas.html" class="sidebar-link"><span class="ic">📋</span>Entrevistas</a><a href="playbook.html" class="sidebar-link"><span class="ic">✅</span>Playbook</a><a href="matriculador.html" class="sidebar-link"><span class="ic">📄</span>Matriculador</a><a href="conversao.html" class="sidebar-link"><span class="ic">🚀</span>Conversão</a><a href="config.html" class="sidebar-link"><span class="ic">⚙️</span>Configurações</a>
   </div>
   <div class="sidebar-foot">Processo Seletivo<br>2027</div>
 </nav>
@@ -228,7 +228,7 @@
 <nav class="nav">
   <div class="nav-logo">🎯 Propósito</div>
   <span class="nav-modulo">🏠 Painel do Gerente</span>
-  <select class="nav-jump" onchange="if(this.value)window.location.href=this.value"><option value="">🔀 Outros módulos...</option><option value="cdr.html">🎧 CDR / Inside Sales</option><option value="closer.html">🤝 Closer</option><option value="entrevistas.html">📋 Entrevistas</option><option value="playbook.html">✅ Playbook</option><option value="matriculador.html">📄 Guia do Matriculador</option><option value="config.html">⚙️ Configurações</option></select><button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
+  <select class="nav-jump" onchange="if(this.value)window.location.href=this.value"><option value="">🔀 Outros módulos...</option><option value="cdr.html">🎧 CDR / Inside Sales</option><option value="closer.html">🤝 Closer</option><option value="entrevistas.html">📋 Entrevistas</option><option value="playbook.html">✅ Playbook</option><option value="matriculador.html">📄 Guia do Matriculador</option><option value="conversao.html">🚀 Conversão</option><option value="config.html">⚙️ Configurações</option></select><button class="nav-back" onclick="window.location.href='index.html'">← Menu</button>
 </nav>
 
 <div class="main">
@@ -355,6 +355,11 @@
 
   <!-- CONVERSÃO -->
   <div class="panel" id="panel-conversao">
+    <div class="card" style="margin-bottom:12px;border:1px solid #b8860b">
+      <div class="card-head" style="background:#fff8e6"><span class="card-title">📨 Reports dos matriculadores</span><span id="reports-badge" style="font-size:10px;background:#fff6e0;color:#d97706;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-body"><div id="reports-lista"><div class="loading">⏳ Carregando...</div></div></div>
+    </div>
+
     <div class="card" style="margin-bottom:12px">
       <div class="card-head"><span class="card-title">🎯 Filtros</span></div>
       <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
@@ -483,7 +488,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1787749365"></script>
+<script src="supabase.js?v=1787845475"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -744,8 +749,10 @@ async function carregarDadosDoBanco(){
 async function atualizarDados(){
   const btn=document.getElementById('btn-atualizar');
   btn.disabled=true; btn.textContent='🔄 Atualizando...';
+  todasPropostasHistorico = []; // força releitura completa das propostas na Conversão
   await carregarDadosDoBanco();
   renderTudo();
+  if(document.getElementById('panel-conversao')?.classList.contains('active')) await renderConversao();
   btn.textContent='✓ Atualizado!';
   setTimeout(()=>{btn.textContent='🔄 Atualizar dados';btn.disabled=false;}, 1800);
 }
@@ -1322,6 +1329,42 @@ async function lerPastaPropostas(inp){
   r.readAsArrayBuffer(f);
 }
 
+// ── Reports enviados pelos matriculadores no módulo de Conversão ──
+async function renderReportsMatriculadores(){
+  const reports = await supa.getReports();
+  const pendentes = reports.filter(r=>r.status!=='avaliado');
+  document.getElementById('reports-badge').textContent = pendentes.length||'';
+
+  if(!reports.length){
+    document.getElementById('reports-lista').innerHTML = '<div class="empty">Nenhum report enviado ainda.</div>';
+    return;
+  }
+
+  document.getElementById('reports-lista').innerHTML = reports.map(r=>`
+    <div style="padding:10px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div style="font-weight:600;color:#2b2620">${r.matriculador}</div>
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;${r.status==='avaliado'?'background:#eafaf0;color:#16a34a':'background:#fff6e0;color:#d97706'}">${r.status==='avaliado'?'✓ Avaliado':'⏳ Pendente'}</span>
+      </div>
+      ${r.aluno_relacionado?`<div style="font-size:11px;color:#7d7364;margin-top:2px">Aluno: ${r.aluno_relacionado}</div>`:''}
+      <div style="margin-top:4px;color:#3d362c">${r.mensagem}</div>
+      <div style="font-size:10px;color:#a89e8f;margin-top:2px">${new Date(r.criado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+      ${r.resposta_gerente?`<div style="background:#f5f1e8;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px"><strong>Sua resposta:</strong> ${r.resposta_gerente}</div>`:`
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input type="text" id="resposta-${r.id}" placeholder="Escreva sua resposta..." style="flex:1;font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid #e8e0d0;background:#fff;color:#2b2620;font-family:inherit">
+          <button type="button" onclick="responderReportMatriculador(${r.id})" style="font-size:12px;padding:6px 14px;border-radius:6px;border:none;background:#2b2620;color:#faf8f4;cursor:pointer;font-family:inherit">Responder</button>
+        </div>`}
+    </div>`).join('');
+}
+
+async function responderReportMatriculador(id){
+  const campo = document.getElementById('resposta-'+id);
+  const texto = campo.value.trim();
+  if(!texto){alert('Escreva uma resposta antes de enviar.');return;}
+  await supa.responderReport(id, texto);
+  renderReportsMatriculadores();
+}
+
 function renderPastaPropostas(){
   const semProposta = pastaPropostas.filter(a => a.nomeAluno && !getPropostaPorNome(a.nomeAluno));
   const comProposta = pastaPropostas.filter(a => a.nomeAluno && getPropostaPorNome(a.nomeAluno));
@@ -1397,6 +1440,7 @@ async function renderConversao(){
   if(!todasPropostasHistorico.length) todasPropostasHistorico = await supa.getTodasPropostas();
   popularFiltrosConversao();
   renderPastaPropostas();
+  renderReportsMatriculadores();
 
   const unidadeSel=document.getElementById('conv-unidade')?.value||'';
   let totvsMatriculados=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');

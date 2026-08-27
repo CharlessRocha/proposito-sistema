@@ -198,13 +198,14 @@ const supa = {
 
     let todos = [];
     let offset = 0;
-    const tamanhoPagina = 1000;
+    // Pede um valor bem alto — o servidor aplica o próprio teto dele, seja qual for (500, 1000, etc.)
+    // Avançamos exatamente pela quantidade que voltou, então funciona com qualquer teto do servidor.
     while(true){
-      const url = `${base}${separador}limit=${tamanhoPagina}&offset=${offset}`;
+      const url = `${base}${separador}limit=100000&offset=${offset}`;
       const pagina = await this.req('GET', table, null, url) || [];
+      if(pagina.length===0) break; // página vazia = acabou de verdade
       todos = todos.concat(pagina);
-      if(pagina.length < tamanhoPagina) break; // última página — acabou
-      offset += tamanhoPagina;
+      offset += pagina.length;
       if(offset > 200000) break; // proteção contra loop infinito em caso de erro inesperado
     }
 
@@ -317,6 +318,53 @@ const supa = {
   async getBaseGeral() {
     const rows = await this.get('base_geral', '?limit=100000');
     return rows.map(adapt.baseGeral);
+  },
+
+  // ── PASTA DE PROPOSTAS FÍSICAS (lista de nomes de arquivo de uma pasta compartilhada) ──
+  async salvarPastaPropostas(itens) {
+    await this.del('pasta_propostas', 'id=gte.0');
+    if (!itens.length) return true;
+    const rows = itens.map(i => ({
+      nome_arquivo: i.original,
+      nome_aluno: i.nomeAluno,
+      nome_matriculador: i.nomeMatriculador,
+      caminho: i.caminho||''
+    }));
+    return await this.inserirComRetentativa('pasta_propostas', rows);
+  },
+  async getPastaPropostas() {
+    const rows = await this.get('pasta_propostas', '?limit=100000');
+    return rows.map(r => ({
+      original: r.nome_arquivo,
+      nomeAluno: r.nome_aluno,
+      nomeMatriculador: r.nome_matriculador,
+      caminho: r.caminho
+    }));
+  },
+
+  // ── REPORTS DOS MATRICULADORES — feedback livre sobre possíveis erros na conversão ──
+  async enviarReport(matriculador, alunoRelacionado, mensagem) {
+    return await this.insert('reports_matriculador', [{matriculador, aluno_relacionado: alunoRelacionado||null, mensagem, status:'pendente'}]);
+  },
+  async getReports() {
+    return await this.get('reports_matriculador', '?order=criado_em.desc');
+  },
+  async responderReport(id, respostaGerente) {
+    return await this.update('reports_matriculador', {resposta_gerente: respostaGerente, status:'avaliado', respondido_em:new Date().toISOString()}, `id=eq.${id}`);
+  },
+  // ── REPORTS DO MATRICULADOR — feedback sobre possíveis erros na conversão ──
+  async enviarReport(matriculador, alunoRelacionado, mensagem) {
+    return await this.insert('reports_matriculador', {
+      matriculador, aluno_relacionado: alunoRelacionado||null, mensagem, status:'pendente'
+    });
+  },
+  async getReports() {
+    return await this.get('reports_matriculador', '?order=criado_em.desc');
+  },
+  async responderReport(id, resposta) {
+    return await this.update('reports_matriculador', {
+      resposta_gerente: resposta, status:'avaliado', respondido_em: new Date().toISOString()
+    }, `id=eq.${id}`);
   },
 
   // ── PLAYBOOK ──
