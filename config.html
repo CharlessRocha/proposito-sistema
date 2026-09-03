@@ -289,6 +289,14 @@
       <div id="matric-lista"></div>
       <button class="add-row-btn" onclick="addGrupoMatric()">+ Novo grupo de nomes</button>
     </div>
+
+    <div class="section-label" style="margin-top:20px">
+      <span>🔍 Possíveis duplicados encontrados</span>
+      <span style="font-size:11px;color:#948a7c">revise antes de agrupar — nomes parecidos podem ser pessoas diferentes</span>
+    </div>
+    <div class="card">
+      <div id="matric-sugestoes"><div style="padding:16px;font-size:12px;color:#a89e8f">Analisando propostas cadastradas...</div></div>
+    </div>
   </div>
 
   <!-- REMATRÍCULA -->
@@ -429,24 +437,48 @@
   <!-- FONTES DE DADOS -->
   <div class="panel" id="panel-fontes">
     <div style="font-size:12px;color:#7d7364;margin-bottom:12px;line-height:1.6">
-      Visão centralizada de todas as fontes de dados do sistema — o que veio de onde, e quando foi atualizado pela última vez.
+      Todas as importações de arquivo do sistema ficam centralizadas aqui — o que veio de onde, e quando foi atualizado pela última vez.
     </div>
 
     <div class="section-label">
-      <span>Planilha de conferência (WhatsApp → propostas)</span>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span class="saved-msg" id="saved-planilha">✓ Salvo!</span>
-        <button class="save-btn" onclick="salvarPlanilhaConferencia()">Salvar</button>
-      </div>
+      <span>Importar arquivos</span>
     </div>
-    <div class="card">
-      <div style="padding:14px">
-        <label style="font-size:11px;color:#666;display:block;margin-bottom:5px">URL da planilha publicada (File → Compartilhar → Publicar na Web → formato CSV)</label>
-        <input type="text" id="planilha-url" placeholder="https://docs.google.com/spreadsheets/d/e/..../pub?output=csv" style="width:100%;font-size:12px;padding:8px 10px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
-        <div style="font-size:11px;color:#a89e8f;margin-top:8px;line-height:1.6">
-          A planilha deve ter 3 colunas: <strong>Aluno</strong>, <strong>Matriculador</strong> e <strong>Data</strong>. O sistema busca essa planilha sozinho sempre que alguém abrir o painel ou clicar em "Atualizar dados" — sem precisar subir arquivo nenhum.
-        </div>
-      </div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem">
+      <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-reg" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+        <div style="font-size:20px;margin-bottom:4px">👥</div>
+        <div style="font-size:12px;font-weight:500;color:#3d362c">Funil Rubeus Completo</div>
+        <div style="font-size:10px;color:#948a7c;margin-top:2px">Todos os leads e etapas</div>
+        <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-reg"></div>
+        <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'reg')">
+      </label>
+      <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-prop" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+        <div style="font-size:20px;margin-bottom:4px">📄</div>
+        <div style="font-size:12px;font-weight:500;color:#3d362c">Propostas</div>
+        <div style="font-size:10px;color:#948a7c;margin-top:2px">Propostas orçamentárias</div>
+        <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-prop"></div>
+        <input type="file" accept=".xls,.csv" style="display:none" onchange="lerProp(this)">
+      </label>
+      <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-atv" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+        <div style="font-size:20px;margin-bottom:4px">📅</div>
+        <div style="font-size:12px;font-weight:500;color:#3d362c">Atividades-CRM</div>
+        <div style="font-size:10px;color:#948a7c;margin-top:2px">Entrevistas agendadas</div>
+        <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-atv"></div>
+        <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'atv')">
+      </label>
+      <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-mat" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+        <div style="font-size:20px;margin-bottom:4px">🎓</div>
+        <div style="font-size:12px;font-weight:500;color:#3d362c">Matrículas</div>
+        <div style="font-size:10px;color:#948a7c;margin-top:2px">Matrículas efetivadas</div>
+        <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-mat"></div>
+        <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'mat')">
+      </label>
+      <label style="border:1.5px dashed #e8e0d0;border-radius:10px;padding:12px;background:#ffffff;text-align:center;cursor:pointer;display:block;transition:border-color .15s" id="iz-basegeral" onmouseover="this.style.borderColor='#F5C842'" onmouseout="this.style.borderColor=this.classList.contains('loaded')?'#16a34a':'#e8e0d0'">
+        <div style="font-size:20px;margin-bottom:4px">🗂️</div>
+        <div style="font-size:12px;font-weight:500;color:#3d362c">Base Geral</div>
+        <div style="font-size:10px;color:#948a7c;margin-top:2px">Todos os alunos já matriculados</div>
+        <div style="font-size:10px;color:#16a34a;font-weight:500;margin-top:3px;display:none" id="ok-basegeral"></div>
+        <input type="file" accept=".csv" style="display:none" onchange="lerCSV(this,'basegeral')">
+      </label>
     </div>
 
     <div class="section-label" style="margin-top:20px">
@@ -462,7 +494,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1787845475"></script>
+<script src="supabase.js?v=1788453694"></script>
 <script>
 if(sessionStorage.getItem('acesso_config')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -604,6 +636,80 @@ function renderMatric(){
       <input style="flex:2;margin-top:2px" value="${m.variantes||''}" placeholder="Variações encontradas nas propostas, separadas por vírgula" onchange="cfg.matriculadores[${i}].variantes=this.value">
       <button class="del-btn" onclick="cfg.matriculadores.splice(${i},1);renderMatric()">×</button>
     </div>`).join('')||'<div class="empty" style="padding:16px;font-size:12px;color:#9c9280">Nenhum grupo criado ainda</div>';
+  detectarDuplicados();
+}
+
+// ── Detecta possíveis duplicados: nomes que compartilham o primeiro "token" ──
+// (ex: CHRISTIANE / CHRISTIANNE / CHRISTIANNE BARBOSA) mas ainda não foram agrupados
+async function detectarDuplicados(){
+  const el = document.getElementById('matric-sugestoes');
+  const props = await supa.get('propostas', '');
+  const nomesDistintos = [...new Set(props.map(p=>p.cadastrado_por).filter(Boolean))];
+
+  // Nomes já cobertos por algum grupo manual — não sugerir de novo
+  const jaAgrupados = new Set();
+  cfg.matriculadores.forEach(g=>{
+    if(g.canonico) jaAgrupados.add(g.canonico.toLowerCase().trim());
+    (g.variantes||'').split(',').forEach(v=>jaAgrupados.add(v.toLowerCase().trim()));
+  });
+
+  const naoAgrupados = nomesDistintos.filter(n=>!jaAgrupados.has(n.toLowerCase().trim()));
+
+  function primeiroNome(n){
+    return normalizarNomeMatric(n).split(' ')[0];
+  }
+  function normalizarNomeMatric(n){
+    return (n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  }
+  function levenshteinMatric(a,b){
+    const m=a.length,n=b.length,dp=[];
+    for(let i=0;i<=m;i++)dp.push([i]);
+    for(let j=1;j<=n;j++)dp[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    return dp[m][n];
+  }
+
+  // Agrupa por primeiro nome idêntico ou muito parecido (ex: christiane vs christianne)
+  const grupos = {};
+  naoAgrupados.forEach(nome=>{
+    const pn = primeiroNome(nome);
+    let chaveEncontrada = Object.keys(grupos).find(k=>{
+      const dist = levenshteinMatric(k, pn);
+      return dist<=1; // tolera 1 letra de diferença (christiane/christianne)
+    });
+    if(!chaveEncontrada) chaveEncontrada = pn;
+    if(!grupos[chaveEncontrada]) grupos[chaveEncontrada]=[];
+    grupos[chaveEncontrada].push(nome);
+  });
+
+  const suspeitos = Object.entries(grupos).filter(([,nomes])=>nomes.length>1);
+
+  if(!suspeitos.length){
+    el.innerHTML = '<div class="empty" style="padding:16px;color:#16a34a">✓ Nenhum possível duplicado encontrado no momento</div>';
+    return;
+  }
+
+  el.innerHTML = suspeitos.map(([chave,nomes],i)=>`
+    <div style="padding:12px 14px;border-bottom:1px solid #e8e0d0">
+      <div style="font-size:12px;color:#7d7364;margin-bottom:6px">Podem ser a mesma pessoa (verifique antes de confirmar):</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+        ${nomes.map(n=>`<span style="font-size:12px;background:#fff6e0;color:#8a6d1a;padding:3px 10px;border-radius:20px;font-weight:500">${n}</span>`).join('')}
+      </div>
+      <button type="button" onclick='confirmarAgrupamento(${JSON.stringify(nomes)})' style="font-size:12px;padding:6px 14px;border-radius:6px;border:none;background:#2b2620;color:#faf8f4;cursor:pointer;font-family:inherit">É a mesma pessoa — agrupar</button>
+      <button type="button" onclick="ignorarSugestao(this)" style="font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #e8e0d0;background:transparent;color:#7d7364;cursor:pointer;font-family:inherit;margin-left:6px">São pessoas diferentes</button>
+    </div>`).join('');
+}
+
+function confirmarAgrupamento(nomes){
+  // Usa o nome mais completo (mais longo) como canônico sugerido — o gerente pode editar depois
+  const canonicoSugerido = nomes.reduce((a,b)=>a.length>=b.length?a:b);
+  cfg.matriculadores.push({canonico: canonicoSugerido, variantes: nomes.join(', ')});
+  renderMatric();
+}
+
+function ignorarSugestao(btn){
+  btn.closest('div[style*="border-bottom"]').remove();
 }
 function addGrupoMatric(){cfg.matriculadores.push({canonico:'',variantes:''});renderMatric();}
 async function salvarMatric(){
@@ -718,12 +824,6 @@ function mudarTab(id){
 // ═══════════════════════════════════════════════
 // FONTES DE DADOS — visão centralizada de todas as importações
 // ═══════════════════════════════════════════════
-async function salvarPlanilhaConferencia(){
-  const url = document.getElementById('planilha-url').value.trim();
-  await supa.salvarConfig('planilha_conferencia_url', url);
-  mostrarSalvo('planilha');
-}
-
 const FONTES_INFO = [
   {tabela:'leads', label:'Funil Rubeus Completo'},
   {tabela:'propostas', label:'Propostas'},
@@ -733,9 +833,6 @@ const FONTES_INFO = [
 ];
 
 async function renderFontesDados(){
-  const urlSalva = await supa.getConfig('planilha_conferencia_url');
-  document.getElementById('planilha-url').value = urlSalva || '';
-
   const linhas = await Promise.all(FONTES_INFO.map(async f=>{
     const dados = await supa.get(f.tabela, '');
     const total = dados.length;
@@ -749,12 +846,173 @@ async function renderFontesDados(){
       <span style="font-size:13px;color:#2b2620">${l.label}</span>
       <span style="font-size:13px;font-weight:600;color:${l.total?'#16a34a':'#a89e8f'}">${l.total||'—'}</span>
       <span style="font-size:12px;color:#7d7364">${l.dataFmt}</span>
-    </div>`).join('') + `
-    <div class="item-simples" style="display:grid;grid-template-columns:1.5fr 0.8fr 1.2fr;align-items:center">
-      <span style="font-size:13px;color:#2b2620">🔗 Lista de Conferência</span>
-      <span style="font-size:13px;font-weight:600;color:${urlSalva?'#16a34a':'#a89e8f'}">${urlSalva?'Ativa':'Não configurada'}</span>
-      <span style="font-size:12px;color:#7d7364">Planilha ao vivo</span>
-    </div>`;
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// IMPORTAÇÃO DE ARQUIVOS
+// ═══════════════════════════════════════════════
+function marcarOk(tipo,n){
+  const ok=document.getElementById('ok-'+tipo);
+  if(ok){ok.style.display='block';ok.textContent=`✓ ${n} registros`;}
+  const iz=document.getElementById('iz-'+tipo);
+  if(iz){iz.style.borderColor='#16a34a';iz.style.background='#eafaf0';}
+}
+
+// Detecta e corrige encoding automaticamente — tenta UTF-8, cai para ISO-8859-1 se detectar corrupção
+function decodeSmart(buffer){
+  const utf8=new TextDecoder('utf-8').decode(buffer);
+  const bad=(utf8.match(/\uFFFD/g)||[]).length;
+  if(bad>0){
+    return new TextDecoder('iso-8859-1').decode(buffer);
+  }
+  return utf8;
+}
+
+// Parser de CSV robusto — respeita aspas e campos com o delimitador dentro
+function parseCSVCompleto(texto, delimitador=';'){
+  const linhas=[];
+  let linhaAtual=[], campoAtual='', dentroAspas=false;
+  for(let i=0;i<texto.length;i++){
+    const c=texto[i];
+    if(c==='"'){
+      if(dentroAspas && texto[i+1]==='"'){campoAtual+='"';i++;}
+      else dentroAspas=!dentroAspas;
+    } else if(c===delimitador && !dentroAspas){
+      linhaAtual.push(campoAtual);campoAtual='';
+    } else if((c==='\n'||c==='\r') && !dentroAspas){
+      if(c==='\r'&&texto[i+1]==='\n')i++;
+      linhaAtual.push(campoAtual);campoAtual='';
+      if(linhaAtual.length>1||linhaAtual[0]!=='')linhas.push(linhaAtual);
+      linhaAtual=[];
+    } else {
+      campoAtual+=c;
+    }
+  }
+  if(campoAtual!==''||linhaAtual.length>0){linhaAtual.push(campoAtual);linhas.push(linhaAtual);}
+  return linhas;
+}
+
+async function lerCSV(inp,tipo){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=async e=>{
+    const texto=decodeSmart(e.target.result);
+    const linhasCSV=parseCSVCompleto(texto,';');
+    if(!linhasCSV.length)return;
+    const header=linhasCSV[0].map(h=>h.trim());
+    const rows=linhasCSV.slice(1).map(cols=>{const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;});
+    if(tipo==='reg'){
+      const leads=rows.filter(r=>r['Nome da pessoa']&&r['Nome da pessoa']!='- - -');
+      marcarOk('reg',leads.length+' (salvando...)');
+      const okLeads = await supa.salvarLeads(leads);
+      const confereLeads = await supa.getLeads();
+      if(!okLeads || confereLeads.length < leads.length){
+        const diferenca = leads.length - confereLeads.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO LEADS: esperado=${leads.length} | encontrado no banco=${confereLeads.length} | diferença=${diferenca} | okLeads=${okLeads}`);
+        document.getElementById('iz-reg').style.borderColor='#dc2626';
+        alert(`⚠️ Divergência na importação de leads:\n\nArquivo enviado: ${leads.length} registros\nSalvos no banco: ${confereLeads.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados. Tire um print e envie ao suporte com esses números.`);
+      }
+      marcarOk('reg',confereLeads.length);
+    } else if(tipo==='atv') {
+      const atividades=rows.filter(r=>r['Contato']&&r['Contato']!='- - -');
+      marcarOk('atv',atividades.length+' (salvando...)');
+      const okAtv = await supa.salvarAtividades(atividades);
+      const confereAtv = await supa.getAtividades();
+      if(!okAtv || confereAtv.length < atividades.length){
+        const diferenca = atividades.length - confereAtv.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO ATIVIDADES: esperado=${atividades.length} | encontrado=${confereAtv.length} | diferença=${diferenca} | okAtv=${okAtv}`);
+        document.getElementById('iz-atv').style.borderColor='#dc2626';
+        alert(`⚠️ Divergência na importação de atividades:\n\nArquivo enviado: ${atividades.length} registros\nSalvos no banco: ${confereAtv.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados. Tire um print e envie ao suporte com esses números.`);
+      }
+      marcarOk('atv',confereAtv.length);
+    } else if(tipo==='mat') {
+      // Filtra matrículas de migração: RA precisa começar com 26 ou 27 (coorte atual)
+      const todasMat=rows.filter(r=>r['NOME']&&r['NOME']!='- - -');
+      const raValido=r=>{const ra=(r['RA']||'').toString().trim();return ra.startsWith('26')||ra.startsWith('27');};
+      const matriculas=todasMat.filter(raValido);
+      const excluidasMigracao=todasMat.length-matriculas.length;
+      marcarOk('mat',matriculas.length+' (salvando...)');
+      const okMat = await supa.salvarMatriculas(matriculas);
+      const confereMat = await supa.getMatriculas();
+      if(!okMat || confereMat.length < matriculas.length){
+        const diferenca = matriculas.length - confereMat.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO MATRÍCULAS: esperado=${matriculas.length} | encontrado=${confereMat.length} | diferença=${diferenca} | okMat=${okMat}`);
+        document.getElementById('iz-mat').style.borderColor='#dc2626';
+        alert(`⚠️ Divergência na importação de matrículas:\n\nArquivo enviado: ${matriculas.length} registros\nSalvos no banco: ${confereMat.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados. Tire um print e envie ao suporte com esses números.`);
+      }
+      marcarOk('mat',confereMat.length+(excluidasMigracao?` (${excluidasMigracao} migração excluída)`:''));
+    } else if(tipo==='basegeral') {
+      const baseGeral=rows.filter(r=>r['NOME']&&r['NOME']!='- - -');
+      marcarOk('basegeral',baseGeral.length+' (salvando...)');
+      const okBase = await supa.salvarBaseGeral(baseGeral);
+      const confereBase = await supa.getBaseGeral();
+      if(!okBase || confereBase.length < baseGeral.length){
+        const diferenca = baseGeral.length - confereBase.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO BASE GERAL: esperado=${baseGeral.length} | encontrado=${confereBase.length} | diferença=${diferenca} | okBase=${okBase}`);
+        document.getElementById('iz-basegeral').style.borderColor='#dc2626';
+        alert(`⚠️ Divergência na importação da Base Geral:\n\nArquivo enviado: ${baseGeral.length} registros\nSalvos no banco: ${confereBase.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados. Tire um print e envie ao suporte com esses números.`);
+      }
+      marcarOk('basegeral',confereBase.length);
+    }
+    renderFontesDados();
+  };
+  r.readAsArrayBuffer(f);
+}
+
+async function lerProp(inp){
+  const f=inp.files[0];if(!f)return;
+  marcarOk('prop','lendo arquivo...');
+  const r=new FileReader();
+  r.onload=async e=>{
+    try{
+      const texto=decodeSmart(e.target.result);
+      let linhasProp=[];
+      const doc=(new DOMParser()).parseFromString(texto,'text/html');
+      const trs=[...doc.querySelectorAll('tr')];
+      if(trs.length>=3){
+        const headers=[...trs[1].querySelectorAll('td')].map(td=>td.textContent.trim());
+        linhasProp=trs.slice(2).map(row=>{
+          const cells=[...row.querySelectorAll('td')].map(td=>td.textContent.trim());
+          const obj={};headers.forEach((h,i)=>obj[h]=cells[i]||'');return obj;
+        }).filter(p=>p['Aluno']);
+      }
+      if(!linhasProp.length){
+        const csvRows=parseCSVCompleto(texto,';');
+        if(csvRows.length>=2){
+          const header=csvRows[0].map(h=>h.trim());
+          linhasProp=csvRows.slice(1).map(cols=>{
+            const obj={};header.forEach((h,i)=>obj[h]=(cols[i]||'').trim());return obj;
+          }).filter(p=>p['Aluno']);
+        }
+      }
+      if(!linhasProp.length){
+        marcarOk('prop','');
+        document.getElementById('iz-prop').style.borderColor='#dc2626';
+        alert('Não consegui reconhecer o formato deste arquivo de Propostas.\n\nVerifique se é o arquivo certo exportado do sistema de admissões (formato .xls ou .csv).');
+        return;
+      }
+      let propostas=linhasProp.filter(p=>p['Status']==='ATIVO');
+      if(!propostas.length) propostas=linhasProp;
+      marcarOk('prop',propostas.length+' (salvando...)');
+      const okProp = await supa.salvarPropostas(propostas);
+      const confereProp = await supa.getPropostas();
+      if(!okProp || confereProp.length < propostas.length){
+        const diferenca = propostas.length - confereProp.length;
+        console.error(`DIAGNÓSTICO IMPORTAÇÃO PROPOSTAS: esperado=${propostas.length} | encontrado=${confereProp.length} | diferença=${diferenca} | okProp=${okProp}`);
+        document.getElementById('iz-prop').style.borderColor='#dc2626';
+        alert(`⚠️ Divergência na importação de propostas:\n\nArquivo enviado: ${propostas.length} registros\nSalvos no banco: ${confereProp.length} registros\nFaltaram: ${diferenca}\n\nOs dados encontrados foram carregados. Tire um print e envie ao suporte com esses números.`);
+      }
+      marcarOk('prop',confereProp.length);
+      renderFontesDados();
+    }catch(err){
+      console.error('Erro ao importar propostas:',err);
+      marcarOk('prop','');
+      alert('Erro ao processar o arquivo de Propostas: '+err.message);
+    }
+  };
+  r.onerror=()=>{ alert('Não foi possível ler o arquivo.'); };
+  r.readAsArrayBuffer(f);
 }
 
 // ═══════════════════════════════════════════════
