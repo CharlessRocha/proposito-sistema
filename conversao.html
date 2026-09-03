@@ -119,6 +119,14 @@
       <button class="trocar-btn" type="button" onclick="trocar()">↺ Trocar nome</button>
     </div>
 
+    <div style="background:#fff3d6;border:1.5px solid #F5C842;border-radius:12px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
+      <div style="font-size:28px">🏆</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#2b2620">Regra da premiação — Top 5</div>
+        <div style="font-size:12px;color:#7d7364;margin-top:2px">Só concorre quem tem no mínimo <strong style="color:#b8860b">50 propostas cadastradas</strong>. O ranking é ordenado pela <strong style="color:#b8860b">taxa de conversão</strong>.</div>
+      </div>
+    </div>
+
     <div class="aviso azul">
       ℹ️ <div><strong>Sobre a comissão:</strong> o pagamento considera apenas matrículas efetivamente baixadas no sistema acadêmico (TOTVS). Este relatório mostra somente matrículas já confirmadas no sistema — pode haver casos em processo que ainda não aparecem aqui.</div>
     </div>
@@ -131,11 +139,19 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">📋 Ranking de conversão — equipe completa</span>
-        <span style="font-size:10px;color:#a89e8f">Top 5 exige 50+ entrevistas</span>
+        <span style="font-size:10px;color:#a89e8f">Top 5 exige 50+ propostas</span>
       </div>
       <div class="card-body">
         <div class="tbl-header"><span>Matriculador</span><span>Entrevistas</span><span>Matrículas</span><span>Conversão</span></div>
         <div id="ranking-lista"><div class="loading">⏳ Carregando dados...</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-title" style="color:#dc2626">🔁 Propostas duplicadas</span></div>
+      <div class="card-body">
+        <div style="font-size:11px;color:#7d7364;margin-bottom:10px">O nome do aluno precisa ser único no arquivo de Propostas — se aparecer mais de uma vez, é preciso identificar e corrigir com o gerente.</div>
+        <div id="duplicadas-lista"></div>
       </div>
     </div>
 
@@ -154,7 +170,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1787845475"></script>
+<script src="supabase.js?v=1788479218"></script>
 <script>
 if(sessionStorage.getItem('acesso_conversao')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -289,12 +305,20 @@ function calcularRanking(){
 function listaAlunosDoMatriculador(nomeMatriculador){
   // Todas as propostas cadastradas por essa pessoa (entrevistados)
   const minhasPropostas = propostas.filter(p=>nomeCanonicoMatriculador(p['Cadastrado Por'])===nomeMatriculador);
-  return minhasPropostas.map(p=>{
+  // Deduplica por nome normalizado — evita o mesmo aluno aparecer 2x quando há proposta duplicada na base
+  const porAluno = {};
+  minhasPropostas.forEach(p=>{
+    const chave = normalizarNome(p['Aluno']);
+    if(!chave) return;
     const matriculado = matriculas.some(m=>m['StatusMatricula']==='Matriculado' && similaridadeNomes(m['Nome'],p['Aluno'])>=LIMIAR_MATCH)
       || leads.some(l=>l['Etapa']==='Matrícula' && similaridadeNomes(l['Nome da pessoa'],p['Aluno'])>=LIMIAR_MATCH);
-    const telefone = getTelefonePorNome(p['Aluno']);
-    return {nome: p['Aluno'], matriculado, telefone};
-  }).sort((a,b)=> (a.matriculado===b.matriculado)?0:(a.matriculado?1:-1));
+    // Se essa pessoa já apareceu antes, mantém a versão "matriculado" se alguma das entradas bater
+    if(!porAluno[chave] || (matriculado && !porAluno[chave].matriculado)){
+      const telefone = getTelefonePorNome(p['Aluno']);
+      porAluno[chave] = {nome: p['Aluno'], matriculado, telefone};
+    }
+  });
+  return Object.values(porAluno).sort((a,b)=> (a.matriculado===b.matriculado)?0:(a.matriculado?1:-1));
 }
 
 function renderTudo(){
@@ -302,6 +326,28 @@ function renderTudo(){
   renderDestaque();
   renderRanking();
   renderMeusReports();
+  renderDuplicadas();
+}
+
+// ── Propostas duplicadas — mesmo aluno aparece mais de uma vez ──
+function renderDuplicadas(){
+  const porNome = {};
+  propostas.forEach(p=>{
+    const chave = normalizarNome(p['Aluno']);
+    if(!chave) return;
+    if(!porNome[chave]) porNome[chave]=[];
+    porNome[chave].push(p);
+  });
+  const duplicadas = Object.values(porNome).filter(g=>g.length>1);
+  const el = document.getElementById('duplicadas-lista');
+  if(!el) return;
+  el.innerHTML = duplicadas.length ? duplicadas.map(grupo=>`
+    <div style="padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <div style="font-weight:600;color:#2b2620;margin-bottom:4px">${grupo[0]['Aluno']}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${grupo.map(p=>`<span style="font-size:11px;background:#fdecec;color:#b91c1c;padding:3px 10px;border-radius:20px">${p['Cadastrado Por']||'—'}</span>`).join('')}
+      </div>
+    </div>`).join('') : '<div class="empty" style="color:#16a34a">✓ Nenhum nome de aluno duplicado</div>';
 }
 
 function renderDestaque(){

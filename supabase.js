@@ -19,6 +19,7 @@ const adapt = {
     'Nome do responsável': l.responsavel||'',
     'Código de Inscrição': l.codigo_inscricao||'',
     'CodigoExterno': l.codigo_externo||'',
+    'Tipo de Escola': l.tipo_escola||'',
     '_id': l.id
   }),
   atividade: a => ({
@@ -94,7 +95,8 @@ const csv2supa = {
     data_criacao: l['Data da criação']||'',
     responsavel: l['Nome do responsável']||'',
     codigo_inscricao: l['Código de Inscrição']||l['Código da Inscrição']||'',
-    codigo_externo: l['Código externo da pessoa']||''
+    codigo_externo: l['Código externo da pessoa']||'',
+    tipo_escola: l['Tipo de Escola']||''
   }),
   atividade: a => ({
     // Mapeamento DIRETO e correto — confirmado após corrigir o parser de CSV
@@ -351,6 +353,17 @@ const supa = {
   },
   async responderReport(id, respostaGerente) {
     return await this.update('reports_matriculador', {resposta_gerente: respostaGerente, status:'avaliado', respondido_em:new Date().toISOString()}, `id=eq.${id}`);
+  },
+
+  // ── RESPONSÁVEL MANUAL POR LEAD — quem está trabalhando aquela etapa, editável pelo gerente ──
+  async salvarResponsavelLead(codigoExterno, responsavel) {
+    return await this.req('POST', 'lead_responsaveis', [{codigo_externo: codigoExterno, responsavel}], '?on_conflict=codigo_externo');
+  },
+  async getResponsaveisLead() {
+    const rows = await this.get('lead_responsaveis', '');
+    const mapa = {};
+    rows.forEach(r=> mapa[r.codigo_externo] = r.responsavel);
+    return mapa;
   },
   // ── REPORTS DO MATRICULADOR — feedback sobre possíveis erros na conversão ──
   async enviarReport(matriculador, alunoRelacionado, mensagem) {

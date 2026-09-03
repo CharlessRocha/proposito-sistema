@@ -129,6 +129,21 @@
   @media(max-width:480px){
     .titulo{font-size:2.1rem}
   }
+
+  /* ═══ Tela de menu (já autenticado) ═══ */
+  .menu-wrap{width:100%;max-width:520px;text-align:center;position:relative;z-index:1;animation:surgir .7s cubic-bezier(.16,1,.3,1)}
+  .menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:2rem}
+  @media(min-width:480px){.menu-grid{grid-template-columns:repeat(3,1fr)}}
+  .menu-card{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:20px 12px;border-radius:12px;border:1px solid #e8e0d0;background:#ffffff;
+    text-decoration:none;color:#2b2620;transition:all .18s ease;
+  }
+  .menu-card:hover{border-color:#b8860b;transform:translateY(-2px);box-shadow:0 4px 14px rgba(184,134,11,.12)}
+  .menu-card .ic{font-size:26px}
+  .menu-card .lbl{font-size:12px;font-weight:500}
+  .sair-link{display:inline-block;margin-top:2.5rem;font-size:11px;color:#a89e8f;text-decoration:none;letter-spacing:.05em}
+  .sair-link:hover{color:#b8860b}
 </style>
 </head>
 <body>
@@ -137,7 +152,7 @@
 <div class="linha-fina linha-topo"></div>
 <div class="linha-fina linha-base"></div>
 
-<div class="portal">
+<div class="portal" id="portal-login">
   <div class="marca">Colégio Propósito</div>
 
   <h1 class="titulo">A <em>operação</em><br>começa aqui.</h1>
@@ -154,7 +169,15 @@
   <div class="rodape">Sistema Comercial · Processo Seletivo 2027</div>
 </div>
 
-<script src="supabase.js?v=1787845475"></script>
+<div class="menu-wrap" id="portal-menu" style="display:none">
+  <div class="marca">Colégio Propósito</div>
+  <h1 class="titulo" style="font-size:2rem">Pra onde vamos?</h1>
+  <p class="subtitulo">Escolha um módulo pra continuar.</p>
+  <div class="menu-grid" id="menu-grid"></div>
+  <a href="#" class="sair-link" onclick="sair();return false">Sair e trocar de senha</a>
+</div>
+
+<script src="supabase.js?v=1788479218"></script>
 <script>
 // Senhas padrão — usadas como respaldo caso o banco ainda não tenha valores customizados
 // "Configurações" não tem senha própria — só é liberado pela senha mestra do Gerente
@@ -195,6 +218,40 @@ const URLS = {
   config:       'config.html',
 };
 
+const LABELS = {
+  gerente: {ic:'🏠', lbl:'Painel do Gerente'},
+  cdr: {ic:'🎧', lbl:'CDR / Inside Sales'},
+  closer: {ic:'🤝', lbl:'Closer'},
+  entrevistas: {ic:'📋', lbl:'Entrevistas'},
+  playbook: {ic:'✅', lbl:'Playbook'},
+  matriculador: {ic:'📄', lbl:'Matriculador'},
+  conversao: {ic:'🚀', lbl:'Conversão'},
+  config: {ic:'⚙️', lbl:'Configurações'},
+};
+
+// Se a pessoa já tem acesso a algum módulo nesta sessão, mostra o menu em vez do login de novo
+function mostrarTelaCorreta(){
+  const modulosComAcesso = Object.keys(URLS).filter(m => sessionStorage.getItem('acesso_'+m) === '1');
+  if(modulosComAcesso.length > 0){
+    document.getElementById('portal-login').style.display = 'none';
+    document.getElementById('portal-menu').style.display = 'block';
+    document.getElementById('menu-grid').innerHTML = modulosComAcesso.map(m => `
+      <a href="${URLS[m]}" class="menu-card">
+        <span class="ic">${LABELS[m].ic}</span>
+        <span class="lbl">${LABELS[m].lbl}</span>
+      </a>`).join('');
+    return true;
+  }
+  return false;
+}
+
+function sair(){
+  Object.keys(URLS).forEach(m => sessionStorage.removeItem('acesso_'+m));
+  document.getElementById('portal-menu').style.display = 'none';
+  document.getElementById('portal-login').style.display = 'block';
+  document.getElementById('senha-input').focus();
+}
+
 function entrar(){
   if(document.getElementById('btn-entrar').disabled) return;
   const senha = document.getElementById('senha-input').value;
@@ -219,7 +276,7 @@ function entrar(){
   }
 }
 
-document.getElementById('senha-input').focus();
+if(!mostrarTelaCorreta()) document.getElementById('senha-input').focus();
 </script>
 </body>
 </html>

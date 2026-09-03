@@ -482,6 +482,23 @@
     </div>
 
     <div class="section-label" style="margin-top:20px">
+      <span>Planilha de conferência (WhatsApp → propostas)</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="saved-msg" id="saved-planilha">✓ Salvo!</span>
+        <button class="save-btn" onclick="salvarPlanilhaConferencia()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="padding:14px">
+        <label style="font-size:11px;color:#666;display:block;margin-bottom:5px">URL da planilha publicada (Arquivo → Compartilhar → Publicar na Web → formato CSV)</label>
+        <input type="text" id="planilha-url" placeholder="https://docs.google.com/spreadsheets/d/e/..../pub?output=csv" style="width:100%;font-size:12px;padding:8px 10px;border-radius:8px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
+        <div style="font-size:11px;color:#a89e8f;margin-top:8px;line-height:1.6">
+          A planilha deve ter as colunas <strong>NOME ALUNO</strong>, <strong>MATRICULADOR</strong>, <strong>UNIDADE</strong> e <strong>DATA CADASTRO</strong>. O sistema busca sozinho, sempre que alguém abrir o painel ou clicar em "Atualizar dados".
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:20px">
       <span>Todas as fontes de dados importadas</span>
       <span class="saved-msg" id="saved-fontes" style="color:#7d7364">Atualizado agora</span>
     </div>
@@ -494,7 +511,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788453694"></script>
+<script src="supabase.js?v=1788479218"></script>
 <script>
 if(sessionStorage.getItem('acesso_config')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -832,7 +849,16 @@ const FONTES_INFO = [
   {tabela:'base_geral', label:'Base Geral'},
 ];
 
+async function salvarPlanilhaConferencia(){
+  const url = document.getElementById('planilha-url').value.trim();
+  await supa.salvarConfig('planilha_conferencia_url', url);
+  mostrarSalvo('planilha');
+}
+
 async function renderFontesDados(){
+  const urlSalva = await supa.getConfig('planilha_conferencia_url');
+  document.getElementById('planilha-url').value = urlSalva || '';
+
   const linhas = await Promise.all(FONTES_INFO.map(async f=>{
     const dados = await supa.get(f.tabela, '');
     const total = dados.length;
@@ -846,7 +872,12 @@ async function renderFontesDados(){
       <span style="font-size:13px;color:#2b2620">${l.label}</span>
       <span style="font-size:13px;font-weight:600;color:${l.total?'#16a34a':'#a89e8f'}">${l.total||'—'}</span>
       <span style="font-size:12px;color:#7d7364">${l.dataFmt}</span>
-    </div>`).join('');
+    </div>`).join('') + `
+    <div class="item-simples" style="display:grid;grid-template-columns:1.5fr 0.8fr 1.2fr;align-items:center">
+      <span style="font-size:13px;color:#2b2620">🔗 Lista de Conferência</span>
+      <span style="font-size:13px;font-weight:600;color:${urlSalva?'#16a34a':'#a89e8f'}">${urlSalva?'Ativa':'Não configurada'}</span>
+      <span style="font-size:12px;color:#7d7364">Planilha ao vivo</span>
+    </div>`;
 }
 
 // ═══════════════════════════════════════════════
