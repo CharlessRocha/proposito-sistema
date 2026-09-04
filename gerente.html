@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Colégio Propósito — Painel do Gerente</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   /* ═══ Sidebar de navegação — visível em telas maiores ═══ */
   @media(min-width:900px){
@@ -138,7 +139,11 @@
 
   /* CARD */
   .card{background:#ffffff;border-radius:10px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:12px}
-  .card-head{padding:11px 14px;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between;background:#f7f3ea}
+  .card-head{padding:11px 14px;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between;background:#f7f3ea;cursor:pointer;user-select:none;gap:8px}
+  .card-head:hover{background:#f2ede0}
+  .card-head::before{content:'▾';font-size:10px;color:#9c9280;transition:transform .15s;flex-shrink:0}
+  .card.colapsado .card-head::before{transform:rotate(-90deg)}
+  .card.colapsado .card-body{display:none}
   .card-title{font-size:13px;font-weight:600;color:#3d362c;display:flex;align-items:center;gap:6px}
   .card-body{padding:14px}
 
@@ -281,16 +286,16 @@
   <div class="panel active" id="panel-painel">
     <div class="main-grid">
       <div class="card">
-        <div class="card-head"><span class="card-title">📅 Próximas datas críticas</span></div>
+        <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📅 Próximas datas críticas</span></div>
         <div class="card-body"><div id="datas-body"></div></div>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">✅ Playbook — próximas tarefas</span></div>
+        <div class="card-head" onclick="toggleCard(this)"><span class="card-title">✅ Playbook — próximas tarefas</span></div>
         <div class="card-body"><div id="play-body"></div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><span class="card-title">📋 Entrevistas pendentes</span></div>
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📋 Entrevistas pendentes</span></div>
       <div class="card-body"><div id="ent-body"></div></div>
     </div>
   </div>
@@ -299,16 +304,16 @@
   <div class="panel" id="panel-funil">
     <div class="main-grid">
       <div class="card">
-        <div class="card-head"><span class="card-title">📊 Funil ao vivo</span><span id="funil-proc" style="font-size:10px;color:#9c9280"></span></div>
+        <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📊 Funil ao vivo</span><span id="funil-proc" style="font-size:10px;color:#9c9280"></span></div>
         <div class="card-body"><div id="funil-body"></div></div>
       </div>
       <div>
         <div class="card">
-          <div class="card-head"><span class="card-title">🏢 Por unidade</span></div>
+          <div class="card-head" onclick="toggleCard(this)"><span class="card-title">🏢 Por unidade</span></div>
           <div class="card-body"><div id="dist-unidade"></div></div>
         </div>
         <div class="card" style="margin-top:12px">
-          <div class="card-head"><span class="card-title">🌅 Por turno</span></div>
+          <div class="card-head" onclick="toggleCard(this)"><span class="card-title">🌅 Por turno</span></div>
           <div class="card-body"><div id="dist-turno"></div></div>
         </div>
       </div>
@@ -316,11 +321,11 @@
 
     <div class="main-grid" style="margin-top:12px">
       <div class="card">
-        <div class="card-head"><span class="card-title">🎯 Conversão por unidade</span><span style="font-size:10px;color:#9c9280">% de leads que viraram matrícula</span></div>
+        <div class="card-head" onclick="toggleCard(this)"><span class="card-title">🎯 Conversão por unidade</span><span style="font-size:10px;color:#9c9280">% de leads que viraram matrícula</span></div>
         <div class="card-body"><div id="conv-por-unidade"></div></div>
       </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">🏫 Escola de origem</span><span style="font-size:10px;color:#9c9280">particular × pública</span></div>
+        <div class="card-head" onclick="toggleCard(this)"><span class="card-title">🏫 Escola de origem</span><span style="font-size:10px;color:#9c9280">particular × pública</span></div>
         <div class="card-body"><div id="dist-tipo-escola"></div></div>
       </div>
     </div>
@@ -329,7 +334,7 @@
   <!-- CONVERSÃO -->
   <div class="panel" id="panel-conversao">
     <div class="card" style="margin-bottom:12px;border:1px solid #b8860b">
-      <div class="card-head" style="background:#fff8e6"><span class="card-title">📨 Reports dos matriculadores</span><span id="reports-badge" style="font-size:10px;background:#fff6e0;color:#d97706;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head" style="background:#fff8e6" onclick="toggleCard(this)"><span class="card-title">📨 Reports dos matriculadores</span><span id="reports-badge" style="font-size:10px;background:#fff6e0;color:#d97706;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body"><div id="reports-lista"><div class="loading">⏳ Carregando...</div></div></div>
     </div>
 
@@ -343,19 +348,21 @@
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-head"><span class="card-title">🚀 Conversão — Top 5</span></div>
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title">🚀 Conversão — Top 5</span></div>
       <div class="card-body"><div id="conv-ranking"></div></div>
     </div>
 
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-head"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#9c9280">por % de conversão</span></div>
+    <div class="card" id="card-ranking-completo" style="margin-bottom:12px">
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#9c9280">por % de conversão</span>
+        <button type="button" onclick="event.stopPropagation();copiarComoImagem('card-ranking-completo','ranking-matriculadores')" style="margin-left:auto;font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #e8e0d0;background:#ffffff;color:#5c5346;cursor:pointer;font-family:inherit">📷 Copiar imagem</button>
+      </div>
       <div class="card-body" style="max-height:480px;overflow-y:auto">
         <div id="conv-ranking-completo" style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px"></div>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-head"><span class="card-title" style="color:#dc2626">🔁 Propostas duplicadas — mesmo aluno aparece mais de uma vez</span><span id="conv-dup-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title" style="color:#dc2626">🔁 Propostas duplicadas — mesmo aluno aparece mais de uma vez</span><span id="conv-dup-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body">
         <div style="font-size:11px;color:#7d7364;margin-bottom:10px">O nome do aluno precisa ser único no arquivo de Propostas — se aparecer mais de uma vez (mesmo matriculador ou outro), é preciso identificar e corrigir.</div>
         <div id="conv-duplicadas"></div>
@@ -363,7 +370,7 @@
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-head"><span class="card-title" style="color:#ef4444">📋 Propostas enviadas não cadastradas no gestor</span><span id="conv-sem-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title" style="color:#ef4444">📋 Propostas enviadas não cadastradas no gestor</span><span id="conv-sem-badge" style="font-size:10px;background:#fdecec;color:#dc2626;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body">
         <div style="font-size:11px;color:#7d7364;margin-bottom:10px">Compara a planilha de conferência (WhatsApp) com o que está de fato cadastrado no sistema.</div>
         <div id="conv-sem-proposta"></div>
@@ -371,7 +378,7 @@
     </div>
 
     <div class="card">
-      <div class="card-head"><span class="card-title" style="color:#9333ea">🔁 Possíveis rematrículas identificadas como matrícula nova</span><span id="conv-remat-badge" style="font-size:10px;background:#f5edff;color:#9333ea;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title" style="color:#9333ea">🔁 Possíveis rematrículas identificadas como matrícula nova</span><span id="conv-remat-badge" style="font-size:10px;background:#f5edff;color:#9333ea;padding:1px 8px;border-radius:20px"></span></div>
       <div class="card-body">
         <div style="font-size:11px;color:#7d7364;margin-bottom:10px">Alunos que já eram matriculados antes (pré-matrícula anterior a <span id="conv-remat-data-corte" style="font-weight:600"></span>) e que agora aparecem como "Matrícula" nova no funil. Provavelmente são rematrícula — corrija a etapa no Rubeus.</div>
         <div id="conv-rematriculas"></div>
@@ -390,7 +397,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788480571"></script>
+<script src="supabase.js?v=1788481647"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -570,6 +577,38 @@ function decodeSmart(buffer){
 
 // Parser de CSV correto — respeita aspas, ponto-e-vírgula e quebras de linha dentro de campos
 // (o split ingênuo por ';' quebra o Rubeus, que usa aspas com caracteres especiais)
+// ── Recolher/expandir cards: clique no cabeçalho esconde ou mostra o conteúdo ──
+function toggleCard(headEl){
+  headEl.closest('.card').classList.toggle('colapsado');
+}
+
+// ── Copia uma seção da tela como imagem (pra colar em outro relatório) ──
+async function copiarComoImagem(elementId, nomeArquivo){
+  const el = document.getElementById(elementId);
+  if(!el || typeof html2canvas==='undefined'){ alert('Não foi possível gerar a imagem agora. Tente novamente.'); return; }
+  try{
+    const estavaColapsado = el.classList.contains('colapsado');
+    if(estavaColapsado) el.classList.remove('colapsado'); // precisa estar aberto pra capturar o conteúdo
+    const canvas = await html2canvas(el, {backgroundColor:'#ffffff', scale:2});
+    if(estavaColapsado) el.classList.add('colapsado');
+    canvas.toBlob(async (blob)=>{
+      try{
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+        alert('✓ Imagem copiada! Agora é só colar (Ctrl+V) no seu relatório.');
+      }catch(e){
+        // Se o navegador não permitir copiar direto, baixa o arquivo como alternativa
+        const link = document.createElement('a');
+        link.download = nomeArquivo+'.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+    });
+  }catch(e){
+    console.error('Erro ao gerar imagem:', e);
+    alert('Não foi possível gerar a imagem agora. Tente novamente.');
+  }
+}
+
 function parseCSVCompleto(texto, delimitador=';'){
   const linhas=[];
   let linha=[];
@@ -826,7 +865,7 @@ function renderPlaybook(){
       const faseTarefas=todas.filter(ta=>ta.fase===f.id);
       const ft=faseTarefas.length,fd=faseTarefas.filter(ta=>t[ta.id]).length;
       return`<div class="card" style="margin-bottom:10px">
-        <div class="card-head"><span class="card-title"><span class="play-fase pf-${f.badge}" style="margin-right:6px">${f.badge.toUpperCase()}</span>${f.label}</span><span style="font-size:10px;color:#9c9280">${fd}/${ft}</span></div>
+        <div class="card-head" onclick="toggleCard(this)"><span class="card-title"><span class="play-fase pf-${f.badge}" style="margin-right:6px">${f.badge.toUpperCase()}</span>${f.label}</span><span style="font-size:10px;color:#9c9280">${fd}/${ft}</span></div>
         <div>${faseTarefas.map(ta=>{
           const checked=!!t[ta.id];
           const cor=prazoCor(d,ta.dRel);
@@ -1174,6 +1213,7 @@ async function renderConversao(){
       const mats=matriculasPorPessoa[nome];
       return {nome, matriculas:mats, propostas:props, validado:props>=50, conversao:props>0?(mats/props*100):0};
     })
+    .filter(r=>r.validado) // Top 5 é sempre entre quem já bateu o mínimo de 50 propostas
     .sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas)
     .slice(0,5);
 
@@ -1181,12 +1221,13 @@ async function renderConversao(){
     document.getElementById('conv-ranking').innerHTML=`<div class="empty">Nenhuma matrícula cruzada com proposta ainda.</div>`;
   } else {
     const medalhas=['🥇','🥈','🥉','4º','5º'];
+    const premios=['R$ 5.000','R$ 4.000','R$ 3.000','R$ 2.000','R$ 1.000'];
     document.getElementById('conv-ranking').innerHTML=ranking.map((r,i)=>`
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0">
         <span style="font-size:16px;width:28px;text-align:center">${medalhas[i]}</span>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:#2b2620">${r.nome}</div>
-          <div style="font-size:10px;color:${r.validado?'#16a34a':'#d97706'}">${r.validado?`✅ Validado — ${r.propostas} propostas`:`⏳ Precisa de 50 propostas para validar (tem ${r.propostas})`}</div>
+          <div style="font-size:10px;color:#16a34a">✅ Validado — ${r.propostas} propostas · <strong>${premios[i]}</strong></div>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div style="font-size:20px;font-weight:700;color:#16a34a">${r.conversao.toFixed(1)}%</div>
@@ -1204,17 +1245,21 @@ async function renderConversao(){
     return {nome, propostas:totalProp, matriculas:totalMat, conversao:conv, elegivel:totalProp>=50};
   }).sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas);
 
-  document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:9px 6px;border-bottom:1px solid #e8e0d0">
-      <span style="font-size:11px;color:#9c9280;width:20px;text-align:center;flex-shrink:0">${i+1}º</span>
+  document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>{
+    const noTop5 = ranking.some(r=>r.nome===p.nome);
+    const medalhas={0:'🥇',1:'🥈',2:'🥉'};
+    return `
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 8px;border-bottom:1px solid #e8e0d0;${noTop5?'background:#fff8e6;border-radius:6px;border-bottom-color:#F5C842':''}">
+      <span style="font-size:11px;color:${noTop5?'#b8860b':'#9c9280'};width:20px;text-align:center;flex-shrink:0;font-weight:${noTop5?'700':'400'}">${medalhas[ranking.findIndex(r=>r.nome===p.nome)]||(i+1)+'º'}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:500;color:#3d362c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}</div>
+        <div style="font-size:12px;font-weight:${noTop5?'700':'500'};color:#2b2620;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}${noTop5?' <span style="font-size:9px;color:#b8860b">TOP 5</span>':''}</div>
         <div style="font-size:9px;color:#9c9280">${p.propostas} prop. · ${p.matriculas} mat.${p.elegivel?' · <span style="color:#16a34a">elegível</span>':''}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:14px;font-weight:700;color:${p.conversao>=15?'#16a34a':p.conversao>=5?'#d97706':'#948a7c'}">${p.conversao.toFixed(1)}%</div>
       </div>
-    </div>`).join(''):'<div class="empty">Sem dados de propostas cadastradas ainda</div>';
+    </div>`;
+  }).join(''):'<div class="empty">Sem dados de propostas cadastradas ainda</div>';
 
   // ── Propostas duplicadas (mesmo aluno, mesmo ou outro matriculador) ──
   const duplicadas = detectarPropostasDuplicadas();
