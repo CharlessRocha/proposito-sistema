@@ -338,17 +338,13 @@
       <div class="card-body"><div id="reports-lista"><div class="loading">⏳ Carregando...</div></div></div>
     </div>
 
-    <!-- REGRA DA PREMIAÇÃO — bem visível -->
-    <div style="background:#fff3d6;border:1.5px solid #F5C842;border-radius:12px;padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;gap:14px">
-      <div style="font-size:28px">🏆</div>
-      <div>
-        <div style="font-size:14px;font-weight:700;color:#2b2620">Regra da premiação — Top 5</div>
-        <div style="font-size:12px;color:#7d7364;margin-top:2px">Só concorre ao Top 5 quem tem no mínimo <strong style="color:#b8860b">50 propostas cadastradas</strong>. O ranking é ordenado pela <strong style="color:#b8860b">taxa de conversão</strong> (matrículas ÷ propostas).</div>
-      </div>
-    </div>
-
     <div class="card" style="margin-bottom:12px">
-      <div class="card-head" onclick="toggleCard(this)"><span class="card-title">🚀 Conversão — Top 5</span></div>
+      <div class="card-head" onclick="toggleCard(this)">
+        <div>
+          <span class="card-title">🚀 Conversão — Top 5</span>
+          <div style="font-size:11px;color:#948a7c;margin-top:3px;font-weight:400">🏆 Mínimo de 50 propostas para concorrer · ordenado pela taxa de conversão</div>
+        </div>
+      </div>
       <div class="card-body"><div id="conv-ranking"></div></div>
     </div>
 
@@ -397,7 +393,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788483615"></script>
+<script src="supabase.js?v=1788484390"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -1216,11 +1212,11 @@ async function renderConversao(){
     matriculasPorPessoa[nome]=alunosMatriculadosPorPessoa[nome].size;
   });
 
-  // ── Top 5 — só valida quem tem 50+ propostas, ordenado por % de conversão ──
-  const ranking=Object.keys(matriculasPorPessoa)
+  // ── Top 5 — mesmo universo do Ranking Completo (todos com proposta cadastrada), filtra 50+ e ordena por conversão ──
+  const ranking=Object.keys(propostasPorPessoa)
     .map(nome=>{
       const props=propostasPorPessoa[nome]?.size||0;
-      const mats=matriculasPorPessoa[nome];
+      const mats=matriculasPorPessoa[nome]||0;
       return {nome, matriculas:mats, propostas:props, validado:props>=50, conversao:props>0?(mats/props*100):0};
     })
     .filter(r=>r.validado) // Top 5 é sempre entre quem já bateu o mínimo de 50 propostas

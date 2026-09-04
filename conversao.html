@@ -123,20 +123,14 @@
       <button class="trocar-btn" type="button" onclick="trocar()">↺ Trocar nome</button>
     </div>
 
-    <div style="background:#fff3d6;border:1.5px solid #F5C842;border-radius:12px;padding:16px 20px;margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-        <div style="font-size:28px">🏆</div>
-        <div>
-          <div style="font-size:14px;font-weight:700;color:#2b2620">Regra da premiação — Top 5</div>
-          <div style="font-size:12px;color:#7d7364;margin-top:2px">Só concorre quem tem no mínimo <strong style="color:#b8860b">50 propostas cadastradas</strong>. O ranking é ordenado pela <strong style="color:#b8860b">taxa de conversão</strong>.</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
-        <div style="background:#ffffff;border-radius:8px;padding:8px 6px;text-align:center"><div style="font-size:16px">🥇</div><div style="font-size:13px;font-weight:700;color:#b8860b">R$ 5.000</div></div>
-        <div style="background:#ffffff;border-radius:8px;padding:8px 6px;text-align:center"><div style="font-size:16px">🥈</div><div style="font-size:13px;font-weight:700;color:#7d7364">R$ 4.000</div></div>
-        <div style="background:#ffffff;border-radius:8px;padding:8px 6px;text-align:center"><div style="font-size:16px">🥉</div><div style="font-size:13px;font-weight:700;color:#a16207">R$ 3.000</div></div>
-        <div style="background:#ffffff;border-radius:8px;padding:8px 6px;text-align:center"><div style="font-size:16px">4º</div><div style="font-size:13px;font-weight:700;color:#5c5346">R$ 2.000</div></div>
-        <div style="background:#ffffff;border-radius:8px;padding:8px 6px;text-align:center"><div style="font-size:16px">5º</div><div style="font-size:13px;font-weight:700;color:#5c5346">R$ 1.000</div></div>
+    <div style="border:1px solid #e8e0d0;border-left:4px solid #F5C842;border-radius:10px;padding:12px 16px;margin-bottom:14px;background:#fffdf7">
+      <div style="font-size:12px;color:#5c5346;margin-bottom:10px">🏆 <strong style="color:#2b2620">Top 5</strong> — mínimo de <strong style="color:#b8860b">50 propostas cadastradas</strong> para concorrer, ordenado pela <strong style="color:#b8860b">taxa de conversão</strong>.</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+        <div style="text-align:center"><div style="font-size:14px">🥇</div><div style="font-size:12px;font-weight:700;color:#b8860b">R$ 5.000</div></div>
+        <div style="text-align:center"><div style="font-size:14px">🥈</div><div style="font-size:12px;font-weight:700;color:#7d7364">R$ 4.000</div></div>
+        <div style="text-align:center"><div style="font-size:14px">🥉</div><div style="font-size:12px;font-weight:700;color:#a16207">R$ 3.000</div></div>
+        <div style="text-align:center"><div style="font-size:11px;color:#9c9280">4º</div><div style="font-size:12px;font-weight:700;color:#5c5346">R$ 2.000</div></div>
+        <div style="text-align:center"><div style="font-size:11px;color:#9c9280">5º</div><div style="font-size:12px;font-weight:700;color:#5c5346">R$ 1.000</div></div>
       </div>
     </div>
 
@@ -179,7 +173,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788483615"></script>
+<script src="supabase.js?v=1788484390"></script>
 <script>
 if(sessionStorage.getItem('acesso_conversao')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
