@@ -103,9 +103,11 @@
     <div class="id-screen">
       <div style="font-size:36px">🎯</div>
       <div class="id-titulo">Qual é o seu nome?</div>
-      <div class="id-sub">Digite seu nome como matriculador para ver sua conversão e a de toda a equipe.</div>
+      <div class="id-sub">Escolha seu nome na lista para ver sua conversão e a de toda a equipe.</div>
       <div class="id-custom">
-        <input type="text" id="nome-input" placeholder="Seu nome completo..." onkeydown="if(event.key==='Enter')entrar()">
+        <select id="nome-input" style="width:100%;font-size:15px;padding:12px 14px;border-radius:10px;border:1px solid #e8e0d0;background:#f5f1e8;color:#2b2620;font-family:inherit">
+          <option value="">Selecione seu nome...</option>
+        </select>
         <button type="button" onclick="entrar()">Entrar</button>
       </div>
     </div>
@@ -184,7 +186,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788481647"></script>
+<script src="supabase.js?v=1788482420"></script>
 <script>
 if(sessionStorage.getItem('acesso_conversao')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -254,7 +256,7 @@ function getTelefonePorNome(nome){
 
 function entrar(){
   const nome = document.getElementById('nome-input').value.trim();
-  if(!nome){alert('Digite seu nome para continuar');return;}
+  if(!nome){alert('Selecione seu nome para continuar');return;}
   usuario = nome;
   document.getElementById('id-wrap').style.display='none';
   document.getElementById('op-wrap').style.display='block';
@@ -275,6 +277,27 @@ async function carregarDados(){
   mapaMatriculadores = await supa.getConfig('matriculadores') || [];
   renderTudo();
 }
+
+// ── Popula a lista de nomes assim que a página abre, antes de entrar ──
+async function popularNomesMatriculadores(){
+  try{
+    const sel = document.getElementById('nome-input');
+    sel.innerHTML = '<option value="">Carregando nomes...</option>';
+    const props = await supa.getTodasPropostas();
+    mapaMatriculadores = await supa.getConfig('matriculadores') || [];
+    const nomes = new Set();
+    props.forEach(p=>{
+      const nome = nomeCanonicoMatriculador(p['Cadastrado Por']);
+      if(nome) nomes.add(nome);
+    });
+    sel.innerHTML = '<option value="">Selecione seu nome...</option>' +
+      [...nomes].sort().map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+  }catch(e){
+    console.error('Erro ao carregar lista de nomes:', e);
+    document.getElementById('nome-input').innerHTML = '<option value="">Erro ao carregar — recarregue a página</option>';
+  }
+}
+popularNomesMatriculadores();
 
 let ranking = [];
 
@@ -403,11 +426,15 @@ function renderRanking(){
     const isEu = similaridadeNomes(r.nome, nomeCanon) >= LIMIAR_MATCH;
     const posTop5 = top5Validados.findIndex(t=>t.nome===r.nome);
     const isTop5 = posTop5>=0;
+    let badge;
+    if(isTop5) badge = `<span class="tbl-badge badge-validado">TOP 5 · ${PREMIOS[posTop5]}</span>`;
+    else if(!r.validado) badge = `<span class="tbl-badge badge-pendente">faltam ${50-r.entrevistas} para concorrer</span>`;
+    else badge = `<span class="tbl-badge badge-pendente" style="background:#fff3d6;color:#b8860b">melhore a conversão p/ Top 5</span>`;
     const aberto = expandido === r.nome;
     return `
     <div>
       <div class="tbl-row ${isEu?'eu':''}" onclick="toggleExpandir('${r.nome.replace(/'/g,"\\'")}')" style="${isTop5?'background:#fff8e6':''}">
-        <span class="tbl-nome">${isTop5?`<span class="tbl-medalha">${MEDALHAS[posTop5]}</span>`:''}${r.nome}${isTop5?`<span class="tbl-badge badge-validado">TOP 5 · ${PREMIOS[posTop5]}</span>`:(r.entrevistas>0&&r.entrevistas<50?`<span class="tbl-badge badge-pendente">${r.entrevistas}/50</span>`:'')}</span>
+        <span class="tbl-nome">${isTop5?`<span class="tbl-medalha">${MEDALHAS[posTop5]}</span>`:''}${r.nome}${badge}</span>
         <span class="tbl-val">${r.entrevistas}</span>
         <span class="tbl-val">${r.matriculas}</span>
         <span class="tbl-pct" style="color:${r.conversao>=15?'#16a34a':r.conversao>=5?'#d97706':'#a89e8f'}">${r.conversao.toFixed(1)}%</span>

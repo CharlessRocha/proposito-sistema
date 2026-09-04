@@ -397,7 +397,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788481647"></script>
+<script src="supabase.js?v=1788482420"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -1248,12 +1248,16 @@ async function renderConversao(){
   document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>{
     const noTop5 = ranking.some(r=>r.nome===p.nome);
     const medalhas={0:'🥇',1:'🥈',2:'🥉'};
+    let mensagemStatus;
+    if(noTop5) mensagemStatus='';
+    else if(!p.elegivel) mensagemStatus=` · <span style="color:#d97706">faltam ${50-p.propostas} propostas para concorrer</span>`;
+    else mensagemStatus=` · <span style="color:#b8860b">melhore a conversão para entrar no Top 5</span>`;
     return `
     <div style="display:flex;align-items:center;gap:8px;padding:9px 8px;border-bottom:1px solid #e8e0d0;${noTop5?'background:#fff8e6;border-radius:6px;border-bottom-color:#F5C842':''}">
       <span style="font-size:11px;color:${noTop5?'#b8860b':'#9c9280'};width:20px;text-align:center;flex-shrink:0;font-weight:${noTop5?'700':'400'}">${medalhas[ranking.findIndex(r=>r.nome===p.nome)]||(i+1)+'º'}</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:${noTop5?'700':'500'};color:#2b2620;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}${noTop5?' <span style="font-size:9px;color:#b8860b">TOP 5</span>':''}</div>
-        <div style="font-size:9px;color:#9c9280">${p.propostas} prop. · ${p.matriculas} mat.${p.elegivel?' · <span style="color:#16a34a">elegível</span>':''}</div>
+        <div style="font-size:9px;color:#9c9280">${p.propostas} propostas · ${p.matriculas} matrículas${mensagemStatus}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:14px;font-weight:700;color:${p.conversao>=15?'#16a34a':p.conversao>=5?'#d97706':'#948a7c'}">${p.conversao.toFixed(1)}%</div>
