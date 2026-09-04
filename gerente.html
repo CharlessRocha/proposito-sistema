@@ -397,7 +397,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788482420"></script>
+<script src="supabase.js?v=1788483615"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -981,7 +981,7 @@ function renderEntrevistas(){
             <span style="color:#5c5346">${a['Segmento']||a['Nome - Oferta de curso']||''}</span>
             <span>${a['Unidade']||''}</span>
             <span style="color:#7d7364">👤 ${a['Responsável']||'—'}</span>
-            ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#2563eb">📞 ${a['Telefone']}</span>`:''}
+            ${a['Telefone']&&a['Telefone']!='- - -'?`<span style="color:#2563eb">📞 ${formatarTelefoneBR(a['Telefone'])}</span>`:''}
           </div>
           <div style="font-size:10px;color:#948a7c;margin-top:2px">${a['Nome - Processo seletivo']||''}</div>
         </div>
@@ -1052,6 +1052,16 @@ function parseDataBR(str){
 }
 
 // Normaliza nome: remove acentos, minúsculas, espaços extras
+// Formata telefone no padrão brasileiro: (DDD) NNNNN-NNNN
+function formatarTelefoneBR(tel){
+  if(!tel) return '';
+  let digitos = tel.replace(/\D/g,'');
+  if(digitos.length>11 && digitos.startsWith('55')) digitos = digitos.slice(2);
+  if(digitos.length===11) return `(${digitos.slice(0,2)}) ${digitos.slice(2,7)}-${digitos.slice(7)}`;
+  if(digitos.length===10) return `(${digitos.slice(0,2)}) ${digitos.slice(2,6)}-${digitos.slice(6)}`;
+  return tel;
+}
+
 function normalizarNome(s){
   return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 }

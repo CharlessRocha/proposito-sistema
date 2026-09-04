@@ -36,6 +36,7 @@
 
   .card{background:#ffffff;border-radius:12px;border:1px solid #e8e0d0;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,32,.04)}
   .card.colapsado .card-body{display:none}
+  .aviso-body{display:flex;flex-direction:column;gap:10px}
   .card-head{padding:12px 16px;background:#f7f3ea;border-bottom:1px solid #e8e0d0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
   .card-title{font-size:13px;font-weight:600;color:#2b2620}
   .card-body{padding:0}
@@ -144,7 +145,7 @@
         <span class="card-title" style="font-size:12px">ℹ️ Avisos importantes — comissão e atualização de dados</span>
         <span style="font-size:10px;color:#9c9280">toque para expandir/recolher</span>
       </div>
-      <div class="card-body" style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+      <div class="card-body aviso-body" style="padding:12px 16px">
         <div style="font-size:12px;color:#5c5346;line-height:1.5">💰 <strong>Comissão:</strong> o pagamento considera apenas matrículas efetivamente baixadas no sistema acadêmico (TOTVS). Este relatório mostra só matrículas já confirmadas — pode haver casos em processo que ainda não aparecem aqui.</div>
         <div style="font-size:12px;color:#5c5346;line-height:1.5">🗓️ <strong>Atualização semanal:</strong> os números de propostas são atualizados semanalmente. Se você acha que tem mais ou menos propostas do que o mostrado, é normal — aguarde a próxima atualização ou use o formulário de report abaixo.</div>
       </div>
@@ -164,14 +165,6 @@
     </div>
 
     <div class="card">
-      <div class="card-head"><span class="card-title" style="color:#dc2626">🔁 Propostas duplicadas</span></div>
-      <div class="card-body">
-        <div style="font-size:11px;color:#7d7364;margin-bottom:10px">O nome do aluno precisa ser único no arquivo de Propostas — se aparecer mais de uma vez, é preciso identificar e corrigir com o gerente.</div>
-        <div id="duplicadas-lista"></div>
-      </div>
-    </div>
-
-    <div class="card">
       <div class="card-head"><span class="card-title">📨 Reportar algo que pode estar errado</span></div>
       <div class="card-body" style="padding:16px">
         <div class="report-form">
@@ -186,7 +179,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788482420"></script>
+<script src="supabase.js?v=1788483615"></script>
 <script>
 if(sessionStorage.getItem('acesso_conversao')!=='1'){document.getElementById('auth-check').style.display='flex';}
 
@@ -242,6 +235,16 @@ function nomeCanonicoMatriculador(nome){
   }
   return nome;
 }
+// Formata telefone no padrão brasileiro: (DDD) NNNNN-NNNN
+function formatarTelefoneBR(tel){
+  if(!tel) return '';
+  let digitos = tel.replace(/\D/g,'');
+  if(digitos.length>11 && digitos.startsWith('55')) digitos = digitos.slice(2); // remove código do país
+  if(digitos.length===11) return `(${digitos.slice(0,2)}) ${digitos.slice(2,7)}-${digitos.slice(7)}`;
+  if(digitos.length===10) return `(${digitos.slice(0,2)}) ${digitos.slice(2,6)}-${digitos.slice(6)}`;
+  return tel; // formato não reconhecido — mostra como veio
+}
+
 function getTelefonePorNome(nome){
   if(!nome) return null;
   let melhor=null, melhorScore=0;
@@ -363,28 +366,6 @@ function renderTudo(){
   renderDestaque();
   renderRanking();
   renderMeusReports();
-  renderDuplicadas();
-}
-
-// ── Propostas duplicadas — mesmo aluno aparece mais de uma vez ──
-function renderDuplicadas(){
-  const porNome = {};
-  propostas.forEach(p=>{
-    const chave = normalizarNome(p['Aluno']);
-    if(!chave) return;
-    if(!porNome[chave]) porNome[chave]=[];
-    porNome[chave].push(p);
-  });
-  const duplicadas = Object.values(porNome).filter(g=>g.length>1);
-  const el = document.getElementById('duplicadas-lista');
-  if(!el) return;
-  el.innerHTML = duplicadas.length ? duplicadas.map(grupo=>`
-    <div style="padding:8px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
-      <div style="font-weight:600;color:#2b2620;margin-bottom:4px">${grupo[0]['Aluno']}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">
-        ${grupo.map(p=>`<span style="font-size:11px;background:#fdecec;color:#b91c1c;padding:3px 10px;border-radius:20px">${p['Cadastrado Por']||'—'}</span>`).join('')}
-      </div>
-    </div>`).join('') : '<div class="empty" style="color:#16a34a">✓ Nenhum nome de aluno duplicado</div>';
 }
 
 function renderDestaque(){
@@ -453,7 +434,7 @@ function renderDetalheAlunos(nomeMatriculador){
     <div class="detalhe-item">
       <span class="detalhe-status ${a.matriculado?'status-matriculado':'status-pendente'}">${a.matriculado?'✓ Matriculado':'Aguardando'}</span>
       <span class="detalhe-nome">${a.nome}</span>
-      ${a.telefone?`<a href="https://wa.me/55${a.telefone.replace(/\D/g,'')}" target="_blank" class="detalhe-tel">📞 ${a.telefone}</a>`:'<span style="font-size:11px;color:#a89e8f">sem telefone</span>'}
+      ${a.telefone?`<a href="https://wa.me/55${a.telefone.replace(/\D/g,'')}" target="_blank" class="detalhe-tel">📞 ${formatarTelefoneBR(a.telefone)}</a>`:'<span style="font-size:11px;color:#a89e8f">sem telefone</span>'}
     </div>`).join('');
 }
 
