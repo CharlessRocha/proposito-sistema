@@ -390,7 +390,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788479218"></script>
+<script src="supabase.js?v=1788480571"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -1099,6 +1099,34 @@ function detectarPropostasDuplicadas(){
     porNome[chave].push(p);
   });
   return Object.values(porNome).filter(grupo=>grupo.length>1);
+}
+
+// ── Reports enviados pelos matriculadores no módulo de Conversão ──
+async function renderReportsMatriculadores(){
+  const reports = await supa.getReports();
+  const pendentes = reports.filter(r=>r.status==='pendente');
+  document.getElementById('reports-badge').textContent = pendentes.length||'';
+  if(!reports.length){
+    document.getElementById('reports-lista').innerHTML = '<div class="empty">Nenhum report enviado ainda.</div>';
+    return;
+  }
+  document.getElementById('reports-lista').innerHTML = reports.map(r=>`
+    <div style="padding:10px 0;border-bottom:1px solid #e8e0d0;font-size:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px">
+        <div style="font-weight:600;color:#2b2620">${r.matriculador||'—'}${r.aluno_relacionado?` · <span style="font-weight:400;color:#7d7364">${r.aluno_relacionado}</span>`:''}</div>
+        <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;${r.status==='pendente'?'background:#fff6e0;color:#d97706':'background:#eafaf0;color:#16a34a'}">${r.status==='pendente'?'⏳ Pendente':'✓ Avaliado'}</span>
+      </div>
+      <div style="color:#3d362c;margin-bottom:6px">${r.mensagem||''}</div>
+      ${r.resposta_gerente?`<div style="background:#f5f1e8;border-radius:6px;padding:8px 10px;font-size:11px;color:#5c5346"><strong>Sua resposta:</strong> ${r.resposta_gerente}</div>`:
+        `<button type="button" onclick="responderReportMatriculador(${r.id})" style="font-size:12px;padding:6px 14px;border-radius:6px;border:none;background:#2b2620;color:#faf8f4;cursor:pointer;font-family:inherit">Responder</button>`}
+    </div>`).join('');
+}
+
+async function responderReportMatriculador(id){
+  const texto = prompt('Resposta para o matriculador:');
+  if(!texto) return;
+  await supa.responderReport(id, texto);
+  renderReportsMatriculadores();
 }
 
 async function renderConversao(){
