@@ -339,18 +339,28 @@
     </div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="card-head" onclick="toggleCard(this)">
-        <div>
+      <div class="card-head" onclick="toggleCard(this)" style="justify-content:center;position:relative">
+        <div style="text-align:center">
           <span class="card-title">🚀 Conversão — Top 5</span>
-          <div style="font-size:11px;color:#948a7c;margin-top:3px;font-weight:400">🏆 Mínimo de 50 propostas para concorrer · ordenado pela taxa de conversão</div>
+          <div style="font-size:11px;color:#948a7c;margin-top:3px;font-weight:400">🏆 Mínimo de 50 propostas para concorrer</div>
         </div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;padding:8px 14px;border-bottom:1px solid #e8e0d0;background:#fdfbf6">
+        <span style="font-size:10px;color:#9c9280;align-self:center;margin-right:2px">Ordenar por:</span>
+        <button type="button" onclick="ordemTop5='conversao';renderConversao()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid ${'transparent'};cursor:pointer;font-family:inherit" id="btn-ordem-top5-conversao">Conversão</button>
+        <button type="button" onclick="ordemTop5='propostas';renderConversao()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid transparent;cursor:pointer;font-family:inherit" id="btn-ordem-top5-propostas">Propostas</button>
       </div>
       <div class="card-body"><div id="conv-ranking"></div></div>
     </div>
 
     <div class="card" id="card-ranking-completo" style="margin-bottom:12px">
-      <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#9c9280">por % de conversão</span>
+      <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📋 Ranking completo de matriculadores</span>
         <button type="button" onclick="event.stopPropagation();copiarComoImagem('card-ranking-completo','ranking-matriculadores')" style="margin-left:auto;font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #e8e0d0;background:#ffffff;color:#5c5346;cursor:pointer;font-family:inherit">📷 Copiar imagem</button>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;padding:8px 14px;border-bottom:1px solid #e8e0d0;background:#fdfbf6">
+        <span style="font-size:10px;color:#9c9280;align-self:center;margin-right:2px">Ordenar por:</span>
+        <button type="button" onclick="ordemCompleto='conversao';renderConversao()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid transparent;cursor:pointer;font-family:inherit" id="btn-ordem-completo-conversao">Conversão</button>
+        <button type="button" onclick="ordemCompleto='propostas';renderConversao()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid transparent;cursor:pointer;font-family:inherit" id="btn-ordem-completo-propostas">Propostas</button>
       </div>
       <div class="card-body" style="max-height:480px;overflow-y:auto">
         <div id="conv-ranking-completo" style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px"></div>
@@ -393,7 +403,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788484390"></script>
+<script src="supabase.js?v=1788534626"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -450,6 +460,7 @@ const ETAPA_COR={'Inscrito':'#1d4ed8','Confirmado no Teste':'#d97706','Não Comp
 
 let leads=[], propostas=[], atividades=[], matriculas=[], baseGeral=[], pastaPropostas=[], tarefas={}, seletivos=[], mapaProcessos=[], tarefasCustom=[];
 let responsaveisEtapa={};
+let ordemTop5='conversao', ordemCompleto='conversao'; // 'conversao' ou 'propostas'
 let mesCorteRematricula=6; // configurável na Central — mês de corte para considerar pré-matrícula "antiga"
 
 // Lista completa de tarefas padrão (mesma base usada no módulo Playbook)
@@ -1212,7 +1223,7 @@ async function renderConversao(){
     matriculasPorPessoa[nome]=alunosMatriculadosPorPessoa[nome].size;
   });
 
-  // ── Top 5 — mesmo universo do Ranking Completo (todos com proposta cadastrada), filtra 50+ e ordena por conversão ──
+  // ── Top 5 — mesmo universo do Ranking Completo (todos com proposta cadastrada), filtra 50+ ──
   const ranking=Object.keys(propostasPorPessoa)
     .map(nome=>{
       const props=propostasPorPessoa[nome]?.size||0;
@@ -1220,23 +1231,32 @@ async function renderConversao(){
       return {nome, matriculas:mats, propostas:props, validado:props>=50, conversao:props>0?(mats/props*100):0};
     })
     .filter(r=>r.validado) // Top 5 é sempre entre quem já bateu o mínimo de 50 propostas
-    .sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas)
+    .sort((a,b)=> ordemTop5==='propostas' ? (b.propostas-a.propostas) : (b.conversao-a.conversao || b.matriculas-a.matriculas))
     .slice(0,5);
+
+  // Marca visualmente qual botão de ordenação está ativo
+  ['conversao','propostas'].forEach(k=>{
+    const btn=document.getElementById('btn-ordem-top5-'+k);
+    if(btn){ btn.style.background = ordemTop5===k?'#2b2620':'#ffffff'; btn.style.color = ordemTop5===k?'#faf8f4':'#5c5346'; btn.style.borderColor = ordemTop5===k?'#2b2620':'#e8e0d0'; }
+    const btn2=document.getElementById('btn-ordem-completo-'+k);
+    if(btn2){ btn2.style.background = ordemCompleto===k?'#2b2620':'#ffffff'; btn2.style.color = ordemCompleto===k?'#faf8f4':'#5c5346'; btn2.style.borderColor = ordemCompleto===k?'#2b2620':'#e8e0d0'; }
+  });
 
   if(!ranking.length){
     document.getElementById('conv-ranking').innerHTML=`<div class="empty">Nenhuma matrícula cruzada com proposta ainda.</div>`;
   } else {
     const medalhas=['🥇','🥈','🥉','4º','5º'];
     const premios=['R$ 5.000','R$ 4.000','R$ 3.000','R$ 2.000','R$ 1.000'];
+    const porPropostas = ordemTop5==='propostas';
     document.getElementById('conv-ranking').innerHTML=ranking.map((r,i)=>`
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0">
         <span style="font-size:16px;width:28px;text-align:center">${medalhas[i]}</span>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:#2b2620">${r.nome}</div>
-          <div style="font-size:10px;color:#16a34a">✅ Validado — ${r.propostas} propostas · <strong>${premios[i]}</strong></div>
+          <div style="font-size:10px;color:#16a34a">✅ Validado ${porPropostas?`— ${r.conversao.toFixed(1)}% de conversão`:`— ${r.propostas} propostas`} · <strong>${premios[i]}</strong></div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:20px;font-weight:700;color:#16a34a">${r.conversao.toFixed(1)}%</div>
+          <div style="font-size:20px;font-weight:700;color:#16a34a">${porPropostas?r.propostas:r.conversao.toFixed(1)+'%'}</div>
           <div style="font-size:10px;color:#948a7c">${r.matriculas} matrícula${r.matriculas===1?'':'s'}</div>
         </div>
       </div>`).join('');
@@ -1249,7 +1269,7 @@ async function renderConversao(){
     const totalMat=matriculasPorPessoa[nome]||0;
     const conv=totalProp>0?(totalMat/totalProp*100):0;
     return {nome, propostas:totalProp, matriculas:totalMat, conversao:conv, elegivel:totalProp>=50};
-  }).sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas);
+  }).sort((a,b)=> ordemCompleto==='propostas' ? (b.propostas-a.propostas) : (b.conversao-a.conversao || b.matriculas-a.matriculas));
 
   document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>{
     const noTop5 = ranking.some(r=>r.nome===p.nome);
