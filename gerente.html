@@ -267,12 +267,6 @@
   <!-- KPIs -->
   <div class="kpi-grid" id="kpi-grid"></div>
 
-  <!-- ALERTAS -->
-  <div class="alert-box" id="alert-box">
-    <div class="alert-title">⚠️ Alertas críticos</div>
-    <div id="alert-list"></div>
-  </div>
-
   <!-- TABS -->
   <div class="tabs">
     <button class="tab active" onclick="mudarTab('painel')">Painel</button>
@@ -334,26 +328,19 @@
   <!-- CONVERSÃO -->
   <div class="panel" id="panel-conversao">
     <div class="card" style="margin-bottom:12px;border:1px solid #b8860b">
-      <div class="card-head" style="background:#fff8e6" onclick="toggleCard(this)"><span class="card-title">📨 Reports dos matriculadores</span><span id="reports-badge" style="font-size:10px;background:#fff6e0;color:#d97706;padding:1px 8px;border-radius:20px"></span></div>
+      <div class="card-head" style="background:#fff8e6;justify-content:center;position:relative" onclick="toggleCard(this)"><span class="card-title">📨 Reports dos matriculadores</span><span id="reports-badge" style="font-size:10px;background:#fff6e0;color:#d97706;padding:1px 8px;border-radius:20px;position:absolute;right:14px"></span></div>
       <div class="card-body"><div id="reports-lista"><div class="loading">⏳ Carregando...</div></div></div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div class="card-head" onclick="toggleCard(this)">
-        <div>
-          <span class="card-title">🚀 Conversão — Top 5</span>
-          <div style="font-size:11px;color:#948a7c;margin-top:3px;font-weight:400">🏆 Mínimo de 50 propostas para concorrer · ordenado pela taxa de conversão</div>
-        </div>
-      </div>
-      <div class="card-body"><div id="conv-ranking"></div></div>
     </div>
 
     <div class="card" id="card-ranking-completo" style="margin-bottom:12px">
       <div class="card-head" onclick="toggleCard(this)"><span class="card-title">📋 Ranking completo de matriculadores</span><span style="font-size:10px;color:#9c9280">por % de conversão</span>
         <button type="button" onclick="event.stopPropagation();copiarComoImagem('card-ranking-completo','ranking-matriculadores')" style="margin-left:auto;font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #e8e0d0;background:#ffffff;color:#5c5346;cursor:pointer;font-family:inherit">📷 Copiar imagem</button>
       </div>
-      <div class="card-body" style="max-height:480px;overflow-y:auto">
-        <div id="conv-ranking-completo"></div>
+      <div class="card-body" style="max-height:600px;overflow-y:auto">
+        <div style="display:flex;gap:16px">
+          <div id="conv-ranking-completo-col1" style="flex:1;min-width:0"></div>
+          <div id="conv-ranking-completo-col2" style="flex:1;min-width:0"></div>
+        </div>
       </div>
     </div>
 
@@ -393,7 +380,7 @@
   </div>
 </div>
 
-<script src="supabase.js?v=1788888703"></script>
+<script src="supabase.js?v=1788890503"></script>
 <script>
 // AUTH
 if(sessionStorage.getItem('acesso_gerente')!=='1'){
@@ -750,7 +737,9 @@ function getLeadsFiltrados(){
   return lista;
 }
 
-function renderTudo(){popularProcessos();renderKPIs();renderAlertas();renderDatas();renderPlaybook();renderFunil();renderEntrevistas();}
+function renderTudo(){popularProcessos();renderKPIs();renderDatas();renderPlaybook();renderFunil();renderEntrevistas();
+  if(document.getElementById('panel-conversao')?.classList.contains('active')) renderConversao();
+}
 
 function renderKPIs(){
   const proc=getProcessoSel();
@@ -1180,9 +1169,28 @@ async function renderConversao(){
   await buscarPlanilhaConferencia();
   renderReportsMatriculadores();
 
-  // ── Propostas por pessoa (histórico completo, canonicalizado) ──
+  // ── Filtra tudo pelo seletivo escolhido em "Visualizando" no topo da página ──
+  const proc = getProcessoSel();
+  const propostasEscopo = !proc ? todasPropostasHistorico : todasPropostasHistorico.filter(p=>{
+    const lead = leads.find(l=>similaridadeNomes(l['Nome da pessoa'], p['Aluno'])>=LIMIAR_MATCH);
+    return lead ? pertenceAoGrupo(lead['Processo seletivo'], proc) : false;
+  });
+
+  // Versão do encontrarPropostaComScore restrita ao escopo do seletivo selecionado
+  function encontrarNoEscopo(nome){
+    if(!nome) return null;
+    let melhor=null, melhorScore=0;
+    propostasEscopo.forEach(p=>{
+      const score=similaridadeNomes(nome, p['Aluno']);
+      if(score>melhorScore){melhorScore=score;melhor=p;}
+    });
+    if(!melhor||melhorScore<LIMIAR_MATCH) return null;
+    return {proposta:melhor, score:melhorScore, exata: melhorScore>=0.999};
+  }
+
+  // ── Propostas por pessoa (dentro do escopo, canonicalizado) ──
   const propostasPorPessoa={};
-  todasPropostasHistorico.forEach(p=>{
+  propostasEscopo.forEach(p=>{
     const nome=nomeCanonicoMatriculador(p['Cadastrado Por']);
     if(!nome) return;
     if(!propostasPorPessoa[nome]) propostasPorPessoa[nome]=new Set();
@@ -1190,7 +1198,7 @@ async function renderConversao(){
   });
 
   // ── Matrículas por pessoa = UNIÃO de alunos vindos do Rubeus (Etapa=Matrícula) + TOTVS (Matriculado) ──
-  const leadsMatriculados=leads.filter(l=>l['Etapa']==='Matrícula');
+  const leadsMatriculados=leads.filter(l=>l['Etapa']==='Matrícula' && pertenceAoGrupo(l['Processo seletivo'],proc));
   const totvsMatriculados=matriculas.filter(m=>m['StatusMatricula']==='Matriculado');
   const alunosMatriculadosPorPessoa={};
   function creditarMatricula(matriculador, nomeAluno){
@@ -1199,12 +1207,12 @@ async function renderConversao(){
     alunosMatriculadosPorPessoa[matriculador].add(normalizarNome(nomeAluno));
   }
   leadsMatriculados.forEach(l=>{
-    const r=encontrarPropostaComScore(l['Nome da pessoa']);
+    const r=encontrarNoEscopo(l['Nome da pessoa']);
     if(!r) return;
     creditarMatricula(nomeCanonicoMatriculador(r.proposta['Cadastrado Por']), l['Nome da pessoa']);
   });
   totvsMatriculados.forEach(m=>{
-    const r=encontrarPropostaComScore(m['Nome']);
+    const r=encontrarNoEscopo(m['Nome']);
     if(!r) return;
     creditarMatricula(nomeCanonicoMatriculador(r.proposta['Cadastrado Por']), m['Nome']);
   });
@@ -1213,7 +1221,7 @@ async function renderConversao(){
     matriculasPorPessoa[nome]=alunosMatriculadosPorPessoa[nome].size;
   });
 
-  // ── Ranking completo — base única, calculada uma vez só, sempre por taxa de conversão ──
+  // ── Ranking completo — base única, sempre por taxa de conversão ──
   const todosNomes=new Set([...Object.keys(propostasPorPessoa)]);
   const listaCompleta=[...todosNomes].map(nome=>{
     const totalProp=propostasPorPessoa[nome]?.size||0;
@@ -1222,30 +1230,11 @@ async function renderConversao(){
     return {nome, propostas:totalProp, matriculas:totalMat, conversao:conv, elegivel:totalProp>=50};
   }).sort((a,b)=>b.conversao-a.conversao || b.matriculas-a.matriculas);
 
-  // Top 5 é literalmente os 5 primeiros do Ranking Completo que já bateram 50 propostas — nunca uma conta separada
-  const ranking = listaCompleta.filter(p=>p.elegivel).slice(0,5).map(p=>({...p, validado:true}));
+  // Top 5 continua calculado (só pra destacar na lista) mesmo sem o card dedicado
+  const top5 = listaCompleta.filter(p=>p.elegivel).slice(0,5);
 
-  if(!ranking.length){
-    document.getElementById('conv-ranking').innerHTML=`<div class="empty">Nenhuma matrícula cruzada com proposta ainda.</div>`;
-  } else {
-    const medalhas=['🥇','🥈','🥉','4º','5º'];
-    const premios=['R$ 5.000','R$ 4.000','R$ 3.000','R$ 2.000','R$ 1.000'];
-    document.getElementById('conv-ranking').innerHTML=ranking.map((r,i)=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8e0d0">
-        <span style="font-size:16px;width:28px;text-align:center">${medalhas[i]}</span>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:600;color:#2b2620">${r.nome}</div>
-          <div style="font-size:10px;color:#16a34a">✅ Validado — ${r.propostas} propostas · <strong>${premios[i]}</strong></div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:20px;font-weight:700;color:#16a34a">${r.conversao.toFixed(1)}%</div>
-          <div style="font-size:10px;color:#948a7c">${r.matriculas} matrícula${r.matriculas===1?'':'s'}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  document.getElementById('conv-ranking-completo').innerHTML=listaCompleta.length?listaCompleta.map((p,i)=>{
-    const noTop5 = ranking.some(r=>r.nome===p.nome);
+  function linhaRanking(p,i){
+    const noTop5 = top5.some(r=>r.nome===p.nome);
     const medalhas={0:'🥇',1:'🥈',2:'🥉'};
     let mensagemStatus;
     if(noTop5) mensagemStatus='';
@@ -1253,7 +1242,7 @@ async function renderConversao(){
     else mensagemStatus=` · <span style="color:#b8860b">melhore a conversão para entrar no Top 5</span>`;
     return `
     <div style="display:flex;align-items:center;gap:12px;padding:11px 10px;border-bottom:1px solid #e8e0d0;${noTop5?'background:#fff8e6;border-radius:6px;border-bottom-color:#F5C842':''}">
-      <span style="font-size:14px;color:${noTop5?'#b8860b':'#9c9280'};width:26px;text-align:center;flex-shrink:0;font-weight:${noTop5?'700':'400'}">${medalhas[ranking.findIndex(r=>r.nome===p.nome)]||(i+1)+'º'}</span>
+      <span style="font-size:14px;color:${noTop5?'#b8860b':'#9c9280'};width:26px;text-align:center;flex-shrink:0;font-weight:${noTop5?'700':'400'}">${medalhas[top5.findIndex(r=>r.nome===p.nome)]||(i+1)+'º'}</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:${noTop5?'700':'500'};color:#2b2620;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.nome}${noTop5?' <span style="font-size:10px;color:#b8860b">TOP 5</span>':''}</div>
         <div style="font-size:11px;color:#9c9280;margin-top:1px">${p.propostas} propostas · ${p.matriculas} matrículas${mensagemStatus}</div>
@@ -1262,7 +1251,19 @@ async function renderConversao(){
         <div style="font-size:17px;font-weight:700;color:${p.conversao>=15?'#16a34a':p.conversao>=5?'#d97706':'#948a7c'}">${p.conversao.toFixed(1)}%</div>
       </div>
     </div>`;
-  }).join(''):'<div class="empty">Sem dados de propostas cadastradas ainda</div>';
+  }
+
+  // Divide em 2 colunas por CONTINUAÇÃO: coluna 1 = primeira metade, coluna 2 = segunda metade (não intercalado)
+  if(!listaCompleta.length){
+    document.getElementById('conv-ranking-completo-col1').innerHTML='<div class="empty">Sem dados de propostas cadastradas ainda</div>';
+    document.getElementById('conv-ranking-completo-col2').innerHTML='';
+  } else {
+    const meio = Math.ceil(listaCompleta.length/2);
+    const col1 = listaCompleta.slice(0, meio);
+    const col2 = listaCompleta.slice(meio);
+    document.getElementById('conv-ranking-completo-col1').innerHTML = col1.map((p,i)=>linhaRanking(p,i)).join('');
+    document.getElementById('conv-ranking-completo-col2').innerHTML = col2.map((p,i)=>linhaRanking(p,i+meio)).join('');
+  }
 
   // ── Propostas duplicadas (mesmo aluno, mesmo ou outro matriculador) ──
   const duplicadas = detectarPropostasDuplicadas();
@@ -1275,7 +1276,7 @@ async function renderConversao(){
       </div>
     </div>`).join('') : '<div class="empty" style="color:#16a34a">✓ Nenhum nome de aluno duplicado nas propostas</div>';
 
-  // ── Propostas enviadas (planilha) não cadastradas no gestor ──
+  // ── Propostas enviadas (planilha) não cadastradas no gestor — sempre olha o histórico completo, não filtra por seletivo ──
   const semCadastro = pastaPropostas.filter(item => !getPropostaPorNome(item.nomeAluno));
   document.getElementById('conv-sem-badge').textContent = semCadastro.length||'';
   document.getElementById('conv-sem-proposta').innerHTML = !pastaPropostas.length
